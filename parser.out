@@ -1,0 +1,169 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    L_BRACKET
+    EQUALITY
+    STRING_CONST
+    VOID
+    R_BRACKET
+
+Grammar
+
+Rule 0     S' -> programm
+Rule 1     programm -> function program
+Rule 2     programm -> main
+Rule 3     function -> FUN type L_PAREN function_aux R_PAREN block
+Rule 4     function_aux -> vars
+Rule 5     function_aux -> empty
+Rule 6     main -> MAIN block
+Rule 7     type -> STRING
+Rule 8     type -> INT
+Rule 9     type -> FLOAT
+Rule 10    type -> CHAR
+Rule 11    type -> BOOL
+Rule 12    vars -> empty
+Rule 13    vars -> type ID var_aux SEMICOLON vars
+Rule 14    var_aux -> empty
+Rule 15    var_aux -> COMMA ID var_aux
+Rule 16    block -> L_BRACE block_aux RETURN R_BRACE
+Rule 17    block_aux -> empty
+Rule 18    block_aux -> sentence
+Rule 19    sentence -> assignment
+Rule 20    sentence -> condition
+Rule 21    sentence -> write
+Rule 22    sentence -> read
+Rule 23    sentence -> for
+Rule 24    sentence -> while
+Rule 25    assignment -> ID EQUALS expresion SEMICOLON
+Rule 26    condition -> IF L_PAREN expresion R_PAREN block condition_aux SEMICOLON
+Rule 27    condition_aux -> empty
+Rule 28    condition_aux -> ELSE block
+Rule 29    expresion -> level3 expresion_aux
+Rule 30    expresion_aux -> OR expresion
+Rule 31    expresion_aux -> AND expresion
+Rule 32    expresion_aux -> empty
+Rule 33    level3 -> level2 logical level2
+Rule 34    level2 -> level1 level2_aux
+Rule 35    level2_aux -> SUM level2
+Rule 36    level2_aux -> MINUS level2
+Rule 37    level2_aux -> empty
+Rule 38    level1 -> level0 level1_aux
+Rule 39    level1_aux -> empty
+Rule 40    level1_aux -> MOD level1
+Rule 41    level1_aux -> DIV level1
+Rule 42    level1_aux -> MULT level1
+Rule 43    level_0 -> L_PAREN expresion R_PAREN
+Rule 44    level_0 -> constant
+Rule 45    level_0 -> SUM constant
+Rule 46    level_0 -> MINUS constant
+Rule 47    logical -> L_EQUAL
+Rule 48    logical -> G_EQUAL
+Rule 49    logical -> LESS
+Rule 50    logical -> GREATER
+Rule 51    logical -> N_EQUAL
+Rule 52    read -> READ L_PAREN ID R_PAREN SEMICOLON
+Rule 53    write -> WRITE L_PAREN write_aux R_PAREN SEMICOLON
+Rule 54    write_aux -> STRING
+Rule 55    write_aux -> expresion
+Rule 56    repeat -> FOR L_PAREN assi cond exec R_PAREN block
+Rule 57    while -> WHILE L_PAREN expresion R_PAREN block
+Rule 58    assi -> ID EQUALS INTCONST SEMICOLON
+Rule 59    cond -> ID logical ID SEMICOLON
+Rule 60    exec -> assignment
+Rule 61    constant -> ID
+Rule 62    constant -> INT_CONST
+Rule 63    constant -> FLOAT_CONST
+Rule 64    constant -> TRUE
+Rule 65    constant -> FALSE
+Rule 66    vector -> VECTOR type ID
+Rule 67    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 31
+BOOL                 : 11
+CHAR                 : 10
+COMMA                : 15
+DIV                  : 41
+ELSE                 : 28
+EQUALITY             : 
+EQUALS               : 25 58
+FALSE                : 65
+FLOAT                : 9
+FLOAT_CONST          : 63
+FUN                  : 3
+GREATER              : 50
+G_EQUAL              : 48
+ID                   : 13 15 25 52 58 59 59 61 66
+IF                   : 26
+INT                  : 8
+INT_CONST            : 62
+LESS                 : 49
+L_BRACE              : 16
+L_BRACKET            : 
+L_EQUAL              : 47
+L_PAREN              : 3 26 43 52 53 56 57
+MAIN                 : 6
+MINUS                : 36 46
+MOD                  : 40
+MULT                 : 42
+N_EQUAL              : 51
+OR                   : 30
+READ                 : 52
+RETURN               : 16
+R_BRACE              : 16
+R_BRACKET            : 
+R_PAREN              : 3 26 43 52 53 56 57
+SEMICOLON            : 13 25 26 52 53 58 59
+STRING               : 7 54
+STRING_CONST         : 
+SUM                  : 35 45
+TRUE                 : 64
+VECTOR               : 66
+VOID                 : 
+WHILE                : 57
+WRITE                : 53
+error                : 
+for                  : 23
+
+Nonterminals, with rules where they appear
+
+FOR                  : 56
+INTCONST             : 58
+assi                 : 56
+assignment           : 19 60
+block                : 3 6 26 28 56 57
+block_aux            : 16
+cond                 : 56
+condition            : 20
+condition_aux        : 26
+constant             : 44 45 46
+empty                : 5 12 14 17 27 32 37 39
+exec                 : 56
+expresion            : 25 26 30 31 43 55 57
+expresion_aux        : 29
+function             : 1
+function_aux         : 3
+level0               : 38
+level1               : 34 40 41 42
+level1_aux           : 38
+level2               : 33 33 35 36
+level2_aux           : 34
+level3               : 29
+level_0              : 
+logical              : 33 59
+main                 : 2
+program              : 1
+programm             : 0
+read                 : 22
+repeat               : 
+sentence             : 18
+type                 : 3 13 66
+var_aux              : 13 15
+vars                 : 4 13
+vector               : 
+while                : 24
+write                : 21
+write_aux            : 53
+
