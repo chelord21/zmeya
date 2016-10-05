@@ -1,0 +1,28 @@
+PROGRAM ::= DECL FUNCTION* MAIN
+FUNCTION ::= fun ( TYPE | 'void' ) '(' PARAMETERS? ')' BLOCK
+MAIN ::= main BLOCK
+ PARAMETERS ::=  NUCLEAR ( '&'? id | ARR_VARIABLE ) ( ',' TYPE ( '&'? id | ARR_VARIABLE ))*
+DECL ::= (( AT_DECLARATION | ARR_DECLARATION )( ',' ( AT_DECLARATION | ARR_DECLARATION ))* ';' )?
+AT_DECLARATION ::= NUCLEAR id
+ARR_DECLARATION ::= NUCLEAR id DIMENTIONS
+DIMENTIONS ::= '[' positive.int.constant ']' ( '[' positive.int.constant ']' )*
+NUCLEAR ::= ( string | int | float | char | bool )
+BLOCK ::= '{' DECL SENTENCE* return '}'
+SENTENCE ::= ( ASSIGNMENT | CONDITION | WRITE | READ | FOR | WHILE )
+REPEAT ::= repeat '(' positive.int.constant ')' BLOCK
+WHILE ::= while '(' EXPRESION ')' BLOCK
+VARIABLE ::= 'id' | ARR_VARIABLE
+ARR_VARIABLE ::= 'id' '[' EXPRESION ']' ( '[' EXPRESION ']' )*
+ASSIGNMENT ::= VARIABLE '=' EXPRESION ';'
+WRITE ::= write '(' ( EXPRESION | string ) ')' ';'
+READ ::= read '(' VARIABLE ')' ';'
+CONDITION ::= if '(' EXPRESION ')' BLOCK ( else BLOCK )? ';'
+EXPRESION ::= LEVEL3 (( '&&' | '||' ) LEVEL3)*
+LEVEL3 ::= LEVEL2 RELATIONAL LEVEL2
+LEVEL2 ::= LEVEL1 (( '+' | '-' ) LEVEL1 )*
+LEVEL1 ::= LEVEL0 (( '*' | '/' | '%' ) LEVEL0 )*
+LEVEL0 ::= ( '(' EXPRESION ')' | ( '+' | '-' )? CONSTANT)
+CONSTANT ::= VARIABLE | int.constant | float.constant | bool.constant
+RELATIONAL ::= ( '<=' | '>=' | '<' | '>' | '<>' | '==' | '!=' )
+
+// C like arrays
