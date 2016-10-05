@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# Analizador sintáctico de ViLe
-# Marcel Benítez Martínez 1139855
-# Abraham Rodríguez 1195653
+# Analizador sintáctico de Zmeya
+# Sergio Cordero a01191167
 
 import ply.yacc as yacc
 import lexer
@@ -19,7 +18,7 @@ def p_function(t):
   'function : FUN type_opt L_PAREN function_aux R_PAREN block'
 
 def p_type_opt(t):
-  '''type_opt : type
+  '''type_opt : nuclear
               | VOID'''
 
 def p_function_aux(t):
@@ -30,12 +29,12 @@ def p_main(t):
   'main : MAIN block'
 
 def p_parameters(t):
-  '''parameters : type params_aux params_loop'''
+  '''parameters : nuclear params_aux params_loop'''
 
 def p_params_aux(t):
   '''params_aux : ASAND ID
                 | ID
-                | a_variable'''
+                | arr_variable'''
 
 def p_params_loop(t):
   '''params_loop : COMMA parameters
@@ -54,11 +53,11 @@ def p_decl_loop(t):
                | empty'''
 
 def p_nuclear(t):
-  '''type : STRING
-          | INT
-          | FLOAT
-          | CHAR
-          | BOOL'''
+  '''nuclear : STRING
+             | INT
+             | FLOAT
+             | CHAR
+             | BOOL'''
 
 def p_at_declaration(t):
   'at_declaration : nuclear ID'
@@ -157,18 +156,18 @@ def p_level1_aux(t):
                 | MULT level1'''
 
 def p_level0(t):
-  '''level_0 : L_PAREN expresion R_PAREN
+  '''level0 : L_PAREN expresion R_PAREN
              | constant
              | SUM constant
              | MINUS constant'''
 
 def p_relational(t):
-  '''logical : L_EQUAL
-             | G_EQUAL
-             | LESS
-             | GREATER
-             | N_EQUAL
-             | EQUALITY'''
+  '''relational : L_EQUAL
+                | G_EQUAL
+                | LESS
+                | GREATER
+                | N_EQUAL
+                | EQUALITY'''
 
 def p_constant(t):
   '''constant : variable

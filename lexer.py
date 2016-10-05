@@ -24,7 +24,6 @@ reserved = {
   'void'   : 'VOID',
   'bool'   : 'BOOL',
   'char'   : 'CHAR',
-  'vector' : 'VECTOR',
   'T'      : 'TRUE',
   'F'      : 'FALSE',
   '&&'     : 'AND',
