@@ -9,7 +9,7 @@ import ply.lex as lex
 
 # Reserved words
 reserved = {
-  'def'    : 'FUN',
+  'fun'    : 'FUN',
   'main'   : 'MAIN',
   'return' : 'RETURN',
   'if'     : 'IF',
@@ -17,7 +17,7 @@ reserved = {
   'write'  : 'WRITE',
   'read'   : 'READ',
   'while'  : 'WHILE',
-  'repeat' : 'for',
+  'repeat' : 'REPEAT',
   'int'    : 'INT',
   'float'  : 'FLOAT',
   'string' : 'STRING',
@@ -28,7 +28,8 @@ reserved = {
   'T'      : 'TRUE',
   'F'      : 'FALSE',
   '&&'     : 'AND',
-  '||'     : 'OR'
+  '||'     : 'OR',
+  '&'      : 'ASAND'
 }
 
 tokens = [
@@ -36,7 +37,7 @@ tokens = [
   'EQUALITY', 'GREATER', 'LESS', 'L_EQUAL', 'G_EQUAL',
   'N_EQUAL', 'SEMICOLON', 'COMMA', 'L_PAREN', 'R_PAREN',
   'L_BRACE', 'R_BRACE', 'L_BRACKET', 'R_BRACKET', 'INT_CONST',
-  'STRING_CONST', 'FLOAT_CONST', 'ID'
+  'STRING_CONST', 'FLOAT_CONST', 'ID', 'POS_INT_CONST'
   ] + list(reserved.values())
 
 # Token definitions
@@ -62,6 +63,7 @@ t_R_BRACE = '\}'
 t_L_BRACKET = '\['
 t_R_BRACKET = '\]'
 t_INT_CONST = '[-][0-9]+'
+t_POS_INT_CONST = '[0-9]+'
 t_STRING_CONST = '"[a-zA-Z_].*"'
 t_FLOAT_CONST = '[-]([0-9]+[.])?[0-9]+'
 

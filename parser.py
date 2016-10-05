@@ -9,36 +9,72 @@ import lexer
 tokens= lexer.tokens
 
 def p_program(t):
-  '''programm : function program
-              | main'''
+  'programm : decl function_opt main'
+
+def p_function_opt(t):
+  '''function_opt : empty
+                  | function function_opt'''
 
 def p_function(t):
-  'function : FUN type L_PAREN function_aux R_PAREN block'
+  'function : FUN type_opt L_PAREN function_aux R_PAREN block'
+
+def p_type_opt(t):
+  '''type_opt : type
+              | VOID'''
 
 def p_function_aux(t):
-  '''function_aux : vars
+  '''function_aux : parameters
                   | empty'''
 
 def p_main(t):
   'main : MAIN block'
 
-def p_type(t):
+def p_parameters(t):
+  '''parameters : type params_aux params_loop'''
+
+def p_params_aux(t):
+  '''params_aux : ASAND ID
+                | ID
+                | a_variable'''
+
+def p_params_loop(t):
+  '''params_loop : COMMA parameters
+                 | empty'''
+
+def p_decl(t):
+  '''decl : decl_aux SEMICOLON
+          | empty'''
+
+def p_decl_aux(t):
+  '''decl_aux : at_declaration decl_loop
+              | arr_declaration decl_loop'''
+
+def p_decl_loop(t):
+  '''decl_loop : COMMA decl_aux
+               | empty'''
+
+def p_nuclear(t):
   '''type : STRING
           | INT
           | FLOAT
           | CHAR
           | BOOL'''
 
-def p_vars(t):
-  '''vars : empty
-          | type ID var_aux SEMICOLON vars'''
+def p_at_declaration(t):
+  'at_declaration : nuclear ID'
 
-def p_var_aux(t):
-  '''var_aux : empty
-             | COMMA ID var_aux'''
+def p_arr_declaration(t):
+  'arr_declaration : nuclear ID dimensions'
+
+def p_dimensions(t):
+  'dimensions : L_BRACKET POS_INT_CONST R_BRACKET dim_loop'
+
+def p_dim_loop(t):
+  '''dim_loop : dimensions
+              | empty'''
 
 def p_block(t):
-  'block : L_BRACE block_aux RETURN R_BRACE'
+  'block : L_BRACE decl block_aux RETURN R_BRACE'
 
 def p_block_aux(t):
   '''block_aux : empty
@@ -49,11 +85,41 @@ def p_sentence(t):
               | condition
               | write
               | read
-              | for
+              | repeat
               | while'''
 
+def p_repeat(t):
+  'repeat : REPEAT L_PAREN POS_INT_CONST R_PAREN block'
+
+def p_while(t):
+  'while : WHILE L_PAREN expresion R_PAREN block'
+
+def p_variable(t):
+  '''variable : ID
+              | arr_variable'''
+
+def p_arr_variable(t):
+  'arr_variable : ID av_loop'
+
+def p_av_loop(t):
+  'av_loop : L_BRACKET expresion R_BRACKET av_opt'
+
+def p_av_opt(t):
+  '''av_opt : empty
+            | av_loop'''
+
 def p_assignment(t):
-  'assignment : ID EQUALS expresion SEMICOLON'
+  'assignment : variable EQUALS expresion SEMICOLON'
+
+def p_read(t):
+  'read : READ L_PAREN ID R_PAREN SEMICOLON'
+
+def p_write(t):
+  'write : WRITE L_PAREN write_opt R_PAREN SEMICOLON'
+
+def p_write_opt(t):
+  '''write_opt : expresion
+               | STRING'''
 
 def p_condition(t):
   'condition : IF L_PAREN expresion R_PAREN block condition_aux SEMICOLON'
@@ -71,7 +137,7 @@ def p_expresion_aux(t):
                    | empty'''
 
 def p_level3(t):
-  'level3 : level2 logical level2'
+  'level3 : level2 relational level2'
 
 def p_level2(t):
   'level2 : level1 level2_aux'
@@ -96,50 +162,26 @@ def p_level0(t):
              | SUM constant
              | MINUS constant'''
 
-def p_logical(t):
+def p_relational(t):
   '''logical : L_EQUAL
              | G_EQUAL
              | LESS
              | GREATER
-             | N_EQUAL'''
-
-def p_read(t):
-  'read : READ L_PAREN ID R_PAREN SEMICOLON'
-
-def p_write(t):
-  'write : WRITE L_PAREN write_aux R_PAREN SEMICOLON'
-
-def p_write_aux(t):
-  '''write_aux : STRING
-               | expresion'''
-
-def p_repeat(t):
-  'repeat : FOR L_PAREN assi cond exec R_PAREN block'
-
-def p_while(t):
-  'while : WHILE L_PAREN expresion R_PAREN block'
-
-def p_assi(t):
-  'assi : ID EQUALS INTCONST SEMICOLON'
-
-def p_cond(t):
-  'cond : ID logical ID SEMICOLON'
-
-def p_exec(t):
-  'exec : assignment'
+             | N_EQUAL
+             | EQUALITY'''
 
 def p_constant(t):
-  '''constant : ID
+  '''constant : variable
               | INT_CONST
               | FLOAT_CONST
               | TRUE
               | FALSE'''
 
-def p_vector(t):
-  'vector : VECTOR type ID'
-
 def p_empty(p):
-    'empty :'
-    pass
+  'empty :'
+  pass
+
+def p_error(p):
+  print("Syntax error in input!")
 
 parser = yacc.yacc()
