@@ -89,7 +89,7 @@ def p_expresion_loop(t):
   print('EXPRESION LOOP')
 
 def p_fun_call(t):
-  'fun_call : ID L_PAREN fun_call_opts R_PAREN'
+  'fun_call : ID_FUN L_PAREN fun_call_opts R_PAREN'
   print('FUN CALL')
 
 def p_fun_call_opts(t):
@@ -161,7 +161,7 @@ def p_oblock(t):
   print('RBLOCK')
 
 def p_oblock_opt(t):
-    '''oblock_opt : RETURN expression
+    '''oblock_opt : RETURN expresion
                   | empty'''
     print('OBLOCK')
 
@@ -201,7 +201,7 @@ def p_repeat(t):
   print('REPEAT')
 
 def p_rfunction(t):
-  'rfunction : atomic ID L_PAREN opt_params R_PAREN rblock'
+  'rfunction : atomic ID_FUN L_PAREN opt_params R_PAREN rblock'
   print('RFUNCTION')
 
 def p_opt_params(t):
@@ -226,7 +226,7 @@ def p_opt_array(t):
   print('OPT ARRAY')
 
 def p_vfunction(t):
-  'vfunction : VOID ID L_PAREN opt_params R_PAREN block'
+  'vfunction : VOID ID_FUN L_PAREN opt_params R_PAREN block'
   print('VFUNCTION')
 
 def p_while(t):
@@ -250,6 +250,6 @@ def p_error(p):
   print("Syntax error in input!")
 
 parser = yacc.yacc()
-file = open("input.txt", "r")
+file = open("input_function.txt", "r")
 yacc.parse(file.read())
 file.close()

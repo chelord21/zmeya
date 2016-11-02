@@ -77,7 +77,7 @@ def t_ID(t):
   return t
 
 def t_ID_FUN(t):
-  '_[a-zA-Z_][a-zA-Z0-9_]*'
+  '\_[a-zA-Z_][a-zA-Z0-9_]*'
   t.type = reserved.get(t.value, 'ID')
   return t
 

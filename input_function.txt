@@ -1,0 +1,4 @@
+int x;
+int _myfunc(){
+  return 1;
+}
