@@ -1,13 +1,11 @@
 PROGRAM ::= DECLARATION* FUNCTION* MAIN
-ARR_DECLARATION ::= ATOMIC id DIMENSIONS
  ASSIGNMENT ::= VARIABLE '=' ( EXPRESION | FUN_CALL )
-AT_DECLARATION ::= ATOMIC id
  ATOMIC ::= ( string | int | float | char | bool )
  BLOCK ::= '{' DECLARATION* CONTENT* '}'
- CONDITION ::= if '(' EXPRESION ')' BLOCK ( else BLOCK )?
+ CONDITION ::= if '(' EXPRESION ')' OBLOCK ( else OBLOCK )?
 CONSTANT ::= int.constant | float.constant | T | F
  CONTENT ::= SENTENCE | LOOPS | CONDITION
- DECLARATION ::= ( AT_DECLARATION | ARR_DECLARATION ) ';'
+ DECLARATION ::= ATOMIC VARIABLE ';'
 DIMENSIONS ::= '[' positive.int.constant ']' ( '[' positive.int.constant ']' )*
 EXPRESION ::= LEVEL3 (( '&&' | '||' ) LEVEL3)*
  FUN_CALL ::= 'id' '(' (EXPRESION ( ',' EXPRESION )*)? ')'
