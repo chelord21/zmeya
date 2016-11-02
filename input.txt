@@ -4,11 +4,6 @@ char g;
 string s;
 bool b;
 
-a = 0;
-f = 0;
-s = "Hola";
-b = T;
-
 void voidFunction(int w, float p){
   i = w+p;
 }
@@ -31,7 +26,6 @@ int intFunction2(int z){
   else{
     return intFunction2(z-1);
   }
-
 }
 bool trueFunction(){
   return T;
@@ -40,8 +34,12 @@ bool trueFunction(){
 int main{
   int p;
   bool true;
-  p = 10;
   int arr[10];
+  p = 10;
+  a = 0;
+  f = 0;
+  s = "Hola";
+  b = T;
   arr[6] = 6;
   while(p > 10){
     if(p % 2 == 0){
