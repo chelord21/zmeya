@@ -9,7 +9,6 @@ import ply.lex as lex
 
 # Reserved words
 reserved = {
-  'fun'    : 'FUN',
   'main'   : 'MAIN',
   'return' : 'RETURN',
   'if'     : 'IF',
@@ -27,8 +26,7 @@ reserved = {
   'T'      : 'TRUE',
   'F'      : 'FALSE',
   '&&'     : 'AND',
-  '||'     : 'OR',
-  '&'      : 'ASAND'
+  '||'     : 'OR'
 }
 
 tokens = [

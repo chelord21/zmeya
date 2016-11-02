@@ -1,0 +1,65 @@
+int i;
+float f;
+char g;
+string s;
+bool b;
+
+a = 0;
+f = 0;
+s = "Hola";
+b = T;
+
+void voidFunction(int w, float p){
+  i = w+p;
+}
+
+void voidFunction2(){
+  int z;
+  z = 10;
+  voidFunction(5, z);
+}
+
+int intFunction(int m){
+  m = f + m;
+  return m;
+}
+
+int intFunction2(int z){
+  if(z==1){
+    return 1;
+  }
+  else{
+    return intFunction2(z-1);
+  }
+
+}
+bool trueFunction(){
+  return T;
+}
+
+int main{
+  int p;
+  bool true;
+  p = 10;
+  int arr[10];
+  arr[6] = 6;
+  while(p > 10){
+    if(p % 2 == 0){
+      write(p);
+    }
+    while(p>0){
+      write(p+1);
+    }
+    p = p - 1;
+  }
+
+  repeat(4){
+    read(p);
+    write("You wrote");
+    write(p);
+  }
+
+  true = trueFunction();
+  p = intFunction2(4) + 1;
+  return 1;
+}

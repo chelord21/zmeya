@@ -1,0 +1,2864 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> decl_kleen function_kleen main
+Rule 2     decl_kleen -> empty
+Rule 3     decl_kleen -> declaration decl_kleen
+Rule 4     function_kleen -> empty
+Rule 5     function_kleen -> function function_kleen
+Rule 6     arr_declaration -> atomic ID dimensions
+Rule 7     assignment -> variable EQUALS assignment_opts
+Rule 8     assignment_opts -> expresion
+Rule 9     assignment_opts -> fun_call
+Rule 10    at_declaration -> atomic ID
+Rule 11    atomic -> STRING
+Rule 12    atomic -> INT
+Rule 13    atomic -> FLOAT
+Rule 14    atomic -> CHAR
+Rule 15    atomic -> BOOL
+Rule 16    block -> L_BRACE decl_kleen content R_BRACE
+Rule 17    condition -> IF L_PAREN expresion R_PAREN block else_condition
+Rule 18    else_condition -> empty
+Rule 19    else_condition -> ELSE block
+Rule 20    constant -> INT_CONST
+Rule 21    constant -> FLOAT_CONST
+Rule 22    constant -> TRUE
+Rule 23    constant -> FALSE
+Rule 24    content -> sentence
+Rule 25    content -> loops
+Rule 26    content -> condition
+Rule 27    declaration -> at_declaration SEMICOLON
+Rule 28    declaration -> arr_declaration SEMICOLON
+Rule 29    dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop
+Rule 30    dim_loop -> dimensions
+Rule 31    dim_loop -> empty
+Rule 32    expresion -> level3 expresion_loop
+Rule 33    expresion_loop -> OR expresion
+Rule 34    expresion_loop -> AND expresion
+Rule 35    expresion_loop -> empty
+Rule 36    fun_call -> ID L_PAREN fun_call_opts R_PAREN
+Rule 37    fun_call_opts -> empty
+Rule 38    fun_call_opts -> expresion funcall_params_loop
+Rule 39    funcall_params_loop -> empty
+Rule 40    funcall_params_loop -> COMMA fun_call_opts
+Rule 41    function -> rfunction
+Rule 42    function -> vfunction
+Rule 43    level0 -> L_PAREN expresion R_PAREN
+Rule 44    level0 -> constant
+Rule 45    level0 -> variable
+Rule 46    level1 -> level0 level1_loop
+Rule 47    level1_loop -> empty
+Rule 48    level1_loop -> MOD level1
+Rule 49    level1_loop -> DIV level1
+Rule 50    level1_loop -> MULT level1
+Rule 51    level2 -> level1 level2_loop
+Rule 52    level2_loop -> SUM level2
+Rule 53    level2_loop -> MINUS level2
+Rule 54    level2_loop -> empty
+Rule 55    level3 -> level2 level3_loop
+Rule 56    level3_loop -> empty
+Rule 57    level3_loop -> relational level3
+Rule 58    loops -> while
+Rule 59    loops -> repeat
+Rule 60    main -> MAIN rblock
+Rule 61    parameters -> atomic variable params_loop
+Rule 62    params_loop -> COMMA parameters
+Rule 63    params_loop -> empty
+Rule 64    rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE
+Rule 65    content_kleen -> empty
+Rule 66    content_kleen -> content content_kleen
+Rule 67    read -> READ L_PAREN variable R_PAREN
+Rule 68    relational -> L_EQUAL
+Rule 69    relational -> G_EQUAL
+Rule 70    relational -> LESS
+Rule 71    relational -> GREATER
+Rule 72    relational -> N_EQUAL
+Rule 73    relational -> EQUALITY
+Rule 74    repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block
+Rule 75    rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock
+Rule 76    opt_params -> empty
+Rule 77    opt_params -> parameters
+Rule 78    sentence -> assignment SEMICOLON
+Rule 79    sentence -> write SEMICOLON
+Rule 80    sentence -> read SEMICOLON
+Rule 81    sentence -> fun_call SEMICOLON
+Rule 82    variable -> ID opt_array
+Rule 83    opt_array -> empty
+Rule 84    opt_array -> dimensions
+Rule 85    vfunction -> VOID ID L_PAREN opt_params R_PAREN block
+Rule 86    while -> WHILE L_PAREN expresion R_PAREN block
+Rule 87    write -> WRITE L_PAREN write_opt R_PAREN
+Rule 88    write_opt -> expresion
+Rule 89    write_opt -> STRING_CONST
+Rule 90    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 34
+BOOL                 : 15
+CHAR                 : 14
+COMMA                : 40 62
+DIV                  : 49
+ELSE                 : 19
+EQUALITY             : 73
+EQUALS               : 7
+FALSE                : 23
+FLOAT                : 13
+FLOAT_CONST          : 21
+GREATER              : 71
+G_EQUAL              : 69
+ID                   : 6 10 36 75 82 85
+IF                   : 17
+INT                  : 12
+INT_CONST            : 20
+LESS                 : 70
+L_BRACE              : 16 64
+L_BRACKET            : 29
+L_EQUAL              : 68
+L_PAREN              : 17 36 43 67 74 75 85 86 87
+MAIN                 : 60
+MINUS                : 53
+MOD                  : 48
+MULT                 : 50
+N_EQUAL              : 72
+OR                   : 33
+POS_INT_CONST        : 29 74
+READ                 : 67
+REPEAT               : 74
+RETURN               : 64
+R_BRACE              : 16 64
+R_BRACKET            : 29
+R_PAREN              : 17 36 43 67 74 75 85 86 87
+SEMICOLON            : 27 28 64 78 79 80 81
+STRING               : 11
+STRING_CONST         : 89
+SUM                  : 52
+TRUE                 : 22
+VOID                 : 85
+WHILE                : 86
+WRITE                : 87
+error                : 
+
+Nonterminals, with rules where they appear
+
+arr_declaration      : 28
+assignment           : 78
+assignment_opts      : 7
+at_declaration       : 27
+atomic               : 6 10 61 75
+block                : 17 19 74 85 86
+condition            : 26
+constant             : 44
+content              : 16 66
+content_kleen        : 64 66
+decl_kleen           : 1 3 16 64
+declaration          : 3
+dim_loop             : 29
+dimensions           : 6 30 84
+else_condition       : 17
+empty                : 2 4 18 31 35 37 39 47 54 56 63 65 76 83
+expresion            : 8 17 33 34 38 43 64 86 88
+expresion_loop       : 32
+fun_call             : 9 81
+fun_call_opts        : 36 40
+funcall_params_loop  : 38
+function             : 5
+function_kleen       : 1 5
+level0               : 46
+level1               : 48 49 50 51
+level1_loop          : 46
+level2               : 52 53 55
+level2_loop          : 51
+level3               : 32 57
+level3_loop          : 55
+loops                : 25
+main                 : 1
+opt_array            : 82
+opt_params           : 75 85
+parameters           : 62 77
+params_loop          : 61
+program              : 0
+rblock               : 60 75
+read                 : 80
+relational           : 57
+repeat               : 59
+rfunction            : 41
+sentence             : 24
+variable             : 7 45 61 67
+vfunction            : 42
+while                : 58
+write                : 79
+write_opt            : 87
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . decl_kleen function_kleen main
+    (2) decl_kleen -> . empty
+    (3) decl_kleen -> . declaration decl_kleen
+    (90) empty -> .
+    (27) declaration -> . at_declaration SEMICOLON
+    (28) declaration -> . arr_declaration SEMICOLON
+    (10) at_declaration -> . atomic ID
+    (6) arr_declaration -> . atomic ID dimensions
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+  ! shift/reduce conflict for STRING resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLOAT resolved as shift
+  ! shift/reduce conflict for CHAR resolved as shift
+  ! shift/reduce conflict for BOOL resolved as shift
+    VOID            reduce using rule 90 (empty -> .)
+    MAIN            reduce using rule 90 (empty -> .)
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+  ! STRING          [ reduce using rule 90 (empty -> .) ]
+  ! INT             [ reduce using rule 90 (empty -> .) ]
+  ! FLOAT           [ reduce using rule 90 (empty -> .) ]
+  ! CHAR            [ reduce using rule 90 (empty -> .) ]
+  ! BOOL            [ reduce using rule 90 (empty -> .) ]
+
+    declaration                    shift and go to state 1
+    atomic                         shift and go to state 9
+    at_declaration                 shift and go to state 5
+    empty                          shift and go to state 11
+    arr_declaration                shift and go to state 10
+    program                        shift and go to state 7
+    decl_kleen                     shift and go to state 2
+
+state 1
+
+    (3) decl_kleen -> declaration . decl_kleen
+    (2) decl_kleen -> . empty
+    (3) decl_kleen -> . declaration decl_kleen
+    (90) empty -> .
+    (27) declaration -> . at_declaration SEMICOLON
+    (28) declaration -> . arr_declaration SEMICOLON
+    (10) at_declaration -> . atomic ID
+    (6) arr_declaration -> . atomic ID dimensions
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+  ! shift/reduce conflict for STRING resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLOAT resolved as shift
+  ! shift/reduce conflict for CHAR resolved as shift
+  ! shift/reduce conflict for BOOL resolved as shift
+    VOID            reduce using rule 90 (empty -> .)
+    MAIN            reduce using rule 90 (empty -> .)
+    IF              reduce using rule 90 (empty -> .)
+    WRITE           reduce using rule 90 (empty -> .)
+    READ            reduce using rule 90 (empty -> .)
+    ID              reduce using rule 90 (empty -> .)
+    WHILE           reduce using rule 90 (empty -> .)
+    REPEAT          reduce using rule 90 (empty -> .)
+    RETURN          reduce using rule 90 (empty -> .)
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+  ! STRING          [ reduce using rule 90 (empty -> .) ]
+  ! INT             [ reduce using rule 90 (empty -> .) ]
+  ! FLOAT           [ reduce using rule 90 (empty -> .) ]
+  ! CHAR            [ reduce using rule 90 (empty -> .) ]
+  ! BOOL            [ reduce using rule 90 (empty -> .) ]
+
+    declaration                    shift and go to state 1
+    atomic                         shift and go to state 9
+    arr_declaration                shift and go to state 10
+    decl_kleen                     shift and go to state 13
+    at_declaration                 shift and go to state 5
+    empty                          shift and go to state 11
+
+state 2
+
+    (1) program -> decl_kleen . function_kleen main
+    (4) function_kleen -> . empty
+    (5) function_kleen -> . function function_kleen
+    (90) empty -> .
+    (41) function -> . rfunction
+    (42) function -> . vfunction
+    (75) rfunction -> . atomic ID L_PAREN opt_params R_PAREN rblock
+    (85) vfunction -> . VOID ID L_PAREN opt_params R_PAREN block
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    MAIN            reduce using rule 90 (empty -> .)
+    VOID            shift and go to state 19
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    rfunction                      shift and go to state 20
+    function                       shift and go to state 14
+    atomic                         shift and go to state 17
+    function_kleen                 shift and go to state 15
+    empty                          shift and go to state 18
+    vfunction                      shift and go to state 16
+
+state 3
+
+    (13) atomic -> FLOAT .
+
+    ID              reduce using rule 13 (atomic -> FLOAT .)
+
+
+state 4
+
+    (14) atomic -> CHAR .
+
+    ID              reduce using rule 14 (atomic -> CHAR .)
+
+
+state 5
+
+    (27) declaration -> at_declaration . SEMICOLON
+
+    SEMICOLON       shift and go to state 21
+
+
+state 6
+
+    (11) atomic -> STRING .
+
+    ID              reduce using rule 11 (atomic -> STRING .)
+
+
+state 7
+
+    (0) S' -> program .
+
+
+
+state 8
+
+    (12) atomic -> INT .
+
+    ID              reduce using rule 12 (atomic -> INT .)
+
+
+state 9
+
+    (10) at_declaration -> atomic . ID
+    (6) arr_declaration -> atomic . ID dimensions
+
+    ID              shift and go to state 22
+
+
+state 10
+
+    (28) declaration -> arr_declaration . SEMICOLON
+
+    SEMICOLON       shift and go to state 23
+
+
+state 11
+
+    (2) decl_kleen -> empty .
+
+    VOID            reduce using rule 2 (decl_kleen -> empty .)
+    STRING          reduce using rule 2 (decl_kleen -> empty .)
+    INT             reduce using rule 2 (decl_kleen -> empty .)
+    FLOAT           reduce using rule 2 (decl_kleen -> empty .)
+    CHAR            reduce using rule 2 (decl_kleen -> empty .)
+    BOOL            reduce using rule 2 (decl_kleen -> empty .)
+    MAIN            reduce using rule 2 (decl_kleen -> empty .)
+    IF              reduce using rule 2 (decl_kleen -> empty .)
+    WRITE           reduce using rule 2 (decl_kleen -> empty .)
+    READ            reduce using rule 2 (decl_kleen -> empty .)
+    ID              reduce using rule 2 (decl_kleen -> empty .)
+    WHILE           reduce using rule 2 (decl_kleen -> empty .)
+    REPEAT          reduce using rule 2 (decl_kleen -> empty .)
+    RETURN          reduce using rule 2 (decl_kleen -> empty .)
+
+
+state 12
+
+    (15) atomic -> BOOL .
+
+    ID              reduce using rule 15 (atomic -> BOOL .)
+
+
+state 13
+
+    (3) decl_kleen -> declaration decl_kleen .
+
+    VOID            reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    STRING          reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    INT             reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    FLOAT           reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    CHAR            reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    BOOL            reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    MAIN            reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    IF              reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    WRITE           reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    READ            reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    ID              reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    WHILE           reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    REPEAT          reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+    RETURN          reduce using rule 3 (decl_kleen -> declaration decl_kleen .)
+
+
+state 14
+
+    (5) function_kleen -> function . function_kleen
+    (4) function_kleen -> . empty
+    (5) function_kleen -> . function function_kleen
+    (90) empty -> .
+    (41) function -> . rfunction
+    (42) function -> . vfunction
+    (75) rfunction -> . atomic ID L_PAREN opt_params R_PAREN rblock
+    (85) vfunction -> . VOID ID L_PAREN opt_params R_PAREN block
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    MAIN            reduce using rule 90 (empty -> .)
+    VOID            shift and go to state 19
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    function                       shift and go to state 14
+    atomic                         shift and go to state 17
+    function_kleen                 shift and go to state 24
+    empty                          shift and go to state 18
+    vfunction                      shift and go to state 16
+    rfunction                      shift and go to state 20
+
+state 15
+
+    (1) program -> decl_kleen function_kleen . main
+    (60) main -> . MAIN rblock
+
+    MAIN            shift and go to state 25
+
+    main                           shift and go to state 26
+
+state 16
+
+    (42) function -> vfunction .
+
+    VOID            reduce using rule 42 (function -> vfunction .)
+    STRING          reduce using rule 42 (function -> vfunction .)
+    INT             reduce using rule 42 (function -> vfunction .)
+    FLOAT           reduce using rule 42 (function -> vfunction .)
+    CHAR            reduce using rule 42 (function -> vfunction .)
+    BOOL            reduce using rule 42 (function -> vfunction .)
+    MAIN            reduce using rule 42 (function -> vfunction .)
+
+
+state 17
+
+    (75) rfunction -> atomic . ID L_PAREN opt_params R_PAREN rblock
+
+    ID              shift and go to state 27
+
+
+state 18
+
+    (4) function_kleen -> empty .
+
+    MAIN            reduce using rule 4 (function_kleen -> empty .)
+
+
+state 19
+
+    (85) vfunction -> VOID . ID L_PAREN opt_params R_PAREN block
+
+    ID              shift and go to state 28
+
+
+state 20
+
+    (41) function -> rfunction .
+
+    VOID            reduce using rule 41 (function -> rfunction .)
+    STRING          reduce using rule 41 (function -> rfunction .)
+    INT             reduce using rule 41 (function -> rfunction .)
+    FLOAT           reduce using rule 41 (function -> rfunction .)
+    CHAR            reduce using rule 41 (function -> rfunction .)
+    BOOL            reduce using rule 41 (function -> rfunction .)
+    MAIN            reduce using rule 41 (function -> rfunction .)
+
+
+state 21
+
+    (27) declaration -> at_declaration SEMICOLON .
+
+    STRING          reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    INT             reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    FLOAT           reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    CHAR            reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    BOOL            reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    VOID            reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    MAIN            reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    IF              reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    WRITE           reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    READ            reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    ID              reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    WHILE           reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    REPEAT          reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+    RETURN          reduce using rule 27 (declaration -> at_declaration SEMICOLON .)
+
+
+state 22
+
+    (10) at_declaration -> atomic ID .
+    (6) arr_declaration -> atomic ID . dimensions
+    (29) dimensions -> . L_BRACKET POS_INT_CONST R_BRACKET dim_loop
+
+    SEMICOLON       reduce using rule 10 (at_declaration -> atomic ID .)
+    L_BRACKET       shift and go to state 29
+
+    dimensions                     shift and go to state 30
+
+state 23
+
+    (28) declaration -> arr_declaration SEMICOLON .
+
+    STRING          reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    INT             reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    FLOAT           reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    CHAR            reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    BOOL            reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    VOID            reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    MAIN            reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    IF              reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    WRITE           reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    READ            reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    ID              reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    WHILE           reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    REPEAT          reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+    RETURN          reduce using rule 28 (declaration -> arr_declaration SEMICOLON .)
+
+
+state 24
+
+    (5) function_kleen -> function function_kleen .
+
+    MAIN            reduce using rule 5 (function_kleen -> function function_kleen .)
+
+
+state 25
+
+    (60) main -> MAIN . rblock
+    (64) rblock -> . L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE
+
+    L_BRACE         shift and go to state 31
+
+    rblock                         shift and go to state 32
+
+state 26
+
+    (1) program -> decl_kleen function_kleen main .
+
+    $end            reduce using rule 1 (program -> decl_kleen function_kleen main .)
+
+
+state 27
+
+    (75) rfunction -> atomic ID . L_PAREN opt_params R_PAREN rblock
+
+    L_PAREN         shift and go to state 33
+
+
+state 28
+
+    (85) vfunction -> VOID ID . L_PAREN opt_params R_PAREN block
+
+    L_PAREN         shift and go to state 34
+
+
+state 29
+
+    (29) dimensions -> L_BRACKET . POS_INT_CONST R_BRACKET dim_loop
+
+    POS_INT_CONST   shift and go to state 35
+
+
+state 30
+
+    (6) arr_declaration -> atomic ID dimensions .
+
+    SEMICOLON       reduce using rule 6 (arr_declaration -> atomic ID dimensions .)
+
+
+state 31
+
+    (64) rblock -> L_BRACE . decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE
+    (2) decl_kleen -> . empty
+    (3) decl_kleen -> . declaration decl_kleen
+    (90) empty -> .
+    (27) declaration -> . at_declaration SEMICOLON
+    (28) declaration -> . arr_declaration SEMICOLON
+    (10) at_declaration -> . atomic ID
+    (6) arr_declaration -> . atomic ID dimensions
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    IF              reduce using rule 90 (empty -> .)
+    WRITE           reduce using rule 90 (empty -> .)
+    READ            reduce using rule 90 (empty -> .)
+    ID              reduce using rule 90 (empty -> .)
+    WHILE           reduce using rule 90 (empty -> .)
+    REPEAT          reduce using rule 90 (empty -> .)
+    RETURN          reduce using rule 90 (empty -> .)
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    declaration                    shift and go to state 1
+    atomic                         shift and go to state 9
+    arr_declaration                shift and go to state 10
+    decl_kleen                     shift and go to state 36
+    at_declaration                 shift and go to state 5
+    empty                          shift and go to state 11
+
+state 32
+
+    (60) main -> MAIN rblock .
+
+    $end            reduce using rule 60 (main -> MAIN rblock .)
+
+
+state 33
+
+    (75) rfunction -> atomic ID L_PAREN . opt_params R_PAREN rblock
+    (76) opt_params -> . empty
+    (77) opt_params -> . parameters
+    (90) empty -> .
+    (61) parameters -> . atomic variable params_loop
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    R_PAREN         reduce using rule 90 (empty -> .)
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    atomic                         shift and go to state 38
+    empty                          shift and go to state 39
+    parameters                     shift and go to state 40
+    opt_params                     shift and go to state 37
+
+state 34
+
+    (85) vfunction -> VOID ID L_PAREN . opt_params R_PAREN block
+    (76) opt_params -> . empty
+    (77) opt_params -> . parameters
+    (90) empty -> .
+    (61) parameters -> . atomic variable params_loop
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    R_PAREN         reduce using rule 90 (empty -> .)
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    atomic                         shift and go to state 38
+    empty                          shift and go to state 39
+    parameters                     shift and go to state 40
+    opt_params                     shift and go to state 41
+
+state 35
+
+    (29) dimensions -> L_BRACKET POS_INT_CONST . R_BRACKET dim_loop
+
+    R_BRACKET       shift and go to state 42
+
+
+state 36
+
+    (64) rblock -> L_BRACE decl_kleen . content_kleen RETURN expresion SEMICOLON R_BRACE
+    (65) content_kleen -> . empty
+    (66) content_kleen -> . content content_kleen
+    (90) empty -> .
+    (24) content -> . sentence
+    (25) content -> . loops
+    (26) content -> . condition
+    (78) sentence -> . assignment SEMICOLON
+    (79) sentence -> . write SEMICOLON
+    (80) sentence -> . read SEMICOLON
+    (81) sentence -> . fun_call SEMICOLON
+    (58) loops -> . while
+    (59) loops -> . repeat
+    (17) condition -> . IF L_PAREN expresion R_PAREN block else_condition
+    (7) assignment -> . variable EQUALS assignment_opts
+    (87) write -> . WRITE L_PAREN write_opt R_PAREN
+    (67) read -> . READ L_PAREN variable R_PAREN
+    (36) fun_call -> . ID L_PAREN fun_call_opts R_PAREN
+    (86) while -> . WHILE L_PAREN expresion R_PAREN block
+    (74) repeat -> . REPEAT L_PAREN POS_INT_CONST R_PAREN block
+    (82) variable -> . ID opt_array
+
+    RETURN          reduce using rule 90 (empty -> .)
+    IF              shift and go to state 57
+    WRITE           shift and go to state 55
+    READ            shift and go to state 44
+    ID              shift and go to state 54
+    WHILE           shift and go to state 51
+    REPEAT          shift and go to state 61
+
+    while                          shift and go to state 43
+    repeat                         shift and go to state 53
+    condition                      shift and go to state 56
+    content_kleen                  shift and go to state 59
+    assignment                     shift and go to state 46
+    write                          shift and go to state 47
+    loops                          shift and go to state 48
+    content                        shift and go to state 58
+    empty                          shift and go to state 49
+    read                           shift and go to state 50
+    variable                       shift and go to state 60
+    fun_call                       shift and go to state 45
+    sentence                       shift and go to state 52
+
+state 37
+
+    (75) rfunction -> atomic ID L_PAREN opt_params . R_PAREN rblock
+
+    R_PAREN         shift and go to state 62
+
+
+state 38
+
+    (61) parameters -> atomic . variable params_loop
+    (82) variable -> . ID opt_array
+
+    ID              shift and go to state 64
+
+    variable                       shift and go to state 63
+
+state 39
+
+    (76) opt_params -> empty .
+
+    R_PAREN         reduce using rule 76 (opt_params -> empty .)
+
+
+state 40
+
+    (77) opt_params -> parameters .
+
+    R_PAREN         reduce using rule 77 (opt_params -> parameters .)
+
+
+state 41
+
+    (85) vfunction -> VOID ID L_PAREN opt_params . R_PAREN block
+
+    R_PAREN         shift and go to state 65
+
+
+state 42
+
+    (29) dimensions -> L_BRACKET POS_INT_CONST R_BRACKET . dim_loop
+    (30) dim_loop -> . dimensions
+    (31) dim_loop -> . empty
+    (29) dimensions -> . L_BRACKET POS_INT_CONST R_BRACKET dim_loop
+    (90) empty -> .
+
+    L_BRACKET       shift and go to state 29
+    SEMICOLON       reduce using rule 90 (empty -> .)
+    EQUALS          reduce using rule 90 (empty -> .)
+    MOD             reduce using rule 90 (empty -> .)
+    DIV             reduce using rule 90 (empty -> .)
+    MULT            reduce using rule 90 (empty -> .)
+    SUM             reduce using rule 90 (empty -> .)
+    MINUS           reduce using rule 90 (empty -> .)
+    L_EQUAL         reduce using rule 90 (empty -> .)
+    G_EQUAL         reduce using rule 90 (empty -> .)
+    LESS            reduce using rule 90 (empty -> .)
+    GREATER         reduce using rule 90 (empty -> .)
+    N_EQUAL         reduce using rule 90 (empty -> .)
+    EQUALITY        reduce using rule 90 (empty -> .)
+    OR              reduce using rule 90 (empty -> .)
+    AND             reduce using rule 90 (empty -> .)
+    COMMA           reduce using rule 90 (empty -> .)
+    R_PAREN         reduce using rule 90 (empty -> .)
+
+    dim_loop                       shift and go to state 68
+    dimensions                     shift and go to state 66
+    empty                          shift and go to state 67
+
+state 43
+
+    (58) loops -> while .
+
+    IF              reduce using rule 58 (loops -> while .)
+    WRITE           reduce using rule 58 (loops -> while .)
+    READ            reduce using rule 58 (loops -> while .)
+    ID              reduce using rule 58 (loops -> while .)
+    WHILE           reduce using rule 58 (loops -> while .)
+    REPEAT          reduce using rule 58 (loops -> while .)
+    RETURN          reduce using rule 58 (loops -> while .)
+    R_BRACE         reduce using rule 58 (loops -> while .)
+
+
+state 44
+
+    (67) read -> READ . L_PAREN variable R_PAREN
+
+    L_PAREN         shift and go to state 69
+
+
+state 45
+
+    (81) sentence -> fun_call . SEMICOLON
+
+    SEMICOLON       shift and go to state 70
+
+
+state 46
+
+    (78) sentence -> assignment . SEMICOLON
+
+    SEMICOLON       shift and go to state 71
+
+
+state 47
+
+    (79) sentence -> write . SEMICOLON
+
+    SEMICOLON       shift and go to state 72
+
+
+state 48
+
+    (25) content -> loops .
+
+    R_BRACE         reduce using rule 25 (content -> loops .)
+    IF              reduce using rule 25 (content -> loops .)
+    WRITE           reduce using rule 25 (content -> loops .)
+    READ            reduce using rule 25 (content -> loops .)
+    ID              reduce using rule 25 (content -> loops .)
+    WHILE           reduce using rule 25 (content -> loops .)
+    REPEAT          reduce using rule 25 (content -> loops .)
+    RETURN          reduce using rule 25 (content -> loops .)
+
+
+state 49
+
+    (65) content_kleen -> empty .
+
+    RETURN          reduce using rule 65 (content_kleen -> empty .)
+
+
+state 50
+
+    (80) sentence -> read . SEMICOLON
+
+    SEMICOLON       shift and go to state 73
+
+
+state 51
+
+    (86) while -> WHILE . L_PAREN expresion R_PAREN block
+
+    L_PAREN         shift and go to state 74
+
+
+state 52
+
+    (24) content -> sentence .
+
+    R_BRACE         reduce using rule 24 (content -> sentence .)
+    IF              reduce using rule 24 (content -> sentence .)
+    WRITE           reduce using rule 24 (content -> sentence .)
+    READ            reduce using rule 24 (content -> sentence .)
+    ID              reduce using rule 24 (content -> sentence .)
+    WHILE           reduce using rule 24 (content -> sentence .)
+    REPEAT          reduce using rule 24 (content -> sentence .)
+    RETURN          reduce using rule 24 (content -> sentence .)
+
+
+state 53
+
+    (59) loops -> repeat .
+
+    IF              reduce using rule 59 (loops -> repeat .)
+    WRITE           reduce using rule 59 (loops -> repeat .)
+    READ            reduce using rule 59 (loops -> repeat .)
+    ID              reduce using rule 59 (loops -> repeat .)
+    WHILE           reduce using rule 59 (loops -> repeat .)
+    REPEAT          reduce using rule 59 (loops -> repeat .)
+    RETURN          reduce using rule 59 (loops -> repeat .)
+    R_BRACE         reduce using rule 59 (loops -> repeat .)
+
+
+state 54
+
+    (36) fun_call -> ID . L_PAREN fun_call_opts R_PAREN
+    (82) variable -> ID . opt_array
+    (83) opt_array -> . empty
+    (84) opt_array -> . dimensions
+    (90) empty -> .
+    (29) dimensions -> . L_BRACKET POS_INT_CONST R_BRACKET dim_loop
+
+    L_PAREN         shift and go to state 78
+    EQUALS          reduce using rule 90 (empty -> .)
+    MOD             reduce using rule 90 (empty -> .)
+    DIV             reduce using rule 90 (empty -> .)
+    MULT            reduce using rule 90 (empty -> .)
+    SUM             reduce using rule 90 (empty -> .)
+    MINUS           reduce using rule 90 (empty -> .)
+    L_EQUAL         reduce using rule 90 (empty -> .)
+    G_EQUAL         reduce using rule 90 (empty -> .)
+    LESS            reduce using rule 90 (empty -> .)
+    GREATER         reduce using rule 90 (empty -> .)
+    N_EQUAL         reduce using rule 90 (empty -> .)
+    EQUALITY        reduce using rule 90 (empty -> .)
+    OR              reduce using rule 90 (empty -> .)
+    AND             reduce using rule 90 (empty -> .)
+    SEMICOLON       reduce using rule 90 (empty -> .)
+    L_BRACKET       shift and go to state 29
+
+    opt_array                      shift and go to state 75
+    dimensions                     shift and go to state 76
+    empty                          shift and go to state 77
+
+state 55
+
+    (87) write -> WRITE . L_PAREN write_opt R_PAREN
+
+    L_PAREN         shift and go to state 79
+
+
+state 56
+
+    (26) content -> condition .
+
+    R_BRACE         reduce using rule 26 (content -> condition .)
+    IF              reduce using rule 26 (content -> condition .)
+    WRITE           reduce using rule 26 (content -> condition .)
+    READ            reduce using rule 26 (content -> condition .)
+    ID              reduce using rule 26 (content -> condition .)
+    WHILE           reduce using rule 26 (content -> condition .)
+    REPEAT          reduce using rule 26 (content -> condition .)
+    RETURN          reduce using rule 26 (content -> condition .)
+
+
+state 57
+
+    (17) condition -> IF . L_PAREN expresion R_PAREN block else_condition
+
+    L_PAREN         shift and go to state 80
+
+
+state 58
+
+    (66) content_kleen -> content . content_kleen
+    (65) content_kleen -> . empty
+    (66) content_kleen -> . content content_kleen
+    (90) empty -> .
+    (24) content -> . sentence
+    (25) content -> . loops
+    (26) content -> . condition
+    (78) sentence -> . assignment SEMICOLON
+    (79) sentence -> . write SEMICOLON
+    (80) sentence -> . read SEMICOLON
+    (81) sentence -> . fun_call SEMICOLON
+    (58) loops -> . while
+    (59) loops -> . repeat
+    (17) condition -> . IF L_PAREN expresion R_PAREN block else_condition
+    (7) assignment -> . variable EQUALS assignment_opts
+    (87) write -> . WRITE L_PAREN write_opt R_PAREN
+    (67) read -> . READ L_PAREN variable R_PAREN
+    (36) fun_call -> . ID L_PAREN fun_call_opts R_PAREN
+    (86) while -> . WHILE L_PAREN expresion R_PAREN block
+    (74) repeat -> . REPEAT L_PAREN POS_INT_CONST R_PAREN block
+    (82) variable -> . ID opt_array
+
+    RETURN          reduce using rule 90 (empty -> .)
+    IF              shift and go to state 57
+    WRITE           shift and go to state 55
+    READ            shift and go to state 44
+    ID              shift and go to state 54
+    WHILE           shift and go to state 51
+    REPEAT          shift and go to state 61
+
+    while                          shift and go to state 43
+    repeat                         shift and go to state 53
+    condition                      shift and go to state 56
+    fun_call                       shift and go to state 45
+    write                          shift and go to state 47
+    assignment                     shift and go to state 46
+    content                        shift and go to state 58
+    loops                          shift and go to state 48
+    empty                          shift and go to state 49
+    read                           shift and go to state 50
+    variable                       shift and go to state 60
+    content_kleen                  shift and go to state 81
+    sentence                       shift and go to state 52
+
+state 59
+
+    (64) rblock -> L_BRACE decl_kleen content_kleen . RETURN expresion SEMICOLON R_BRACE
+
+    RETURN          shift and go to state 82
+
+
+state 60
+
+    (7) assignment -> variable . EQUALS assignment_opts
+
+    EQUALS          shift and go to state 83
+
+
+state 61
+
+    (74) repeat -> REPEAT . L_PAREN POS_INT_CONST R_PAREN block
+
+    L_PAREN         shift and go to state 84
+
+
+state 62
+
+    (75) rfunction -> atomic ID L_PAREN opt_params R_PAREN . rblock
+    (64) rblock -> . L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE
+
+    L_BRACE         shift and go to state 31
+
+    rblock                         shift and go to state 85
+
+state 63
+
+    (61) parameters -> atomic variable . params_loop
+    (62) params_loop -> . COMMA parameters
+    (63) params_loop -> . empty
+    (90) empty -> .
+
+    COMMA           shift and go to state 86
+    R_PAREN         reduce using rule 90 (empty -> .)
+
+    params_loop                    shift and go to state 88
+    empty                          shift and go to state 87
+
+state 64
+
+    (82) variable -> ID . opt_array
+    (83) opt_array -> . empty
+    (84) opt_array -> . dimensions
+    (90) empty -> .
+    (29) dimensions -> . L_BRACKET POS_INT_CONST R_BRACKET dim_loop
+
+    COMMA           reduce using rule 90 (empty -> .)
+    R_PAREN         reduce using rule 90 (empty -> .)
+    MOD             reduce using rule 90 (empty -> .)
+    DIV             reduce using rule 90 (empty -> .)
+    MULT            reduce using rule 90 (empty -> .)
+    SUM             reduce using rule 90 (empty -> .)
+    MINUS           reduce using rule 90 (empty -> .)
+    L_EQUAL         reduce using rule 90 (empty -> .)
+    G_EQUAL         reduce using rule 90 (empty -> .)
+    LESS            reduce using rule 90 (empty -> .)
+    GREATER         reduce using rule 90 (empty -> .)
+    N_EQUAL         reduce using rule 90 (empty -> .)
+    EQUALITY        reduce using rule 90 (empty -> .)
+    OR              reduce using rule 90 (empty -> .)
+    AND             reduce using rule 90 (empty -> .)
+    SEMICOLON       reduce using rule 90 (empty -> .)
+    L_BRACKET       shift and go to state 29
+
+    opt_array                      shift and go to state 75
+    dimensions                     shift and go to state 76
+    empty                          shift and go to state 77
+
+state 65
+
+    (85) vfunction -> VOID ID L_PAREN opt_params R_PAREN . block
+    (16) block -> . L_BRACE decl_kleen content R_BRACE
+
+    L_BRACE         shift and go to state 90
+
+    block                          shift and go to state 89
+
+state 66
+
+    (30) dim_loop -> dimensions .
+
+    SEMICOLON       reduce using rule 30 (dim_loop -> dimensions .)
+    EQUALS          reduce using rule 30 (dim_loop -> dimensions .)
+    MOD             reduce using rule 30 (dim_loop -> dimensions .)
+    DIV             reduce using rule 30 (dim_loop -> dimensions .)
+    MULT            reduce using rule 30 (dim_loop -> dimensions .)
+    SUM             reduce using rule 30 (dim_loop -> dimensions .)
+    MINUS           reduce using rule 30 (dim_loop -> dimensions .)
+    L_EQUAL         reduce using rule 30 (dim_loop -> dimensions .)
+    G_EQUAL         reduce using rule 30 (dim_loop -> dimensions .)
+    LESS            reduce using rule 30 (dim_loop -> dimensions .)
+    GREATER         reduce using rule 30 (dim_loop -> dimensions .)
+    N_EQUAL         reduce using rule 30 (dim_loop -> dimensions .)
+    EQUALITY        reduce using rule 30 (dim_loop -> dimensions .)
+    OR              reduce using rule 30 (dim_loop -> dimensions .)
+    AND             reduce using rule 30 (dim_loop -> dimensions .)
+    COMMA           reduce using rule 30 (dim_loop -> dimensions .)
+    R_PAREN         reduce using rule 30 (dim_loop -> dimensions .)
+
+
+state 67
+
+    (31) dim_loop -> empty .
+
+    SEMICOLON       reduce using rule 31 (dim_loop -> empty .)
+    EQUALS          reduce using rule 31 (dim_loop -> empty .)
+    MOD             reduce using rule 31 (dim_loop -> empty .)
+    DIV             reduce using rule 31 (dim_loop -> empty .)
+    MULT            reduce using rule 31 (dim_loop -> empty .)
+    SUM             reduce using rule 31 (dim_loop -> empty .)
+    MINUS           reduce using rule 31 (dim_loop -> empty .)
+    L_EQUAL         reduce using rule 31 (dim_loop -> empty .)
+    G_EQUAL         reduce using rule 31 (dim_loop -> empty .)
+    LESS            reduce using rule 31 (dim_loop -> empty .)
+    GREATER         reduce using rule 31 (dim_loop -> empty .)
+    N_EQUAL         reduce using rule 31 (dim_loop -> empty .)
+    EQUALITY        reduce using rule 31 (dim_loop -> empty .)
+    OR              reduce using rule 31 (dim_loop -> empty .)
+    AND             reduce using rule 31 (dim_loop -> empty .)
+    COMMA           reduce using rule 31 (dim_loop -> empty .)
+    R_PAREN         reduce using rule 31 (dim_loop -> empty .)
+
+
+state 68
+
+    (29) dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .
+
+    SEMICOLON       reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    EQUALS          reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    MOD             reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    DIV             reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    MULT            reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    SUM             reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    MINUS           reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    L_EQUAL         reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    G_EQUAL         reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    LESS            reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    GREATER         reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    N_EQUAL         reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    EQUALITY        reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    OR              reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    AND             reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    COMMA           reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+    R_PAREN         reduce using rule 29 (dimensions -> L_BRACKET POS_INT_CONST R_BRACKET dim_loop .)
+
+
+state 69
+
+    (67) read -> READ L_PAREN . variable R_PAREN
+    (82) variable -> . ID opt_array
+
+    ID              shift and go to state 64
+
+    variable                       shift and go to state 91
+
+state 70
+
+    (81) sentence -> fun_call SEMICOLON .
+
+    R_BRACE         reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    IF              reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    WRITE           reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    READ            reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    ID              reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    WHILE           reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    REPEAT          reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+    RETURN          reduce using rule 81 (sentence -> fun_call SEMICOLON .)
+
+
+state 71
+
+    (78) sentence -> assignment SEMICOLON .
+
+    R_BRACE         reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    IF              reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    WRITE           reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    READ            reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    ID              reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    WHILE           reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    REPEAT          reduce using rule 78 (sentence -> assignment SEMICOLON .)
+    RETURN          reduce using rule 78 (sentence -> assignment SEMICOLON .)
+
+
+state 72
+
+    (79) sentence -> write SEMICOLON .
+
+    R_BRACE         reduce using rule 79 (sentence -> write SEMICOLON .)
+    IF              reduce using rule 79 (sentence -> write SEMICOLON .)
+    WRITE           reduce using rule 79 (sentence -> write SEMICOLON .)
+    READ            reduce using rule 79 (sentence -> write SEMICOLON .)
+    ID              reduce using rule 79 (sentence -> write SEMICOLON .)
+    WHILE           reduce using rule 79 (sentence -> write SEMICOLON .)
+    REPEAT          reduce using rule 79 (sentence -> write SEMICOLON .)
+    RETURN          reduce using rule 79 (sentence -> write SEMICOLON .)
+
+
+state 73
+
+    (80) sentence -> read SEMICOLON .
+
+    R_BRACE         reduce using rule 80 (sentence -> read SEMICOLON .)
+    IF              reduce using rule 80 (sentence -> read SEMICOLON .)
+    WRITE           reduce using rule 80 (sentence -> read SEMICOLON .)
+    READ            reduce using rule 80 (sentence -> read SEMICOLON .)
+    ID              reduce using rule 80 (sentence -> read SEMICOLON .)
+    WHILE           reduce using rule 80 (sentence -> read SEMICOLON .)
+    REPEAT          reduce using rule 80 (sentence -> read SEMICOLON .)
+    RETURN          reduce using rule 80 (sentence -> read SEMICOLON .)
+
+
+state 74
+
+    (86) while -> WHILE L_PAREN . expresion R_PAREN block
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 99
+    variable                       shift and go to state 94
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 75
+
+    (82) variable -> ID opt_array .
+
+    MOD             reduce using rule 82 (variable -> ID opt_array .)
+    DIV             reduce using rule 82 (variable -> ID opt_array .)
+    MULT            reduce using rule 82 (variable -> ID opt_array .)
+    SUM             reduce using rule 82 (variable -> ID opt_array .)
+    MINUS           reduce using rule 82 (variable -> ID opt_array .)
+    L_EQUAL         reduce using rule 82 (variable -> ID opt_array .)
+    G_EQUAL         reduce using rule 82 (variable -> ID opt_array .)
+    LESS            reduce using rule 82 (variable -> ID opt_array .)
+    GREATER         reduce using rule 82 (variable -> ID opt_array .)
+    N_EQUAL         reduce using rule 82 (variable -> ID opt_array .)
+    EQUALITY        reduce using rule 82 (variable -> ID opt_array .)
+    OR              reduce using rule 82 (variable -> ID opt_array .)
+    AND             reduce using rule 82 (variable -> ID opt_array .)
+    SEMICOLON       reduce using rule 82 (variable -> ID opt_array .)
+    EQUALS          reduce using rule 82 (variable -> ID opt_array .)
+    COMMA           reduce using rule 82 (variable -> ID opt_array .)
+    R_PAREN         reduce using rule 82 (variable -> ID opt_array .)
+
+
+state 76
+
+    (84) opt_array -> dimensions .
+
+    COMMA           reduce using rule 84 (opt_array -> dimensions .)
+    R_PAREN         reduce using rule 84 (opt_array -> dimensions .)
+    MOD             reduce using rule 84 (opt_array -> dimensions .)
+    DIV             reduce using rule 84 (opt_array -> dimensions .)
+    MULT            reduce using rule 84 (opt_array -> dimensions .)
+    SUM             reduce using rule 84 (opt_array -> dimensions .)
+    MINUS           reduce using rule 84 (opt_array -> dimensions .)
+    L_EQUAL         reduce using rule 84 (opt_array -> dimensions .)
+    G_EQUAL         reduce using rule 84 (opt_array -> dimensions .)
+    LESS            reduce using rule 84 (opt_array -> dimensions .)
+    GREATER         reduce using rule 84 (opt_array -> dimensions .)
+    N_EQUAL         reduce using rule 84 (opt_array -> dimensions .)
+    EQUALITY        reduce using rule 84 (opt_array -> dimensions .)
+    OR              reduce using rule 84 (opt_array -> dimensions .)
+    AND             reduce using rule 84 (opt_array -> dimensions .)
+    SEMICOLON       reduce using rule 84 (opt_array -> dimensions .)
+    EQUALS          reduce using rule 84 (opt_array -> dimensions .)
+
+
+state 77
+
+    (83) opt_array -> empty .
+
+    COMMA           reduce using rule 83 (opt_array -> empty .)
+    R_PAREN         reduce using rule 83 (opt_array -> empty .)
+    MOD             reduce using rule 83 (opt_array -> empty .)
+    DIV             reduce using rule 83 (opt_array -> empty .)
+    MULT            reduce using rule 83 (opt_array -> empty .)
+    SUM             reduce using rule 83 (opt_array -> empty .)
+    MINUS           reduce using rule 83 (opt_array -> empty .)
+    L_EQUAL         reduce using rule 83 (opt_array -> empty .)
+    G_EQUAL         reduce using rule 83 (opt_array -> empty .)
+    LESS            reduce using rule 83 (opt_array -> empty .)
+    GREATER         reduce using rule 83 (opt_array -> empty .)
+    N_EQUAL         reduce using rule 83 (opt_array -> empty .)
+    EQUALITY        reduce using rule 83 (opt_array -> empty .)
+    OR              reduce using rule 83 (opt_array -> empty .)
+    AND             reduce using rule 83 (opt_array -> empty .)
+    SEMICOLON       reduce using rule 83 (opt_array -> empty .)
+    EQUALS          reduce using rule 83 (opt_array -> empty .)
+
+
+state 78
+
+    (36) fun_call -> ID L_PAREN . fun_call_opts R_PAREN
+    (37) fun_call_opts -> . empty
+    (38) fun_call_opts -> . expresion funcall_params_loop
+    (90) empty -> .
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    R_PAREN         reduce using rule 90 (empty -> .)
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    fun_call_opts                  shift and go to state 104
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 106
+    empty                          shift and go to state 105
+    variable                       shift and go to state 94
+    level3                         shift and go to state 103
+    level2                         shift and go to state 102
+
+state 79
+
+    (87) write -> WRITE L_PAREN . write_opt R_PAREN
+    (88) write_opt -> . expresion
+    (89) write_opt -> . STRING_CONST
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    STRING_CONST    shift and go to state 109
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    write_opt                      shift and go to state 107
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 108
+    variable                       shift and go to state 94
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 80
+
+    (17) condition -> IF L_PAREN . expresion R_PAREN block else_condition
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 110
+    variable                       shift and go to state 94
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 81
+
+    (66) content_kleen -> content content_kleen .
+
+    RETURN          reduce using rule 66 (content_kleen -> content content_kleen .)
+
+
+state 82
+
+    (64) rblock -> L_BRACE decl_kleen content_kleen RETURN . expresion SEMICOLON R_BRACE
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 111
+    variable                       shift and go to state 94
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 83
+
+    (7) assignment -> variable EQUALS . assignment_opts
+    (8) assignment_opts -> . expresion
+    (9) assignment_opts -> . fun_call
+    (32) expresion -> . level3 expresion_loop
+    (36) fun_call -> . ID L_PAREN fun_call_opts R_PAREN
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    ID              shift and go to state 54
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    constant                       shift and go to state 96
+    assignment_opts                shift and go to state 112
+    expresion                      shift and go to state 113
+    fun_call                       shift and go to state 114
+    variable                       shift and go to state 94
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 84
+
+    (74) repeat -> REPEAT L_PAREN . POS_INT_CONST R_PAREN block
+
+    POS_INT_CONST   shift and go to state 115
+
+
+state 85
+
+    (75) rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .
+
+    VOID            reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+    STRING          reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+    INT             reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+    FLOAT           reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+    CHAR            reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+    BOOL            reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+    MAIN            reduce using rule 75 (rfunction -> atomic ID L_PAREN opt_params R_PAREN rblock .)
+
+
+state 86
+
+    (62) params_loop -> COMMA . parameters
+    (61) parameters -> . atomic variable params_loop
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    atomic                         shift and go to state 38
+    parameters                     shift and go to state 116
+
+state 87
+
+    (63) params_loop -> empty .
+
+    R_PAREN         reduce using rule 63 (params_loop -> empty .)
+
+
+state 88
+
+    (61) parameters -> atomic variable params_loop .
+
+    R_PAREN         reduce using rule 61 (parameters -> atomic variable params_loop .)
+
+
+state 89
+
+    (85) vfunction -> VOID ID L_PAREN opt_params R_PAREN block .
+
+    VOID            reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+    STRING          reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+    INT             reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+    FLOAT           reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+    CHAR            reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+    BOOL            reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+    MAIN            reduce using rule 85 (vfunction -> VOID ID L_PAREN opt_params R_PAREN block .)
+
+
+state 90
+
+    (16) block -> L_BRACE . decl_kleen content R_BRACE
+    (2) decl_kleen -> . empty
+    (3) decl_kleen -> . declaration decl_kleen
+    (90) empty -> .
+    (27) declaration -> . at_declaration SEMICOLON
+    (28) declaration -> . arr_declaration SEMICOLON
+    (10) at_declaration -> . atomic ID
+    (6) arr_declaration -> . atomic ID dimensions
+    (11) atomic -> . STRING
+    (12) atomic -> . INT
+    (13) atomic -> . FLOAT
+    (14) atomic -> . CHAR
+    (15) atomic -> . BOOL
+
+    IF              reduce using rule 90 (empty -> .)
+    WRITE           reduce using rule 90 (empty -> .)
+    READ            reduce using rule 90 (empty -> .)
+    ID              reduce using rule 90 (empty -> .)
+    WHILE           reduce using rule 90 (empty -> .)
+    REPEAT          reduce using rule 90 (empty -> .)
+    STRING          shift and go to state 6
+    INT             shift and go to state 8
+    FLOAT           shift and go to state 3
+    CHAR            shift and go to state 4
+    BOOL            shift and go to state 12
+
+    declaration                    shift and go to state 1
+    atomic                         shift and go to state 9
+    arr_declaration                shift and go to state 10
+    decl_kleen                     shift and go to state 117
+    at_declaration                 shift and go to state 5
+    empty                          shift and go to state 11
+
+state 91
+
+    (67) read -> READ L_PAREN variable . R_PAREN
+
+    R_PAREN         shift and go to state 118
+
+
+state 92
+
+    (46) level1 -> level0 . level1_loop
+    (47) level1_loop -> . empty
+    (48) level1_loop -> . MOD level1
+    (49) level1_loop -> . DIV level1
+    (50) level1_loop -> . MULT level1
+    (90) empty -> .
+
+    MOD             shift and go to state 123
+    DIV             shift and go to state 119
+    MULT            shift and go to state 120
+    SUM             reduce using rule 90 (empty -> .)
+    MINUS           reduce using rule 90 (empty -> .)
+    L_EQUAL         reduce using rule 90 (empty -> .)
+    G_EQUAL         reduce using rule 90 (empty -> .)
+    LESS            reduce using rule 90 (empty -> .)
+    GREATER         reduce using rule 90 (empty -> .)
+    N_EQUAL         reduce using rule 90 (empty -> .)
+    EQUALITY        reduce using rule 90 (empty -> .)
+    OR              reduce using rule 90 (empty -> .)
+    AND             reduce using rule 90 (empty -> .)
+    R_PAREN         reduce using rule 90 (empty -> .)
+    COMMA           reduce using rule 90 (empty -> .)
+    SEMICOLON       reduce using rule 90 (empty -> .)
+
+    empty                          shift and go to state 121
+    level1_loop                    shift and go to state 122
+
+state 93
+
+    (51) level2 -> level1 . level2_loop
+    (52) level2_loop -> . SUM level2
+    (53) level2_loop -> . MINUS level2
+    (54) level2_loop -> . empty
+    (90) empty -> .
+
+    SUM             shift and go to state 127
+    MINUS           shift and go to state 124
+    L_EQUAL         reduce using rule 90 (empty -> .)
+    G_EQUAL         reduce using rule 90 (empty -> .)
+    LESS            reduce using rule 90 (empty -> .)
+    GREATER         reduce using rule 90 (empty -> .)
+    N_EQUAL         reduce using rule 90 (empty -> .)
+    EQUALITY        reduce using rule 90 (empty -> .)
+    OR              reduce using rule 90 (empty -> .)
+    AND             reduce using rule 90 (empty -> .)
+    R_PAREN         reduce using rule 90 (empty -> .)
+    COMMA           reduce using rule 90 (empty -> .)
+    SEMICOLON       reduce using rule 90 (empty -> .)
+
+    empty                          shift and go to state 125
+    level2_loop                    shift and go to state 126
+
+state 94
+
+    (45) level0 -> variable .
+
+    MOD             reduce using rule 45 (level0 -> variable .)
+    DIV             reduce using rule 45 (level0 -> variable .)
+    MULT            reduce using rule 45 (level0 -> variable .)
+    SUM             reduce using rule 45 (level0 -> variable .)
+    MINUS           reduce using rule 45 (level0 -> variable .)
+    L_EQUAL         reduce using rule 45 (level0 -> variable .)
+    G_EQUAL         reduce using rule 45 (level0 -> variable .)
+    LESS            reduce using rule 45 (level0 -> variable .)
+    GREATER         reduce using rule 45 (level0 -> variable .)
+    N_EQUAL         reduce using rule 45 (level0 -> variable .)
+    EQUALITY        reduce using rule 45 (level0 -> variable .)
+    OR              reduce using rule 45 (level0 -> variable .)
+    AND             reduce using rule 45 (level0 -> variable .)
+    R_PAREN         reduce using rule 45 (level0 -> variable .)
+    COMMA           reduce using rule 45 (level0 -> variable .)
+    SEMICOLON       reduce using rule 45 (level0 -> variable .)
+
+
+state 95
+
+    (43) level0 -> L_PAREN . expresion R_PAREN
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 128
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 96
+
+    (44) level0 -> constant .
+
+    MOD             reduce using rule 44 (level0 -> constant .)
+    DIV             reduce using rule 44 (level0 -> constant .)
+    MULT            reduce using rule 44 (level0 -> constant .)
+    SUM             reduce using rule 44 (level0 -> constant .)
+    MINUS           reduce using rule 44 (level0 -> constant .)
+    L_EQUAL         reduce using rule 44 (level0 -> constant .)
+    G_EQUAL         reduce using rule 44 (level0 -> constant .)
+    LESS            reduce using rule 44 (level0 -> constant .)
+    GREATER         reduce using rule 44 (level0 -> constant .)
+    N_EQUAL         reduce using rule 44 (level0 -> constant .)
+    EQUALITY        reduce using rule 44 (level0 -> constant .)
+    OR              reduce using rule 44 (level0 -> constant .)
+    AND             reduce using rule 44 (level0 -> constant .)
+    R_PAREN         reduce using rule 44 (level0 -> constant .)
+    COMMA           reduce using rule 44 (level0 -> constant .)
+    SEMICOLON       reduce using rule 44 (level0 -> constant .)
+
+
+state 97
+
+    (23) constant -> FALSE .
+
+    MOD             reduce using rule 23 (constant -> FALSE .)
+    DIV             reduce using rule 23 (constant -> FALSE .)
+    MULT            reduce using rule 23 (constant -> FALSE .)
+    SUM             reduce using rule 23 (constant -> FALSE .)
+    MINUS           reduce using rule 23 (constant -> FALSE .)
+    L_EQUAL         reduce using rule 23 (constant -> FALSE .)
+    G_EQUAL         reduce using rule 23 (constant -> FALSE .)
+    LESS            reduce using rule 23 (constant -> FALSE .)
+    GREATER         reduce using rule 23 (constant -> FALSE .)
+    N_EQUAL         reduce using rule 23 (constant -> FALSE .)
+    EQUALITY        reduce using rule 23 (constant -> FALSE .)
+    OR              reduce using rule 23 (constant -> FALSE .)
+    AND             reduce using rule 23 (constant -> FALSE .)
+    R_PAREN         reduce using rule 23 (constant -> FALSE .)
+    COMMA           reduce using rule 23 (constant -> FALSE .)
+    SEMICOLON       reduce using rule 23 (constant -> FALSE .)
+
+
+state 98
+
+    (22) constant -> TRUE .
+
+    MOD             reduce using rule 22 (constant -> TRUE .)
+    DIV             reduce using rule 22 (constant -> TRUE .)
+    MULT            reduce using rule 22 (constant -> TRUE .)
+    SUM             reduce using rule 22 (constant -> TRUE .)
+    MINUS           reduce using rule 22 (constant -> TRUE .)
+    L_EQUAL         reduce using rule 22 (constant -> TRUE .)
+    G_EQUAL         reduce using rule 22 (constant -> TRUE .)
+    LESS            reduce using rule 22 (constant -> TRUE .)
+    GREATER         reduce using rule 22 (constant -> TRUE .)
+    N_EQUAL         reduce using rule 22 (constant -> TRUE .)
+    EQUALITY        reduce using rule 22 (constant -> TRUE .)
+    OR              reduce using rule 22 (constant -> TRUE .)
+    AND             reduce using rule 22 (constant -> TRUE .)
+    R_PAREN         reduce using rule 22 (constant -> TRUE .)
+    COMMA           reduce using rule 22 (constant -> TRUE .)
+    SEMICOLON       reduce using rule 22 (constant -> TRUE .)
+
+
+state 99
+
+    (86) while -> WHILE L_PAREN expresion . R_PAREN block
+
+    R_PAREN         shift and go to state 129
+
+
+state 100
+
+    (21) constant -> FLOAT_CONST .
+
+    MOD             reduce using rule 21 (constant -> FLOAT_CONST .)
+    DIV             reduce using rule 21 (constant -> FLOAT_CONST .)
+    MULT            reduce using rule 21 (constant -> FLOAT_CONST .)
+    SUM             reduce using rule 21 (constant -> FLOAT_CONST .)
+    MINUS           reduce using rule 21 (constant -> FLOAT_CONST .)
+    L_EQUAL         reduce using rule 21 (constant -> FLOAT_CONST .)
+    G_EQUAL         reduce using rule 21 (constant -> FLOAT_CONST .)
+    LESS            reduce using rule 21 (constant -> FLOAT_CONST .)
+    GREATER         reduce using rule 21 (constant -> FLOAT_CONST .)
+    N_EQUAL         reduce using rule 21 (constant -> FLOAT_CONST .)
+    EQUALITY        reduce using rule 21 (constant -> FLOAT_CONST .)
+    OR              reduce using rule 21 (constant -> FLOAT_CONST .)
+    AND             reduce using rule 21 (constant -> FLOAT_CONST .)
+    R_PAREN         reduce using rule 21 (constant -> FLOAT_CONST .)
+    COMMA           reduce using rule 21 (constant -> FLOAT_CONST .)
+    SEMICOLON       reduce using rule 21 (constant -> FLOAT_CONST .)
+
+
+state 101
+
+    (20) constant -> INT_CONST .
+
+    MOD             reduce using rule 20 (constant -> INT_CONST .)
+    DIV             reduce using rule 20 (constant -> INT_CONST .)
+    MULT            reduce using rule 20 (constant -> INT_CONST .)
+    SUM             reduce using rule 20 (constant -> INT_CONST .)
+    MINUS           reduce using rule 20 (constant -> INT_CONST .)
+    L_EQUAL         reduce using rule 20 (constant -> INT_CONST .)
+    G_EQUAL         reduce using rule 20 (constant -> INT_CONST .)
+    LESS            reduce using rule 20 (constant -> INT_CONST .)
+    GREATER         reduce using rule 20 (constant -> INT_CONST .)
+    N_EQUAL         reduce using rule 20 (constant -> INT_CONST .)
+    EQUALITY        reduce using rule 20 (constant -> INT_CONST .)
+    OR              reduce using rule 20 (constant -> INT_CONST .)
+    AND             reduce using rule 20 (constant -> INT_CONST .)
+    R_PAREN         reduce using rule 20 (constant -> INT_CONST .)
+    COMMA           reduce using rule 20 (constant -> INT_CONST .)
+    SEMICOLON       reduce using rule 20 (constant -> INT_CONST .)
+
+
+state 102
+
+    (55) level3 -> level2 . level3_loop
+    (56) level3_loop -> . empty
+    (57) level3_loop -> . relational level3
+    (90) empty -> .
+    (68) relational -> . L_EQUAL
+    (69) relational -> . G_EQUAL
+    (70) relational -> . LESS
+    (71) relational -> . GREATER
+    (72) relational -> . N_EQUAL
+    (73) relational -> . EQUALITY
+
+    OR              reduce using rule 90 (empty -> .)
+    AND             reduce using rule 90 (empty -> .)
+    R_PAREN         reduce using rule 90 (empty -> .)
+    COMMA           reduce using rule 90 (empty -> .)
+    SEMICOLON       reduce using rule 90 (empty -> .)
+    L_EQUAL         shift and go to state 133
+    G_EQUAL         shift and go to state 137
+    LESS            shift and go to state 132
+    GREATER         shift and go to state 131
+    N_EQUAL         shift and go to state 135
+    EQUALITY        shift and go to state 130
+
+    relational                     shift and go to state 136
+    empty                          shift and go to state 134
+    level3_loop                    shift and go to state 138
+
+state 103
+
+    (32) expresion -> level3 . expresion_loop
+    (33) expresion_loop -> . OR expresion
+    (34) expresion_loop -> . AND expresion
+    (35) expresion_loop -> . empty
+    (90) empty -> .
+
+    OR              shift and go to state 142
+    AND             shift and go to state 141
+    R_PAREN         reduce using rule 90 (empty -> .)
+    COMMA           reduce using rule 90 (empty -> .)
+    SEMICOLON       reduce using rule 90 (empty -> .)
+
+    empty                          shift and go to state 139
+    expresion_loop                 shift and go to state 140
+
+state 104
+
+    (36) fun_call -> ID L_PAREN fun_call_opts . R_PAREN
+
+    R_PAREN         shift and go to state 143
+
+
+state 105
+
+    (37) fun_call_opts -> empty .
+
+    R_PAREN         reduce using rule 37 (fun_call_opts -> empty .)
+
+
+state 106
+
+    (38) fun_call_opts -> expresion . funcall_params_loop
+    (39) funcall_params_loop -> . empty
+    (40) funcall_params_loop -> . COMMA fun_call_opts
+    (90) empty -> .
+
+    COMMA           shift and go to state 144
+    R_PAREN         reduce using rule 90 (empty -> .)
+
+    funcall_params_loop            shift and go to state 145
+    empty                          shift and go to state 146
+
+state 107
+
+    (87) write -> WRITE L_PAREN write_opt . R_PAREN
+
+    R_PAREN         shift and go to state 147
+
+
+state 108
+
+    (88) write_opt -> expresion .
+
+    R_PAREN         reduce using rule 88 (write_opt -> expresion .)
+
+
+state 109
+
+    (89) write_opt -> STRING_CONST .
+
+    R_PAREN         reduce using rule 89 (write_opt -> STRING_CONST .)
+
+
+state 110
+
+    (17) condition -> IF L_PAREN expresion . R_PAREN block else_condition
+
+    R_PAREN         shift and go to state 148
+
+
+state 111
+
+    (64) rblock -> L_BRACE decl_kleen content_kleen RETURN expresion . SEMICOLON R_BRACE
+
+    SEMICOLON       shift and go to state 149
+
+
+state 112
+
+    (7) assignment -> variable EQUALS assignment_opts .
+
+    SEMICOLON       reduce using rule 7 (assignment -> variable EQUALS assignment_opts .)
+
+
+state 113
+
+    (8) assignment_opts -> expresion .
+
+    SEMICOLON       reduce using rule 8 (assignment_opts -> expresion .)
+
+
+state 114
+
+    (9) assignment_opts -> fun_call .
+
+    SEMICOLON       reduce using rule 9 (assignment_opts -> fun_call .)
+
+
+state 115
+
+    (74) repeat -> REPEAT L_PAREN POS_INT_CONST . R_PAREN block
+
+    R_PAREN         shift and go to state 150
+
+
+state 116
+
+    (62) params_loop -> COMMA parameters .
+
+    R_PAREN         reduce using rule 62 (params_loop -> COMMA parameters .)
+
+
+state 117
+
+    (16) block -> L_BRACE decl_kleen . content R_BRACE
+    (24) content -> . sentence
+    (25) content -> . loops
+    (26) content -> . condition
+    (78) sentence -> . assignment SEMICOLON
+    (79) sentence -> . write SEMICOLON
+    (80) sentence -> . read SEMICOLON
+    (81) sentence -> . fun_call SEMICOLON
+    (58) loops -> . while
+    (59) loops -> . repeat
+    (17) condition -> . IF L_PAREN expresion R_PAREN block else_condition
+    (7) assignment -> . variable EQUALS assignment_opts
+    (87) write -> . WRITE L_PAREN write_opt R_PAREN
+    (67) read -> . READ L_PAREN variable R_PAREN
+    (36) fun_call -> . ID L_PAREN fun_call_opts R_PAREN
+    (86) while -> . WHILE L_PAREN expresion R_PAREN block
+    (74) repeat -> . REPEAT L_PAREN POS_INT_CONST R_PAREN block
+    (82) variable -> . ID opt_array
+
+    IF              shift and go to state 57
+    WRITE           shift and go to state 55
+    READ            shift and go to state 44
+    ID              shift and go to state 54
+    WHILE           shift and go to state 51
+    REPEAT          shift and go to state 61
+
+    while                          shift and go to state 43
+    repeat                         shift and go to state 53
+    condition                      shift and go to state 56
+    fun_call                       shift and go to state 45
+    write                          shift and go to state 47
+    assignment                     shift and go to state 46
+    content                        shift and go to state 151
+    loops                          shift and go to state 48
+    read                           shift and go to state 50
+    variable                       shift and go to state 60
+    sentence                       shift and go to state 52
+
+state 118
+
+    (67) read -> READ L_PAREN variable R_PAREN .
+
+    SEMICOLON       reduce using rule 67 (read -> READ L_PAREN variable R_PAREN .)
+
+
+state 119
+
+    (49) level1_loop -> DIV . level1
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 152
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+
+state 120
+
+    (50) level1_loop -> MULT . level1
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 153
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+
+state 121
+
+    (47) level1_loop -> empty .
+
+    SUM             reduce using rule 47 (level1_loop -> empty .)
+    MINUS           reduce using rule 47 (level1_loop -> empty .)
+    L_EQUAL         reduce using rule 47 (level1_loop -> empty .)
+    G_EQUAL         reduce using rule 47 (level1_loop -> empty .)
+    LESS            reduce using rule 47 (level1_loop -> empty .)
+    GREATER         reduce using rule 47 (level1_loop -> empty .)
+    N_EQUAL         reduce using rule 47 (level1_loop -> empty .)
+    EQUALITY        reduce using rule 47 (level1_loop -> empty .)
+    OR              reduce using rule 47 (level1_loop -> empty .)
+    AND             reduce using rule 47 (level1_loop -> empty .)
+    R_PAREN         reduce using rule 47 (level1_loop -> empty .)
+    COMMA           reduce using rule 47 (level1_loop -> empty .)
+    SEMICOLON       reduce using rule 47 (level1_loop -> empty .)
+
+
+state 122
+
+    (46) level1 -> level0 level1_loop .
+
+    SUM             reduce using rule 46 (level1 -> level0 level1_loop .)
+    MINUS           reduce using rule 46 (level1 -> level0 level1_loop .)
+    L_EQUAL         reduce using rule 46 (level1 -> level0 level1_loop .)
+    G_EQUAL         reduce using rule 46 (level1 -> level0 level1_loop .)
+    LESS            reduce using rule 46 (level1 -> level0 level1_loop .)
+    GREATER         reduce using rule 46 (level1 -> level0 level1_loop .)
+    N_EQUAL         reduce using rule 46 (level1 -> level0 level1_loop .)
+    EQUALITY        reduce using rule 46 (level1 -> level0 level1_loop .)
+    OR              reduce using rule 46 (level1 -> level0 level1_loop .)
+    AND             reduce using rule 46 (level1 -> level0 level1_loop .)
+    R_PAREN         reduce using rule 46 (level1 -> level0 level1_loop .)
+    COMMA           reduce using rule 46 (level1 -> level0 level1_loop .)
+    SEMICOLON       reduce using rule 46 (level1 -> level0 level1_loop .)
+
+
+state 123
+
+    (48) level1_loop -> MOD . level1
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 154
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+
+state 124
+
+    (53) level2_loop -> MINUS . level2
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+    level2                         shift and go to state 155
+
+state 125
+
+    (54) level2_loop -> empty .
+
+    L_EQUAL         reduce using rule 54 (level2_loop -> empty .)
+    G_EQUAL         reduce using rule 54 (level2_loop -> empty .)
+    LESS            reduce using rule 54 (level2_loop -> empty .)
+    GREATER         reduce using rule 54 (level2_loop -> empty .)
+    N_EQUAL         reduce using rule 54 (level2_loop -> empty .)
+    EQUALITY        reduce using rule 54 (level2_loop -> empty .)
+    OR              reduce using rule 54 (level2_loop -> empty .)
+    AND             reduce using rule 54 (level2_loop -> empty .)
+    R_PAREN         reduce using rule 54 (level2_loop -> empty .)
+    COMMA           reduce using rule 54 (level2_loop -> empty .)
+    SEMICOLON       reduce using rule 54 (level2_loop -> empty .)
+
+
+state 126
+
+    (51) level2 -> level1 level2_loop .
+
+    L_EQUAL         reduce using rule 51 (level2 -> level1 level2_loop .)
+    G_EQUAL         reduce using rule 51 (level2 -> level1 level2_loop .)
+    LESS            reduce using rule 51 (level2 -> level1 level2_loop .)
+    GREATER         reduce using rule 51 (level2 -> level1 level2_loop .)
+    N_EQUAL         reduce using rule 51 (level2 -> level1 level2_loop .)
+    EQUALITY        reduce using rule 51 (level2 -> level1 level2_loop .)
+    OR              reduce using rule 51 (level2 -> level1 level2_loop .)
+    AND             reduce using rule 51 (level2 -> level1 level2_loop .)
+    R_PAREN         reduce using rule 51 (level2 -> level1 level2_loop .)
+    COMMA           reduce using rule 51 (level2 -> level1 level2_loop .)
+    SEMICOLON       reduce using rule 51 (level2 -> level1 level2_loop .)
+
+
+state 127
+
+    (52) level2_loop -> SUM . level2
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+    level2                         shift and go to state 156
+
+state 128
+
+    (43) level0 -> L_PAREN expresion . R_PAREN
+
+    R_PAREN         shift and go to state 157
+
+
+state 129
+
+    (86) while -> WHILE L_PAREN expresion R_PAREN . block
+    (16) block -> . L_BRACE decl_kleen content R_BRACE
+
+    L_BRACE         shift and go to state 90
+
+    block                          shift and go to state 158
+
+state 130
+
+    (73) relational -> EQUALITY .
+
+    L_PAREN         reduce using rule 73 (relational -> EQUALITY .)
+    INT_CONST       reduce using rule 73 (relational -> EQUALITY .)
+    FLOAT_CONST     reduce using rule 73 (relational -> EQUALITY .)
+    TRUE            reduce using rule 73 (relational -> EQUALITY .)
+    FALSE           reduce using rule 73 (relational -> EQUALITY .)
+    ID              reduce using rule 73 (relational -> EQUALITY .)
+
+
+state 131
+
+    (71) relational -> GREATER .
+
+    L_PAREN         reduce using rule 71 (relational -> GREATER .)
+    INT_CONST       reduce using rule 71 (relational -> GREATER .)
+    FLOAT_CONST     reduce using rule 71 (relational -> GREATER .)
+    TRUE            reduce using rule 71 (relational -> GREATER .)
+    FALSE           reduce using rule 71 (relational -> GREATER .)
+    ID              reduce using rule 71 (relational -> GREATER .)
+
+
+state 132
+
+    (70) relational -> LESS .
+
+    L_PAREN         reduce using rule 70 (relational -> LESS .)
+    INT_CONST       reduce using rule 70 (relational -> LESS .)
+    FLOAT_CONST     reduce using rule 70 (relational -> LESS .)
+    TRUE            reduce using rule 70 (relational -> LESS .)
+    FALSE           reduce using rule 70 (relational -> LESS .)
+    ID              reduce using rule 70 (relational -> LESS .)
+
+
+state 133
+
+    (68) relational -> L_EQUAL .
+
+    L_PAREN         reduce using rule 68 (relational -> L_EQUAL .)
+    INT_CONST       reduce using rule 68 (relational -> L_EQUAL .)
+    FLOAT_CONST     reduce using rule 68 (relational -> L_EQUAL .)
+    TRUE            reduce using rule 68 (relational -> L_EQUAL .)
+    FALSE           reduce using rule 68 (relational -> L_EQUAL .)
+    ID              reduce using rule 68 (relational -> L_EQUAL .)
+
+
+state 134
+
+    (56) level3_loop -> empty .
+
+    OR              reduce using rule 56 (level3_loop -> empty .)
+    AND             reduce using rule 56 (level3_loop -> empty .)
+    R_PAREN         reduce using rule 56 (level3_loop -> empty .)
+    COMMA           reduce using rule 56 (level3_loop -> empty .)
+    SEMICOLON       reduce using rule 56 (level3_loop -> empty .)
+
+
+state 135
+
+    (72) relational -> N_EQUAL .
+
+    L_PAREN         reduce using rule 72 (relational -> N_EQUAL .)
+    INT_CONST       reduce using rule 72 (relational -> N_EQUAL .)
+    FLOAT_CONST     reduce using rule 72 (relational -> N_EQUAL .)
+    TRUE            reduce using rule 72 (relational -> N_EQUAL .)
+    FALSE           reduce using rule 72 (relational -> N_EQUAL .)
+    ID              reduce using rule 72 (relational -> N_EQUAL .)
+
+
+state 136
+
+    (57) level3_loop -> relational . level3
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+    level3                         shift and go to state 159
+    level2                         shift and go to state 102
+
+state 137
+
+    (69) relational -> G_EQUAL .
+
+    L_PAREN         reduce using rule 69 (relational -> G_EQUAL .)
+    INT_CONST       reduce using rule 69 (relational -> G_EQUAL .)
+    FLOAT_CONST     reduce using rule 69 (relational -> G_EQUAL .)
+    TRUE            reduce using rule 69 (relational -> G_EQUAL .)
+    FALSE           reduce using rule 69 (relational -> G_EQUAL .)
+    ID              reduce using rule 69 (relational -> G_EQUAL .)
+
+
+state 138
+
+    (55) level3 -> level2 level3_loop .
+
+    OR              reduce using rule 55 (level3 -> level2 level3_loop .)
+    AND             reduce using rule 55 (level3 -> level2 level3_loop .)
+    R_PAREN         reduce using rule 55 (level3 -> level2 level3_loop .)
+    COMMA           reduce using rule 55 (level3 -> level2 level3_loop .)
+    SEMICOLON       reduce using rule 55 (level3 -> level2 level3_loop .)
+
+
+state 139
+
+    (35) expresion_loop -> empty .
+
+    R_PAREN         reduce using rule 35 (expresion_loop -> empty .)
+    COMMA           reduce using rule 35 (expresion_loop -> empty .)
+    SEMICOLON       reduce using rule 35 (expresion_loop -> empty .)
+
+
+state 140
+
+    (32) expresion -> level3 expresion_loop .
+
+    SEMICOLON       reduce using rule 32 (expresion -> level3 expresion_loop .)
+    R_PAREN         reduce using rule 32 (expresion -> level3 expresion_loop .)
+    COMMA           reduce using rule 32 (expresion -> level3 expresion_loop .)
+
+
+state 141
+
+    (34) expresion_loop -> AND . expresion
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 160
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 142
+
+    (33) expresion_loop -> OR . expresion
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    variable                       shift and go to state 94
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 161
+    level2                         shift and go to state 102
+    level3                         shift and go to state 103
+
+state 143
+
+    (36) fun_call -> ID L_PAREN fun_call_opts R_PAREN .
+
+    SEMICOLON       reduce using rule 36 (fun_call -> ID L_PAREN fun_call_opts R_PAREN .)
+
+
+state 144
+
+    (40) funcall_params_loop -> COMMA . fun_call_opts
+    (37) fun_call_opts -> . empty
+    (38) fun_call_opts -> . expresion funcall_params_loop
+    (90) empty -> .
+    (32) expresion -> . level3 expresion_loop
+    (55) level3 -> . level2 level3_loop
+    (51) level2 -> . level1 level2_loop
+    (46) level1 -> . level0 level1_loop
+    (43) level0 -> . L_PAREN expresion R_PAREN
+    (44) level0 -> . constant
+    (45) level0 -> . variable
+    (20) constant -> . INT_CONST
+    (21) constant -> . FLOAT_CONST
+    (22) constant -> . TRUE
+    (23) constant -> . FALSE
+    (82) variable -> . ID opt_array
+
+    R_PAREN         reduce using rule 90 (empty -> .)
+    L_PAREN         shift and go to state 95
+    INT_CONST       shift and go to state 101
+    FLOAT_CONST     shift and go to state 100
+    TRUE            shift and go to state 98
+    FALSE           shift and go to state 97
+    ID              shift and go to state 64
+
+    level0                         shift and go to state 92
+    level1                         shift and go to state 93
+    fun_call_opts                  shift and go to state 162
+    constant                       shift and go to state 96
+    expresion                      shift and go to state 106
+    empty                          shift and go to state 105
+    variable                       shift and go to state 94
+    level3                         shift and go to state 103
+    level2                         shift and go to state 102
+
+state 145
+
+    (38) fun_call_opts -> expresion funcall_params_loop .
+
+    R_PAREN         reduce using rule 38 (fun_call_opts -> expresion funcall_params_loop .)
+
+
+state 146
+
+    (39) funcall_params_loop -> empty .
+
+    R_PAREN         reduce using rule 39 (funcall_params_loop -> empty .)
+
+
+state 147
+
+    (87) write -> WRITE L_PAREN write_opt R_PAREN .
+
+    SEMICOLON       reduce using rule 87 (write -> WRITE L_PAREN write_opt R_PAREN .)
+
+
+state 148
+
+    (17) condition -> IF L_PAREN expresion R_PAREN . block else_condition
+    (16) block -> . L_BRACE decl_kleen content R_BRACE
+
+    L_BRACE         shift and go to state 90
+
+    block                          shift and go to state 163
+
+state 149
+
+    (64) rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON . R_BRACE
+
+    R_BRACE         shift and go to state 164
+
+
+state 150
+
+    (74) repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN . block
+    (16) block -> . L_BRACE decl_kleen content R_BRACE
+
+    L_BRACE         shift and go to state 90
+
+    block                          shift and go to state 165
+
+state 151
+
+    (16) block -> L_BRACE decl_kleen content . R_BRACE
+
+    R_BRACE         shift and go to state 166
+
+
+state 152
+
+    (49) level1_loop -> DIV level1 .
+
+    SUM             reduce using rule 49 (level1_loop -> DIV level1 .)
+    MINUS           reduce using rule 49 (level1_loop -> DIV level1 .)
+    L_EQUAL         reduce using rule 49 (level1_loop -> DIV level1 .)
+    G_EQUAL         reduce using rule 49 (level1_loop -> DIV level1 .)
+    LESS            reduce using rule 49 (level1_loop -> DIV level1 .)
+    GREATER         reduce using rule 49 (level1_loop -> DIV level1 .)
+    N_EQUAL         reduce using rule 49 (level1_loop -> DIV level1 .)
+    EQUALITY        reduce using rule 49 (level1_loop -> DIV level1 .)
+    OR              reduce using rule 49 (level1_loop -> DIV level1 .)
+    AND             reduce using rule 49 (level1_loop -> DIV level1 .)
+    R_PAREN         reduce using rule 49 (level1_loop -> DIV level1 .)
+    COMMA           reduce using rule 49 (level1_loop -> DIV level1 .)
+    SEMICOLON       reduce using rule 49 (level1_loop -> DIV level1 .)
+
+
+state 153
+
+    (50) level1_loop -> MULT level1 .
+
+    SUM             reduce using rule 50 (level1_loop -> MULT level1 .)
+    MINUS           reduce using rule 50 (level1_loop -> MULT level1 .)
+    L_EQUAL         reduce using rule 50 (level1_loop -> MULT level1 .)
+    G_EQUAL         reduce using rule 50 (level1_loop -> MULT level1 .)
+    LESS            reduce using rule 50 (level1_loop -> MULT level1 .)
+    GREATER         reduce using rule 50 (level1_loop -> MULT level1 .)
+    N_EQUAL         reduce using rule 50 (level1_loop -> MULT level1 .)
+    EQUALITY        reduce using rule 50 (level1_loop -> MULT level1 .)
+    OR              reduce using rule 50 (level1_loop -> MULT level1 .)
+    AND             reduce using rule 50 (level1_loop -> MULT level1 .)
+    R_PAREN         reduce using rule 50 (level1_loop -> MULT level1 .)
+    COMMA           reduce using rule 50 (level1_loop -> MULT level1 .)
+    SEMICOLON       reduce using rule 50 (level1_loop -> MULT level1 .)
+
+
+state 154
+
+    (48) level1_loop -> MOD level1 .
+
+    SUM             reduce using rule 48 (level1_loop -> MOD level1 .)
+    MINUS           reduce using rule 48 (level1_loop -> MOD level1 .)
+    L_EQUAL         reduce using rule 48 (level1_loop -> MOD level1 .)
+    G_EQUAL         reduce using rule 48 (level1_loop -> MOD level1 .)
+    LESS            reduce using rule 48 (level1_loop -> MOD level1 .)
+    GREATER         reduce using rule 48 (level1_loop -> MOD level1 .)
+    N_EQUAL         reduce using rule 48 (level1_loop -> MOD level1 .)
+    EQUALITY        reduce using rule 48 (level1_loop -> MOD level1 .)
+    OR              reduce using rule 48 (level1_loop -> MOD level1 .)
+    AND             reduce using rule 48 (level1_loop -> MOD level1 .)
+    R_PAREN         reduce using rule 48 (level1_loop -> MOD level1 .)
+    COMMA           reduce using rule 48 (level1_loop -> MOD level1 .)
+    SEMICOLON       reduce using rule 48 (level1_loop -> MOD level1 .)
+
+
+state 155
+
+    (53) level2_loop -> MINUS level2 .
+
+    L_EQUAL         reduce using rule 53 (level2_loop -> MINUS level2 .)
+    G_EQUAL         reduce using rule 53 (level2_loop -> MINUS level2 .)
+    LESS            reduce using rule 53 (level2_loop -> MINUS level2 .)
+    GREATER         reduce using rule 53 (level2_loop -> MINUS level2 .)
+    N_EQUAL         reduce using rule 53 (level2_loop -> MINUS level2 .)
+    EQUALITY        reduce using rule 53 (level2_loop -> MINUS level2 .)
+    OR              reduce using rule 53 (level2_loop -> MINUS level2 .)
+    AND             reduce using rule 53 (level2_loop -> MINUS level2 .)
+    R_PAREN         reduce using rule 53 (level2_loop -> MINUS level2 .)
+    COMMA           reduce using rule 53 (level2_loop -> MINUS level2 .)
+    SEMICOLON       reduce using rule 53 (level2_loop -> MINUS level2 .)
+
+
+state 156
+
+    (52) level2_loop -> SUM level2 .
+
+    L_EQUAL         reduce using rule 52 (level2_loop -> SUM level2 .)
+    G_EQUAL         reduce using rule 52 (level2_loop -> SUM level2 .)
+    LESS            reduce using rule 52 (level2_loop -> SUM level2 .)
+    GREATER         reduce using rule 52 (level2_loop -> SUM level2 .)
+    N_EQUAL         reduce using rule 52 (level2_loop -> SUM level2 .)
+    EQUALITY        reduce using rule 52 (level2_loop -> SUM level2 .)
+    OR              reduce using rule 52 (level2_loop -> SUM level2 .)
+    AND             reduce using rule 52 (level2_loop -> SUM level2 .)
+    R_PAREN         reduce using rule 52 (level2_loop -> SUM level2 .)
+    COMMA           reduce using rule 52 (level2_loop -> SUM level2 .)
+    SEMICOLON       reduce using rule 52 (level2_loop -> SUM level2 .)
+
+
+state 157
+
+    (43) level0 -> L_PAREN expresion R_PAREN .
+
+    MOD             reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    DIV             reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    MULT            reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    SUM             reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    MINUS           reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    L_EQUAL         reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    G_EQUAL         reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    LESS            reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    GREATER         reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    N_EQUAL         reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    EQUALITY        reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    OR              reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    AND             reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    R_PAREN         reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    COMMA           reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+    SEMICOLON       reduce using rule 43 (level0 -> L_PAREN expresion R_PAREN .)
+
+
+state 158
+
+    (86) while -> WHILE L_PAREN expresion R_PAREN block .
+
+    R_BRACE         reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    IF              reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    WRITE           reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    READ            reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    ID              reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    WHILE           reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    REPEAT          reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+    RETURN          reduce using rule 86 (while -> WHILE L_PAREN expresion R_PAREN block .)
+
+
+state 159
+
+    (57) level3_loop -> relational level3 .
+
+    OR              reduce using rule 57 (level3_loop -> relational level3 .)
+    AND             reduce using rule 57 (level3_loop -> relational level3 .)
+    R_PAREN         reduce using rule 57 (level3_loop -> relational level3 .)
+    COMMA           reduce using rule 57 (level3_loop -> relational level3 .)
+    SEMICOLON       reduce using rule 57 (level3_loop -> relational level3 .)
+
+
+state 160
+
+    (34) expresion_loop -> AND expresion .
+
+    R_PAREN         reduce using rule 34 (expresion_loop -> AND expresion .)
+    COMMA           reduce using rule 34 (expresion_loop -> AND expresion .)
+    SEMICOLON       reduce using rule 34 (expresion_loop -> AND expresion .)
+
+
+state 161
+
+    (33) expresion_loop -> OR expresion .
+
+    R_PAREN         reduce using rule 33 (expresion_loop -> OR expresion .)
+    COMMA           reduce using rule 33 (expresion_loop -> OR expresion .)
+    SEMICOLON       reduce using rule 33 (expresion_loop -> OR expresion .)
+
+
+state 162
+
+    (40) funcall_params_loop -> COMMA fun_call_opts .
+
+    R_PAREN         reduce using rule 40 (funcall_params_loop -> COMMA fun_call_opts .)
+
+
+state 163
+
+    (17) condition -> IF L_PAREN expresion R_PAREN block . else_condition
+    (18) else_condition -> . empty
+    (19) else_condition -> . ELSE block
+    (90) empty -> .
+
+    ELSE            shift and go to state 169
+    IF              reduce using rule 90 (empty -> .)
+    WRITE           reduce using rule 90 (empty -> .)
+    READ            reduce using rule 90 (empty -> .)
+    ID              reduce using rule 90 (empty -> .)
+    WHILE           reduce using rule 90 (empty -> .)
+    REPEAT          reduce using rule 90 (empty -> .)
+    RETURN          reduce using rule 90 (empty -> .)
+    R_BRACE         reduce using rule 90 (empty -> .)
+
+    else_condition                 shift and go to state 168
+    empty                          shift and go to state 167
+
+state 164
+
+    (64) rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .
+
+    $end            reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    VOID            reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    STRING          reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    INT             reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    FLOAT           reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    CHAR            reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    BOOL            reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+    MAIN            reduce using rule 64 (rblock -> L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE .)
+
+
+state 165
+
+    (74) repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .
+
+    IF              reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    WRITE           reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    READ            reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    ID              reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    WHILE           reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    REPEAT          reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    RETURN          reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+    R_BRACE         reduce using rule 74 (repeat -> REPEAT L_PAREN POS_INT_CONST R_PAREN block .)
+
+
+state 166
+
+    (16) block -> L_BRACE decl_kleen content R_BRACE .
+
+    IF              reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    WRITE           reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    READ            reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    ID              reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    WHILE           reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    REPEAT          reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    RETURN          reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    R_BRACE         reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    VOID            reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    STRING          reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    INT             reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    FLOAT           reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    CHAR            reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    BOOL            reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    MAIN            reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+    ELSE            reduce using rule 16 (block -> L_BRACE decl_kleen content R_BRACE .)
+
+
+state 167
+
+    (18) else_condition -> empty .
+
+    IF              reduce using rule 18 (else_condition -> empty .)
+    WRITE           reduce using rule 18 (else_condition -> empty .)
+    READ            reduce using rule 18 (else_condition -> empty .)
+    ID              reduce using rule 18 (else_condition -> empty .)
+    WHILE           reduce using rule 18 (else_condition -> empty .)
+    REPEAT          reduce using rule 18 (else_condition -> empty .)
+    RETURN          reduce using rule 18 (else_condition -> empty .)
+    R_BRACE         reduce using rule 18 (else_condition -> empty .)
+
+
+state 168
+
+    (17) condition -> IF L_PAREN expresion R_PAREN block else_condition .
+
+    IF              reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    WRITE           reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    READ            reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    ID              reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    WHILE           reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    REPEAT          reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    RETURN          reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+    R_BRACE         reduce using rule 17 (condition -> IF L_PAREN expresion R_PAREN block else_condition .)
+
+
+state 169
+
+    (19) else_condition -> ELSE . block
+    (16) block -> . L_BRACE decl_kleen content R_BRACE
+
+    L_BRACE         shift and go to state 90
+
+    block                          shift and go to state 170
+
+state 170
+
+    (19) else_condition -> ELSE block .
+
+    IF              reduce using rule 19 (else_condition -> ELSE block .)
+    WRITE           reduce using rule 19 (else_condition -> ELSE block .)
+    READ            reduce using rule 19 (else_condition -> ELSE block .)
+    ID              reduce using rule 19 (else_condition -> ELSE block .)
+    WHILE           reduce using rule 19 (else_condition -> ELSE block .)
+    REPEAT          reduce using rule 19 (else_condition -> ELSE block .)
+    RETURN          reduce using rule 19 (else_condition -> ELSE block .)
+    R_BRACE         reduce using rule 19 (else_condition -> ELSE block .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for STRING in state 0 resolved as shift
+WARNING: shift/reduce conflict for INT in state 0 resolved as shift
+WARNING: shift/reduce conflict for FLOAT in state 0 resolved as shift
+WARNING: shift/reduce conflict for CHAR in state 0 resolved as shift
+WARNING: shift/reduce conflict for BOOL in state 0 resolved as shift
+WARNING: shift/reduce conflict for STRING in state 1 resolved as shift
+WARNING: shift/reduce conflict for INT in state 1 resolved as shift
+WARNING: shift/reduce conflict for FLOAT in state 1 resolved as shift
+WARNING: shift/reduce conflict for CHAR in state 1 resolved as shift
+WARNING: shift/reduce conflict for BOOL in state 1 resolved as shift
