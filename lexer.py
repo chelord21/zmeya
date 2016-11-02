@@ -34,7 +34,7 @@ tokens = [
   'EQUALITY', 'GREATER', 'LESS', 'L_EQUAL', 'G_EQUAL',
   'N_EQUAL', 'SEMICOLON', 'COMMA', 'L_PAREN', 'R_PAREN',
   'L_BRACE', 'R_BRACE', 'L_BRACKET', 'R_BRACKET', 'INT_CONST',
-  'STRING_CONST', 'FLOAT_CONST', 'ID', 'POS_INT_CONST'
+  'STRING_CONST', 'FLOAT_CONST', 'ID', 'POS_INT_CONST', 'ID_FUN'
   ] + list(reserved.values())
 
 # Token definitions
@@ -62,7 +62,7 @@ t_R_BRACKET = '\]'
 t_INT_CONST = '[-][0-9]+'
 t_POS_INT_CONST = '[0-9]+'
 t_STRING_CONST = '"[a-zA-Z_].*"'
-t_FLOAT_CONST = '[-]([0-9]+[.])?[0-9]+'
+t_FLOAT_CONST = '[-]([0-9]+.)?[0-9]+'
 
 # LOC counter
 def t_newline(t):
@@ -73,6 +73,11 @@ def t_newline(t):
 # Checks if id is not a reserved word
 def t_ID(t):
   '[a-zA-Z_][a-zA-Z0-9_]*'
+  t.type = reserved.get(t.value, 'ID')
+  return t
+
+def t_ID_FUN(t):
+  '_[a-zA-Z_][a-zA-Z0-9_]*'
   t.type = reserved.get(t.value, 'ID')
   return t
 

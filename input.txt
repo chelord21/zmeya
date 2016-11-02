@@ -4,22 +4,22 @@ char g;
 string s;
 bool b;
 
-void voidFunction(int w, float p){
+void _voidFunction(int w, float p){
   i = w+p;
 }
 
-void voidFunction2(){
+void _voidFunction2(){
   int z;
   z = 10;
   voidFunction(5, z);
 }
 
-int intFunction(int m){
+int _intFunction(int m){
   m = f + m;
   return m;
 }
 
-int intFunction2(int z){
+int _intFunction2(int z){
   if(z==1){
     return 1;
   }
@@ -27,7 +27,7 @@ int intFunction2(int z){
     return intFunction2(z-1);
   }
 }
-bool trueFunction(){
+bool _trueFunction(){
   return T;
 }
 
@@ -57,7 +57,7 @@ int main{
     write(p);
   }
 
-  true = trueFunction();
-  p = intFunction2(4) + 1;
+  true = _trueFunction();
+  p = _intFunction2(4) + 1;
   return 1;
 }
