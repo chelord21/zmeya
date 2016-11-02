@@ -157,7 +157,7 @@ def p_main(t):
   print('MAIN')
 
 def p_oblock(t):
-  'rblock : L_BRACE decl_kleen content_kleen oblock_opt SEMICOLON R_BRACE'
+  'oblock : L_BRACE decl_kleen content_kleen oblock_opt SEMICOLON R_BRACE'
   print('RBLOCK')
 
 def p_oblock_opt(t):
