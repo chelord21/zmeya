@@ -1,28 +1,33 @@
-PROGRAM ::= DECL FUNCTION* MAIN
-FUNCTION ::= fun ( TYPE | 'void' ) '(' PARAMETERS? ')' BLOCK
-MAIN ::= main BLOCK
- PARAMETERS ::=  NUCLEAR ( '&'? id | ARR_VARIABLE ) ( ',' TYPE ( '&'? id | ARR_VARIABLE ))*
-DECL ::= (( AT_DECLARATION | ARR_DECLARATION )( ',' ( AT_DECLARATION | ARR_DECLARATION ))* ';' )?
-AT_DECLARATION ::= NUCLEAR id
-ARR_DECLARATION ::= NUCLEAR id DIMENTIONS
-DIMENTIONS ::= '[' positive.int.constant ']' ( '[' positive.int.constant ']' )*
-NUCLEAR ::= ( string | int | float | char | bool )
-BLOCK ::= '{' DECL SENTENCE* return '}'
-SENTENCE ::= ( ASSIGNMENT | CONDITION | WRITE | READ | FOR | WHILE )
-REPEAT ::= repeat '(' positive.int.constant ')' BLOCK
-WHILE ::= while '(' EXPRESION ')' BLOCK
-VARIABLE ::= 'id' | ARR_VARIABLE
-ARR_VARIABLE ::= 'id' '[' EXPRESION ']' ( '[' EXPRESION ']' )*
-ASSIGNMENT ::= VARIABLE '=' EXPRESION ';'
-WRITE ::= write '(' ( EXPRESION | string ) ')' ';'
-READ ::= read '(' VARIABLE ')' ';'
-CONDITION ::= if '(' EXPRESION ')' BLOCK ( else BLOCK )? ';'
+PROGRAM ::= DECLARATION* FUNCTION* MAIN
+ARR_DECLARATION ::= ATOMIC id DIMENSIONS
+ ASSIGNMENT ::= VARIABLE '=' ( EXPRESION | FUN_CALL )
+AT_DECLARATION ::= ATOMIC id
+ ATOMIC ::= ( string | int | float | char | bool )
+ BLOCK ::= '{' DECLARATION* CONTENT* '}'
+ CONDITION ::= if '(' EXPRESION ')' BLOCK ( else BLOCK )?
+CONSTANT ::= int.constant | float.constant | T | F
+ CONTENT ::= SENTENCE | LOOPS | CONDITION
+ DECLARATION ::= ( AT_DECLARATION | ARR_DECLARATION ) ';'
+DIMENSIONS ::= '[' positive.int.constant ']' ( '[' positive.int.constant ']' )*
 EXPRESION ::= LEVEL3 (( '&&' | '||' ) LEVEL3)*
-LEVEL3 ::= LEVEL2 RELATIONAL LEVEL2
-LEVEL2 ::= LEVEL1 (( '+' | '-' ) LEVEL1 )*
+ FUN_CALL ::= 'id' '(' (EXPRESION ( ',' EXPRESION )*)? ')'
+ FUNCTION ::= RFUNCTION | VFUNCTION
+LEVEL0 ::= '(' EXPRESION ')' | CONSTANT | VARIABLE
 LEVEL1 ::= LEVEL0 (( '*' | '/' | '%' ) LEVEL0 )*
-LEVEL0 ::= ( '(' EXPRESION ')' | ( '+' | '-' )? CONSTANT)
-CONSTANT ::= VARIABLE | int.constant | float.constant | bool.constant
-RELATIONAL ::= ( '<=' | '>=' | '<' | '>' | '<>' | '==' | '!=' )
+LEVEL2 ::= LEVEL1 (( '+' | '-' ) LEVEL1 )*
+LEVEL3 ::= LEVEL2 ( RELATIONAL LEVEL2 )*
+ LOOPS ::= WHILE | REPEAT
+MAIN ::= main RBLOCK
+ PARAMETERS ::=  ATOMIC VARIABLE ( ',' ATOMIC VARIABLE )*
+ RBLOCK ::= '{' DECLARATION* CONTENT* return EXPRESION ';' '}'
+READ ::= read '(' VARIABLE ')'
+RELATIONAL ::= ( '<=' | '>=' | '<' | '>' | '==' | '!=' )
+REPEAT ::= repeat '(' positive.int.constant ')' BLOCK
+ RFUNCTION ::= ATOMIC 'id' '(' PARAMETERS? ')' RBLOCK
+ SENTENCE ::= ( ASSIGNMENT | WRITE | READ | FUN_CALL ) ';'
+VARIABLE ::= 'id' DIMENSIONS?
+ VFUNCTION ::= 'void' 'id' '(' PARAMETERS? ')' BLOCK
+WHILE ::= while '(' EXPRESION ')' BLOCK
+WRITE ::= write '(' ( EXPRESION | string ) ')'
 
 // C like arrays
