@@ -66,7 +66,7 @@ def p_content(t):
   print('CONTENT')
 
 def p_declaration(t):
-  'declaration : atomic variable SEMICOLON'
+  'declaration : variable COLON atomic SEMICOLON'
   print('DECLARATION')
 
 def p_dimensions(t):
@@ -201,7 +201,7 @@ def p_repeat(t):
   print('REPEAT')
 
 def p_rfunction(t):
-  'rfunction : atomic ID_FUN L_PAREN opt_params R_PAREN rblock'
+  'rfunction : ID_FUN COLON atomic L_PAREN opt_params R_PAREN rblock'
   print('RFUNCTION')
 
 def p_opt_params(t):
@@ -226,7 +226,7 @@ def p_opt_array(t):
   print('OPT ARRAY')
 
 def p_vfunction(t):
-  'vfunction : VOID ID_FUN L_PAREN opt_params R_PAREN block'
+  'vfunction : ID_FUN COLON VOID L_PAREN opt_params R_PAREN block'
   print('VFUNCTION')
 
 def p_while(t):
