@@ -34,7 +34,8 @@ tokens = [
   'EQUALITY', 'GREATER', 'LESS', 'L_EQUAL', 'G_EQUAL',
   'N_EQUAL', 'SEMICOLON', 'COMMA', 'L_PAREN', 'R_PAREN',
   'L_BRACE', 'R_BRACE', 'L_BRACKET', 'R_BRACKET', 'INT_CONST',
-  'STRING_CONST', 'FLOAT_CONST', 'ID', 'POS_INT_CONST', 'ID_FUN'
+  'STRING_CONST', 'FLOAT_CONST', 'ID', 'POS_INT_CONST', 'ID_FUN',
+  'COLON'
   ] + list(reserved.values())
 
 # Token definitions
@@ -59,6 +60,7 @@ t_L_BRACE = '\{'
 t_R_BRACE = '\}'
 t_L_BRACKET = '\['
 t_R_BRACKET = '\]'
+t_COLON = ':'
 t_INT_CONST = '[-][0-9]+'
 t_POS_INT_CONST = '[0-9]+'
 t_STRING_CONST = '"[a-zA-Z_].*"'
