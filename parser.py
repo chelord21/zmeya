@@ -22,10 +22,6 @@ def p_function_kleen(t):
                     | function function_kleen'''
   print('FUNCTION KLEEN')
 
-def p_arr_declaration(t):
-  'arr_declaration : atomic ID dimensions'
-  print('ARR DECLARATION')
-
 def p_assignment(t):
   'assignment : variable EQUALS assignment_opts'
   print('ASSIGNMENT')
@@ -34,10 +30,6 @@ def p_assignment_opts(t):
   '''assignment_opts : expresion
                      | fun_call'''
   print('ASSIGNMET OPTS')
-
-def p_at_declaration(t):
-  'at_declaration : atomic ID'
-  print('AT DECLARATION')
 
 def p_atomic(t):
   '''atomic : STRING
@@ -52,12 +44,12 @@ def p_block(t):
   print('BLOCK')
 
 def p_condition(t):
-  'condition : IF L_PAREN expresion R_PAREN block else_condition'
+  'condition : IF L_PAREN expresion R_PAREN oblock else_condition'
   print('CONDITION')
 
 def p_else_condition(t):
   '''else_condition : empty
-                    | ELSE block'''
+                    | ELSE oblock'''
   print('ELSE CONDITION')
 
 def p_constant(t):
@@ -74,8 +66,7 @@ def p_content(t):
   print('CONTENT')
 
 def p_declaration(t):
-  '''declaration : at_declaration SEMICOLON
-                 | arr_declaration SEMICOLON'''
+  'declaration : atomic variable SEMICOLON'
   print('DECLARATION')
 
 def p_dimensions(t):
@@ -164,6 +155,15 @@ def p_loops(t):
 def p_main(t):
   'main : MAIN rblock'
   print('MAIN')
+
+def p_oblock(t):
+  'rblock : L_BRACE decl_kleen content_kleen oblock_opt SEMICOLON R_BRACE'
+  print('RBLOCK')
+
+def p_oblock_opt(t):
+    '''oblock_opt : RETURN expression
+                  | empty'''
+    print('OBLOCK')
 
 def p_parameters(t):
   '''parameters : atomic variable params_loop'''
