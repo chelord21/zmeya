@@ -34,7 +34,7 @@ tokens = [
   'EQUALITY', 'GREATER', 'LESS', 'L_EQUAL', 'G_EQUAL',
   'N_EQUAL', 'SEMICOLON', 'COMMA', 'L_PAREN', 'R_PAREN',
   'L_BRACE', 'R_BRACE', 'L_BRACKET', 'R_BRACKET', 'INT_CONST',
-  'STRING_CONST', 'FLOAT_CONST', 'ID', 'POS_INT_CONST', 'ID_FUN',
+  'STRING_CONST', 'FLOAT_CONST', 'ID_FUN', 'ID', 'POS_INT_CONST',
   'COLON'
   ] + list(reserved.values())
 
@@ -71,15 +71,15 @@ def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+def t_ID_FUN(t):
+  '[_]+[a-zA-Z_][a-zA-Z0-9_]*'
+  t.type = reserved.get(t.value, 'ID_FUN')
+  return t
+
 # ID recognition
 # Checks if id is not a reserved word
 def t_ID(t):
   '[a-zA-Z_][a-zA-Z0-9_]*'
-  t.type = reserved.get(t.value, 'ID')
-  return t
-
-def t_ID_FUN(t):
-  '\_[a-zA-Z_][a-zA-Z0-9_]*'
   t.type = reserved.get(t.value, 'ID')
   return t
 
