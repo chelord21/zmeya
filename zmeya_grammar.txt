@@ -5,11 +5,11 @@ PROGRAM ::= DECLARATION* FUNCTION* MAIN
  CONDITION ::= if '(' EXPRESION ')' OBLOCK ( else OBLOCK )?
 CONSTANT ::= int.constant | float.constant | T | F
  CONTENT ::= SENTENCE | LOOPS | CONDITION
- DECLARATION ::= ATOMIC VARIABLE ';'
+ DECLARATION ::= VARIABLE ':' ATOMIC ';'
 DIMENSIONS ::= '[' positive.int.constant ']' ( '[' positive.int.constant ']' )*
 EXPRESION ::= LEVEL3 (( '&&' | '||' ) LEVEL3)*
  FUN_CALL ::= 'id_fun' '(' (EXPRESION ( ',' EXPRESION )*)? ')'
- FUNCTION ::= RFUNCTION | VFUNCTION
+ FUNCTION ::= 'id_fun' ':' (RFUNCTION | VFUNCTION)
 LEVEL0 ::= '(' EXPRESION ')' | CONSTANT | VARIABLE
 LEVEL1 ::= LEVEL0 (( '*' | '/' | '%' ) LEVEL0 )*
 LEVEL2 ::= LEVEL1 (( '+' | '-' ) LEVEL1 )*
@@ -21,10 +21,10 @@ MAIN ::= main RBLOCK
 READ ::= read '(' VARIABLE ')'
 RELATIONAL ::= ( '<=' | '>=' | '<' | '>' | '==' | '!=' )
 REPEAT ::= repeat '(' positive.int.constant ')' BLOCK
- RFUNCTION ::= ATOMIC 'id_fun' '(' PARAMETERS? ')' RBLOCK
+ RFUNCTION ::= ATOMIC '(' PARAMETERS? ')' RBLOCK
  SENTENCE ::= ( ASSIGNMENT | WRITE | READ | FUN_CALL ) ';'
 VARIABLE ::= 'id' DIMENSIONS?
- VFUNCTION ::= 'void' 'id_fun' '(' PARAMETERS? ')' BLOCK
+ VFUNCTION ::= 'void' '(' PARAMETERS? ')' BLOCK
 WHILE ::= while '(' EXPRESION ')' BLOCK
 WRITE ::= write '(' ( EXPRESION | string ) ')'
 
