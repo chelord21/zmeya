@@ -61,10 +61,10 @@ t_R_BRACE = '\}'
 t_L_BRACKET = '\['
 t_R_BRACKET = '\]'
 t_COLON = ':'
-t_INT_CONST = '[-][0-9]+'
+t_INT_CONST = '-?[0-9]+'
 t_POS_INT_CONST = '[0-9]+'
-t_STRING_CONST = '"[a-zA-Z_].*"'
-t_FLOAT_CONST = '[-]([0-9]+.)?[0-9]+'
+t_STRING_CONST = '"[^"]*"'
+t_FLOAT_CONST = '-?[0-9]+\.+[0-9]+'
 
 # LOC counter
 def t_newline(t):
@@ -72,7 +72,7 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 def t_ID_FUN(t):
-  '[_]+[a-zA-Z_][a-zA-Z0-9_]*'
+  '_+[a-zA-Z_][a-zA-Z0-9_]*'
   t.type = reserved.get(t.value, 'ID_FUN')
   return t
 

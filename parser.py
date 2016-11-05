@@ -1,3 +1,8 @@
+# TODO: Cambiar tipo de parametrización en funciones
+# TODO: Ambigüedad en funciones al entrar a una función sin declaraciones
+# decl_kleen -> variable -> ID y content -> assignment ->variable
+# TODO: No aceptamos funciones vacías
+
 # -*- coding: utf-8 -*-
 # Analizador sintáctico de Zmeya
 # Marcelo Salcedo A01195804
@@ -249,10 +254,17 @@ def p_empty(p):
   'empty :'
   pass
 
+# Función de error del parser
 def p_error(p):
-  print("Syntax error in input!")
+    if type(p).__name__ == 'NoneType':
+      print('Syntax error')
+      exit(0)
+    else:
+      print('Syntax error in ', p.value, ' at line ', p.lineno)
+      p.lineno = 0
+      exit(0)
 
 parser = yacc.yacc()
-file = open("input_function.txt", "r")
+file = open("input.txt", "r")
 yacc.parse(file.read())
 file.close()

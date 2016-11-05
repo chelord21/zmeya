@@ -1,40 +1,41 @@
-int i;
-float f;
-char g;
-string s;
-bool b;
+i : int;
+f : float;
+g : char;
+s : string;
+b : bool;
 
-void _voidFunction(int w, float p){
-  i = w+p;
+_voidFunction : void (int w, float p){
+  i = w + p - 3;  
 }
 
-void _voidFunction2(){
+_voidFunction2:void (){
   int z;
   z = 10;
-  voidFunction(5, z);
+  _voidFunction(5, z);
 }
 
-int _intFunction(int m){
+
+_intFunction:int (int m){
   m = f + m;
   return m;
 }
 
-int _intFunction2(int z){
+_intFunction2:int(int z){
   if(z==1){
     return 1;
   }
   else{
-    return intFunction2(z-1);
+    return _intFunction2(z-1);
   }
 }
-bool _trueFunction(){
+_trueFunction:bool(){
   return T;
 }
 
-int main{
-  int p;
-  bool true;
-  int arr[10];
+main{
+  p:int;
+  true:bool;
+  arr[10] : int;
   p = 10;
   a = 0;
   f = 0;
