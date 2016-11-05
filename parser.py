@@ -33,10 +33,10 @@ def p_assignment_opts(t):
 
 def p_atomic(t):
   '''atomic : STRING
-             | INT
-             | FLOAT
-             | CHAR
-             | BOOL'''
+            | INT
+            | FLOAT
+            | CHAR
+            | BOOL'''
   print('ATOMIC')
 
 def p_block(t):
@@ -107,9 +107,12 @@ def p_funcall_params_loop(t):
   print('FUNCALL PARAMS LOOP')
 
 def p_function(t):
-  '''function : rfunction
-              | vfunction'''
+  'function : ID_FUN COLON function_types'
   print('FUNCTION')
+
+def p_function_types(t):
+  '''function_types : vfunction
+                    | rfunction'''
 
 def p_level0(t):
   '''level0 : L_PAREN expresion R_PAREN
@@ -201,7 +204,7 @@ def p_repeat(t):
   print('REPEAT')
 
 def p_rfunction(t):
-  'rfunction : ID_FUN COLON atomic L_PAREN opt_params R_PAREN rblock'
+  'rfunction : atomic L_PAREN opt_params R_PAREN rblock'
   print('RFUNCTION')
 
 def p_opt_params(t):
@@ -226,7 +229,7 @@ def p_opt_array(t):
   print('OPT ARRAY')
 
 def p_vfunction(t):
-  'vfunction : ID_FUN COLON VOID L_PAREN opt_params R_PAREN block'
+  'vfunction : VOID L_PAREN opt_params R_PAREN block'
   print('VFUNCTION')
 
 def p_while(t):
