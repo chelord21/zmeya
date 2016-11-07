@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-# Estructuras usadas para manejo de semántica
+# Data structures used for semantic analysis
 
 # Variables dictionary with scope
 variables = {
-    'global' : {
-    },
-    'main' : {
-     },
-    'function' : {
-    },
-    'constants' : {
-    }
+  'global' : {
+  },
+  'main' : {
+   },
+  'function' : {
+  },
+  'constants' : {
+  }
 }
 
 # Functions dictionary
@@ -22,7 +22,8 @@ int_types = {
   'float'   : 2,
   'string'  : 3,
   'bool'    : 4,
-  'void'    : 5,
+  'char'    : 5,
+  'void'    : 6,
   'error'   : -1
 }
 
@@ -32,11 +33,29 @@ string_types = {
    2 : 'float',
    3 : 'string',
    4 : 'bool',
-   5 : 'void',
+   5 : 'char',
+   6 : 'void',
   -1 : 'error'
 }
 
 current_function = {
   'id' : None,
   'type' : None
+}
+
+operators = {
+ '+'  = 1,
+ '-'  = 2,
+ '*'  = 3,
+ '/'  = 4,
+ '%'  = 5,
+ '='  = 6,
+ '==' = 7,
+ '>'  = 8,
+ '<'  = 9,
+ '<=' = 10,
+ '>=' = 11,
+ '<>' = 12,
+ '&&' = 13,
+ '11' = 14
 }

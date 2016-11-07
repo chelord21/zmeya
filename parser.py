@@ -2,12 +2,13 @@
 # TODO: Ambigüedad en funciones al entrar a una función sin declaraciones
 # decl_kleen -> variable -> ID y content -> assignment ->variable
 # TODO: No aceptamos funciones vacías
+# TODO: No aceptamos declaración de varias variables del mismo tipo en misma línea
+# TODO: Quitar char y mod
 
 # -*- coding: utf-8 -*-
 # Analizador sintáctico de Zmeya
 # Marcelo Salcedo A01195804
 # Sergio Cordero a01191167
-
 import ply.yacc as yacc
 import lexer
 
@@ -265,6 +266,6 @@ def p_error(p):
       exit(0)
 
 parser = yacc.yacc()
-file = open("input.txt", "r")
+file = open("inputs/input.txt", "r")
 yacc.parse(file.read())
 file.close()

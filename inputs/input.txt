@@ -5,11 +5,11 @@ s : string;
 b : bool;
 
 _voidFunction : void (int w, float p){
-  i = w + p - 3;  
+  i = w + p - 3;
 }
 
 _voidFunction2:void (){
-  int z;
+  z : int;
   z = 10;
   _voidFunction(5, z);
 }
