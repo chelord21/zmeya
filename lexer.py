@@ -1,9 +1,7 @@
-#
 # -*- coding: utf-8 -*-
 # Zmeya's Lexer
 # José Marcelo Salcedo
 # Sergio Jesús Cordero
-#
 
 import ply.lex as lex
 
@@ -68,9 +66,11 @@ t_FLOAT_CONST = '-?[0-9]+\.+[0-9]+'
 
 # LOC counter
 def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
+  r'\n+'
+  t.lexer.lineno += len(t.value)
 
+# Function id recognition
+# Checks if id is not a reserved word
 def t_ID_FUN(t):
   '_+[a-zA-Z_][a-zA-Z0-9_]*'
   t.type = reserved.get(t.value, 'ID_FUN')
