@@ -1,19 +1,18 @@
-i : int;
-f : float;
-g : char;
-s : string;
-b : bool;
+var i : int;
+var f : float;
+var g : char;
+var s : string;
+var b : bool;
 
 _voidFunction : void (int w, float p){
   i = w + p - 3;
 }
 
 _voidFunction2:void (){
-  z : int;
+  var z : int;
   z = 10;
   _voidFunction(5, z);
 }
-
 
 _intFunction:int (int m){
   m = f + m;
@@ -21,21 +20,26 @@ _intFunction:int (int m){
 }
 
 _intFunction2:int(int z){
-  if(z==1){
+  if ( z == 1 )
+  {
     return 1;
   }
-  else{
-    return _intFunction2(z-1);
+  else
+  {
+    z = -4;
+    return _intFunction2(z - 1);
   }
+  return 1;
 }
+
 _trueFunction:bool(){
   return T;
 }
 
 main{
-  p:int;
-  true:bool;
-  arr[10] : int;
+  var p:int;
+  var true:bool;
+  var arr[10] : int;
   p = 10;
   a = 0;
   f = 0;

@@ -1,4 +1,16 @@
-x : int;
-_myfunc : int (){
+_intFunction2:int(int z){
+  if ( z == 1 )
+  {
+    return 1;
+  }
+  else
+  {
+    z = -4;
+    return _intFunction2(z - 1);
+  }
   return 1;
+}
+
+main{
+  return 0;
 }

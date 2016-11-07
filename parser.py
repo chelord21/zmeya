@@ -1,8 +1,6 @@
 # TODO: Cambiar tipo de parametrización en funciones
 # TODO: Ambigüedad en funciones al entrar a una función sin declaraciones
 # decl_kleen -> variable -> ID y content -> assignment ->variable
-# TODO: No aceptamos funciones vacías
-# TODO: No aceptamos declaración de varias variables del mismo tipo en misma línea
 # TODO: Quitar char y mod
 
 # -*- coding: utf-8 -*-
@@ -33,8 +31,7 @@ def p_assignment(t):
   print('ASSIGNMENT')
 
 def p_assignment_opts(t):
-  '''assignment_opts : expresion
-                     | fun_call'''
+  '''assignment_opts : expresion'''
   print('ASSIGNMET OPTS')
 
 def p_atomic(t):
@@ -46,7 +43,7 @@ def p_atomic(t):
   print('ATOMIC')
 
 def p_block(t):
-  'block : L_BRACE decl_kleen content R_BRACE'
+  'block : L_BRACE decl_kleen content_kleen R_BRACE'
   print('BLOCK')
 
 def p_condition(t):
@@ -72,7 +69,7 @@ def p_content(t):
   print('CONTENT')
 
 def p_declaration(t):
-  'declaration : variable COLON atomic SEMICOLON'
+  'declaration : VAR variable COLON atomic SEMICOLON'
   print('DECLARATION')
 
 def p_dimensions(t):
@@ -82,7 +79,7 @@ def p_dimensions(t):
 def p_dim_loop(t):
   '''dim_loop : dimensions
               | empty'''
-  print('DIMENSION LOOP')
+  print('DIM LOOP')
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
@@ -119,11 +116,13 @@ def p_function(t):
 def p_function_types(t):
   '''function_types : vfunction
                     | rfunction'''
+  print('FUNCTION TYPES')
 
 def p_level0(t):
   '''level0 : L_PAREN expresion R_PAREN
-             | constant
-             | variable'''
+            | constant
+            | variable
+            | fun_call'''
   print('LEVEL0')
 
 def p_level1(t):
@@ -166,13 +165,13 @@ def p_main(t):
   print('MAIN')
 
 def p_oblock(t):
-  'oblock : L_BRACE decl_kleen content_kleen oblock_opt SEMICOLON R_BRACE'
-  print('RBLOCK')
+  'oblock : L_BRACE content_kleen oblock_opt R_BRACE'
+  print('OBLOCK')
 
 def p_oblock_opt(t):
-    '''oblock_opt : RETURN expresion
+    '''oblock_opt : RETURN expresion SEMICOLON
                   | empty'''
-    print('OBLOCK')
+    print('OBLOCK_OPT')
 
 def p_parameters(t):
   '''parameters : atomic variable params_loop'''
@@ -266,6 +265,6 @@ def p_error(p):
       exit(0)
 
 parser = yacc.yacc()
-file = open("inputs/input.txt", "r")
+file = open("inputs/input_function.txt", "r")
 yacc.parse(file.read())
 file.close()

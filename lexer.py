@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # Zmeya's Lexer
-# José Marcelo Salcedo
-# Sergio Jesús Cordero
 
 import ply.lex as lex
 
@@ -20,11 +18,11 @@ reserved = {
   'string' : 'STRING',
   'void'   : 'VOID',
   'bool'   : 'BOOL',
-  'char'   : 'CHAR',
   'T'      : 'TRUE',
   'F'      : 'FALSE',
   '&&'     : 'AND',
-  '||'     : 'OR'
+  '||'     : 'OR',
+  'var'    : 'VAR'
 }
 
 tokens = [

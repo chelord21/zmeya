@@ -22,8 +22,7 @@ int_types = {
   'float'   : 2,
   'string'  : 3,
   'bool'    : 4,
-  'char'    : 5,
-  'void'    : 6,
+  'void'    : 5,
   'error'   : -1
 }
 
@@ -33,8 +32,7 @@ string_types = {
    2 : 'float',
    3 : 'string',
    4 : 'bool',
-   5 : 'char',
-   6 : 'void',
+   5 : 'void',
   -1 : 'error'
 }
 
@@ -57,5 +55,5 @@ operators = {
  '>=' = 11,
  '<>' = 12,
  '&&' = 13,
- '11' = 14
+ '||' = 14
 }
