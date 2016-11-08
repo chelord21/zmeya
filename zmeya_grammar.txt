@@ -11,15 +11,17 @@ EXPRESION ::= LEVEL3 (( '&&' | '||' ) LEVEL3)*
  FUN_CALL ::= 'id_fun' '(' (EXPRESION ( ',' EXPRESION )*)? ')'
  FUNCTION ::= 'id_fun' ':' (RFUNCTION | VFUNCTION)
 LEVEL0 ::= '(' EXPRESION ')' | CONSTANT | VARIABLE
-LEVEL1 ::= LEVEL0 (( '*' | '/' | '%' ) LEVEL0 )*
-LEVEL2 ::= LEVEL1 (( '+' | '-' ) LEVEL1 )*
-LEVEL3 ::= LEVEL2 ( RELATIONAL LEVEL2 )*
+LEVEL1 ::= LEVEL0 (LEVEL1_OPERS LEVEL0 )*
+LEVEL1_OPERS ::= ( '*' | '/' | '%')
+LEVEL2 ::= LEVEL1 (LEVEL2_OPERS LEVEL1 )*
+LEVEL2_OPERS ::= ( '+' | '-')
+LEVEL3 ::= LEVEL2 ( LEVEL3_OPERS LEVEL2 )*
+LEVEL3_OPERS ::= ( '<=' | '>=' | '<' | '>' | '==' | '!=' )
  LOOPS ::= WHILE | REPEAT
 MAIN ::= main RBLOCK
  PARAMETERS ::=  ATOMIC VARIABLE ( ',' ATOMIC VARIABLE )*
  RBLOCK ::= '{' DECLARATION* CONTENT* return EXPRESION ';' '}'
 READ ::= read '(' VARIABLE ')'
-RELATIONAL ::= ( '<=' | '>=' | '<' | '>' | '==' | '!=' )
 REPEAT ::= repeat '(' positive.int.constant ')' BLOCK
  RFUNCTION ::= ATOMIC '(' PARAMETERS? ')' RBLOCK
  SENTENCE ::= ( ASSIGNMENT | WRITE | READ | FUN_CALL ) ';'

@@ -7,14 +7,23 @@
 from semantics import *
 from variable_details import VariableDetails
 from function_details import FunctionDetails
+from quadruple import *
 import ply.yacc as yacc
 import lexer
 
-tokens= lexer.tokens
+tokens = lexer.tokens
+
+#Operation structures
+operands = zStack()
+operators = zStack()
+types = zStack()
+
+#arithmetic
+tempCount = 1
 
 def p_program(t):
   'program : decl_kleen function_kleen main print_everything'
-  # print('PROGRAM')
+  print('PROGRAM')
 
 def p_decl_kleen(t):
   '''decl_kleen : empty
@@ -64,7 +73,11 @@ def p_constant(t):
               | FALSE'''
   global constants
   constants[t[1]] = type(t[1])
-  # print('CONSTANT')
+    # arithmetic
+  operands.push(t[1])
+  print(operands.top())
+  types.push(type(t[1]))
+  #print('CONSTANT: ' + str(t[1]))
 
 def p_content(t):
   '''content : sentence
@@ -100,13 +113,20 @@ def p_dim_loop(t):
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
-  # print('EXPRESION')
+  print('EXPRESION: ' + str(t.lexer.lineno))
 
 def p_expresion_loop(t):
-  '''expresion_loop : OR expresion
-                    | AND expresion
+  '''expresion_loop : expresion_operations expresion
                     | empty'''
   # print('EXPRESION LOOP')
+
+def p_expresion_operations(t):
+    '''expresion_operations : OR
+                            | AND'''
+    operators.push(quadruple_operations.index(t[1]))
+    types.push(type(t[1]))
+    print('EXPRESSION OPERS ', quadruple_operations.index(t[1]))
+
 
 def p_fun_call(t):
   'fun_call : ID_FUN L_PAREN fun_call_opts R_PAREN'
@@ -142,41 +162,111 @@ def p_function_types(t):
   # print('FUNCTION TYPES')
 
 def p_level0(t):
-  '''level0 : L_PAREN expresion R_PAREN
+  '''level0 : L_PAREN add_bottom expresion R_PAREN
             | constant
             | variable
             | fun_call'''
   # print('LEVEL0')
 
+def p_add_bottom(t):
+    'add_bottom : '
+    operators.push
+
+
+def p_evaluate_level0(t):
+    'evaluate_level0 : '
+    if(levels(operators.top()) == 1):
+        #TODO semantic validation
+        types.pop()
+        types.pop()
+        operator = operators.pop()
+        operand2 = operands.pop()
+        operand1 = operands.pop()
+        result = 'temp' + str(tempCount)
+        tempCount += 1
+        operands.push(result)
+        types.push(type(result))
+
 def p_level1(t):
-  'level1 : level0 level1_loop'
+  'level1 : level0 evaluate_level0 level1_loop'
   # print('LEVEL1')
 
 def p_level1_loop(t):
   '''level1_loop : empty
-                 | MOD level1
-                 | DIV level1
-                 | MULT level1'''
+                 | level1_opers level1'''
   # print('LEVEL1 LOOP')
 
+def p_level1_opers(t):
+    '''level1_opers : MOD
+                    | DIV
+                    | MULT'''
+    operators.push(quadruple_operations.index(t[1]))
+    types.push(type(t[1]))
+    print('LEVEL1 OPERS ', quadruple_operations.index(t[1]))
+
+def p_evaluate_level1(t):
+    'evaluate_level1 : '
+    if(levels(operators.top()) == 2):
+        #TODO semantic validation
+        types.pop()
+        types.pop()
+        operator = operators.pop()
+        operand2 = operands.pop()
+        operand1 = operands.pop()
+        result = 'temp' + str(tempCount)
+        tempCount += 1
+        operands.push(result)
+        types.push(type(result))
+
 def p_level2(t):
-  'level2 : level1 level2_loop'
+  'level2 : level1 evaluate_level1 level2_loop'
   # print('LEVEL2')
 
 def p_level2_loop(t):
-  '''level2_loop : SUM level2
-                 | MINUS level2
+  '''level2_loop : level2_opers level2
                  | empty'''
   # print('LEVEL2 LOOP')
 
+def p_level2_opers(t):
+    '''level2_opers : SUM
+                    | MINUS'''
+    operators.push(quadruple_operations.index(t[1]))
+    types.push(type(t[1]))
+    print('LEVEL2 OPERS ', quadruple_operations.index(t[1]))
+
+def p_evaluate_level2(t):
+    'evaluate_level2 : '
+    if(levels(operators.top()) == 3):
+        #TODO semantic validation
+        types.pop()
+        types.pop()
+        operator = operators.pop()
+        operand2 = operands.pop()
+        operand1 = operands.pop()
+        result = 'temp' + str(tempCount)
+        tempCount += 1
+        operands.push(result)
+        types.push(type(result))
+
 def p_level3(t):
-  'level3 : level2 level3_loop'
+  'level3 : level2 evaluate_level2 level3_loop'
   # print('LEVEL3')
 
 def p_level3_loop(t):
   '''level3_loop : empty
-                 | relational level3'''
+                 | level3_opers level3'''
   # print('LEVEL3 LOOP')
+
+def p_level3_opers(t):
+  '''level3_opers : L_EQUAL
+                  | G_EQUAL
+                  | LESS
+                  | GREATER
+                  | N_EQUAL
+                  | EQUALITY'''
+  operators.push(quadruple_operations.index(t[1]))
+  types.push(type(t[1]))
+  print('LEVEL3 OPERS ', quadruple_operations.index(t[1]))
 
 def p_loops(t):
   '''loops : while
@@ -232,15 +322,6 @@ def p_read(t):
   'read : READ L_PAREN variable R_PAREN'
   # print('READ')
 
-def p_relational(t):
-  '''relational : L_EQUAL
-                | G_EQUAL
-                | LESS
-                | GREATER
-                | N_EQUAL
-                | EQUALITY'''
-  # print('RELATIONAL')
-
 def p_repeat(t):
   'repeat : REPEAT L_PAREN POS_INT_CONST R_PAREN block'
   # print('REPEAT')
@@ -274,6 +355,9 @@ def p_variable(t):
   global current_id
   current_id = t[1]
   print('Current id: ', current_id)
+    # arithmetic
+  operands.push(t[1])
+  types.push(type(t[1]))
   # print('VARIABLE')
 
 def p_opt_array(t):
@@ -327,6 +411,21 @@ def p_print_everything(t):
 def p_empty(p):
   'empty :'
   pass
+# Check if symbol is of a certain level
+levels = {0:2, # +
+            1:2, # -
+            2:1, # *
+            3:1, # /
+            4:1, # %
+            5:10, # =
+            6:3, # ==
+            7:3, # >
+            8:3, # <
+            9:3, # <=
+            10:3, # >=
+            11:3 # <>
+            }
+
 
 # Función de error del parser
 def p_error(p):
@@ -339,6 +438,6 @@ def p_error(p):
       exit(0)
 
 parser = yacc.yacc()
-file = open("inputs/input_function.txt", "r")
+file = open("inputs/arithmetic.txt", "r")
 yacc.parse(file.read())
 file.close()
