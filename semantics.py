@@ -1,4 +1,10 @@
-# Semantic cube
+from function_details import FunctionDetails
+#
+# Semantic anaĺysis and structures
+#
+#################
+# Semantic Cube #
+#################
 # Operator values 
 # 1: +
 # 2: -
@@ -60,3 +66,85 @@ semantic_cube[4][4][9] = 4 # bool < bool = bool
 semantic_cube[4][4][10] = 4 # bool <= bool = bool
 semantic_cube[4][4][11] = 4 # bool >= bool = bool
 semantic_cube[4][4][12] = 4 # bool <> bool = bool
+
+###################
+# Data structures #
+###################
+current_scope = 'global'
+current_type = ''
+current_id = ''
+current_params_types = []
+current_params_ids = []
+current_function = {
+  'id'           : '',
+  'type'         : '',
+  'params_types' : [],
+  'params_ids'   : []
+}
+
+# Variables dictionary with scope
+variables = {
+  'global' : {
+  },
+  'function' : {
+  }
+}
+
+# Functions dictionary
+functions = {}
+
+# Translation of types to int
+int_types = {
+  'int'     : 1,
+  'float'   : 2,
+  'string'  : 3,
+  'bool'    : 4,
+  'void'    : 5,
+  'error'   : -1
+}
+
+# Translation of types to int
+string_types = {
+   1 : 'int',
+   2 : 'float',
+   3 : 'string',
+   4 : 'bool',
+   5 : 'void',
+  -1 : 'error'
+}
+
+operators = {
+ '+'  : 1,
+ '-'  : 2,
+ '*'  : 3,
+ '/'  : 4,
+ '%'  : 5,
+ '='  : 6,
+ '==' : 7,
+ '>'  : 8,
+ '<'  : 9,
+ '<=' : 10,
+ '>=' : 11,
+ '<>' : 12,
+ '&&' : 13,
+ '||' : 14
+}
+
+######################
+# Semantic functions #
+######################
+def add_to_fun_dict():
+  global functions, current_function, current_scope
+  functions[current_function['id']] = FunctionDetails(current_function['type'],
+                                                      current_function['params_types'],
+                                                      current_function['params_ids'])
+  current_scope = 'function'
+
+def reset_current_function():
+  global current_function
+  current_function = {
+    'id'           : '',
+    'type'         : '',
+    'params_types' : [],
+    'params_ids'   : []
+  }

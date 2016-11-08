@@ -1,12 +1,12 @@
-# TODO: Cambiar tipo de parametrización en funciones
-# TODO: Ambigüedad en funciones al entrar a una función sin declaraciones
-# decl_kleen -> variable -> ID y content -> assignment ->variable
-# TODO: Quitar char y mod
-
 # -*- coding: utf-8 -*-
 # Analizador sintáctico de Zmeya
 # Marcelo Salcedo A01195804
 # Sergio Cordero a01191167
+
+# Imports
+from semantics import *
+from variable_details import VariableDetails
+from function_details import FunctionDetails
 import ply.yacc as yacc
 import lexer
 
@@ -38,8 +38,9 @@ def p_atomic(t):
   '''atomic : STRING
             | INT
             | FLOAT
-            | CHAR
             | BOOL'''
+  global current_type
+  current_type = t[1]
   # print('ATOMIC')
 
 def p_block(t):
@@ -70,6 +71,15 @@ def p_content(t):
 
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
+  global current_scope, current_type, current_id, current_function
+  if current_scope == 'global':
+    variables[current_scope][current_id] = VariableDetails(current_type)
+    current_type = ''
+    current_id = ''
+  else:
+    variables[current_scope][current_function['id']][current_id] = VariableDetails(current_type)
+    current_type = ''
+    current_id = ''
   # print('DECLARATION')
 
 def p_dimensions(t):
@@ -110,8 +120,17 @@ def p_funcall_params_loop(t):
   # print('FUNCALL PARAMS LOOP')
 
 def p_function(t):
-  'function : ID_FUN COLON function_types'
+  'function : ID_FUN set_fun_id COLON function_types reset_function'
   # print('FUNCTION')
+
+def p_set_fun_id(t):
+  '''set_fun_id : '''
+  global current_function
+  current_function['id'] = t[-1]
+
+def p_reset_function(t):
+  '''reset_function : '''
+  reset_current_function()
 
 def p_function_types(t):
   '''function_types : vfunction
@@ -174,8 +193,22 @@ def p_oblock_opt(t):
     # print('OBLOCK_OPT')
 
 def p_parameters(t):
-  '''parameters : atomic variable params_loop'''
+  '''parameters : atomic set_param_type variable set_param_name params_loop'''
   # print('PARAMETERS')
+
+# Append parameter type to the function's parameter types list
+def p_set_param_type(t):
+  '''set_param_type : '''
+  global current_type, current_function
+  current_function['params_types'].append(current_type)
+  current_type = ''
+
+# Append parameter id to the function's parameter names list
+def p_set_param_name(t):
+  '''set_param_name : '''
+  global current_id, current_function
+  current_function['params_ids'].append(current_id)
+  current_id = ''
 
 def p_params_loop(t):
   '''params_loop : COMMA parameters
@@ -209,12 +242,20 @@ def p_repeat(t):
   # print('REPEAT')
 
 def p_rfunction(t):
-  'rfunction : atomic L_PAREN opt_params R_PAREN rblock'
+  'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
   # print('RFUNCTION')
 
+def p_set_fun_type(t):
+  '''set_fun_type : '''
+  global current_function, current_type
+  current_function['type'] = current_type
+  current_type = ''
+
+# Add function with its details to function dictionary and change current scope
 def p_opt_params(t):
   '''opt_params : empty
                 | parameters'''
+  add_to_fun_dict()
   # print('OPT PARAMS')
 
 def p_sentence(t):
@@ -226,6 +267,8 @@ def p_sentence(t):
 
 def p_variable(t):
   'variable : ID opt_array'
+  global current_id
+  current_id = t[1]
   # print('VARIABLE')
 
 def p_opt_array(t):
@@ -234,8 +277,13 @@ def p_opt_array(t):
   # print('OPT ARRAY')
 
 def p_vfunction(t):
-  'vfunction : VOID L_PAREN opt_params R_PAREN block'
+  'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
   # print('VFUNCTION')
+
+def p_set_fun_void(t):
+  '''set_fun_void : '''
+  global current_function
+  current_function['type'] = 'void'
 
 def p_while(t):
   'while : WHILE L_PAREN expresion R_PAREN block'

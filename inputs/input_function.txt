@@ -1,3 +1,9 @@
+var j : int;
+
+_voidFunc:void(){
+  
+}
+
 _intFunction2:int(int z){
   if ( z == 1 )
   {
