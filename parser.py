@@ -13,7 +13,7 @@ import lexer
 tokens= lexer.tokens
 
 def p_program(t):
-  'program : decl_kleen function_kleen main'
+  'program : decl_kleen function_kleen main print_everything'
   # print('PROGRAM')
 
 def p_decl_kleen(t):
@@ -41,6 +41,7 @@ def p_atomic(t):
             | BOOL'''
   global current_type
   current_type = t[1]
+  print('Current type: ', current_type)
   # print('ATOMIC')
 
 def p_block(t):
@@ -61,6 +62,8 @@ def p_constant(t):
               | FLOAT_CONST
               | TRUE
               | FALSE'''
+  global constants
+  constants[t[1]] = type(t[1])
   # print('CONSTANT')
 
 def p_content(t):
@@ -72,10 +75,14 @@ def p_content(t):
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
   global current_scope, current_type, current_id, current_function
+  print('Saving variable in scope: ', current_scope)
   if current_scope == 'global':
     variables[current_scope][current_id] = VariableDetails(current_type)
+    print('Saved in variables[', current_scope, '][', current_id, ']')
     current_type = ''
     current_id = ''
+    print('Current id after save: ', current_id)
+    print('Current id after type: ', current_type)
   else:
     variables[current_scope][current_function['id']][current_id] = VariableDetails(current_type)
     current_type = ''
@@ -110,10 +117,6 @@ def p_fun_call_opts(t):
                    | expresion funcall_params_loop'''
   # print('FUN CALL OPTS')
 
-# def p_funcall_params(t):
-#   '''funcall_params : expresion
-#                     | variable'''
-
 def p_funcall_params_loop(t):
   '''funcall_params_loop : empty
                          | COMMA fun_call_opts'''
@@ -127,6 +130,7 @@ def p_set_fun_id(t):
   '''set_fun_id : '''
   global current_function
   current_function['id'] = t[-1]
+  print('Current function id: ', current_function['id'])
 
 def p_reset_function(t):
   '''reset_function : '''
@@ -269,6 +273,7 @@ def p_variable(t):
   'variable : ID opt_array'
   global current_id
   current_id = t[1]
+  print('Current id: ', current_id)
   # print('VARIABLE')
 
 def p_opt_array(t):
@@ -284,6 +289,7 @@ def p_set_fun_void(t):
   '''set_fun_void : '''
   global current_function
   current_function['type'] = 'void'
+  print('Current function type: ', current_function['type'])
 
 def p_while(t):
   'while : WHILE L_PAREN expresion R_PAREN block'
@@ -295,8 +301,28 @@ def p_write(t):
 
 def p_write_opt(t):
   '''write_opt : expresion
-               | STRING_CONST'''
+               | STRING_CONST add_string_const'''
   # print('WRITE OPT')
+
+def p_add_string_const(t):
+  '''add_string_const : '''
+  global constants
+  constants[t[0]] = 'string'
+
+def p_print_everything(t):
+  '''print_everything : '''
+  global variables, functions, constants
+  print('Variables')
+  for x in variables:
+    print (x)
+    for y in variables[x]:
+        print (y,':',variables[x][y])
+  print('Fucntions')
+  for x in functions:
+    print (x)
+  print('Constants')
+  for x in constants:
+    print (x)
 
 def p_empty(p):
   'empty :'

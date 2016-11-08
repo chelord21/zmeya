@@ -1,22 +1,23 @@
 var j : int;
-
+var t : string;
 _voidFunc:void(){
-  
+  write("Hello World");
 }
 
 _intFunction2:int(int z){
+  var m : int;
   if ( z == 1 )
   {
     return 1;
   }
   else
   {
-    z = -4;
+    z = -4.0;
     return _intFunction2(z - 1);
   }
   return 1;
 }
 
 main{
-  return 0;
+  return 1;
 }

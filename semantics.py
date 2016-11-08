@@ -93,6 +93,9 @@ variables = {
 # Functions dictionary
 functions = {}
 
+# Constants dictionary
+constants = {}
+
 # Translation of types to int
 int_types = {
   'int'     : 1,
@@ -135,10 +138,12 @@ operators = {
 ######################
 def add_to_fun_dict():
   global functions, current_function, current_scope
+  print('Saving function ', current_function['id'])
   functions[current_function['id']] = FunctionDetails(current_function['type'],
                                                       current_function['params_types'],
                                                       current_function['params_ids'])
   current_scope = 'function'
+  print('Saved in functions[', current_function['id'], ']')
 
 def reset_current_function():
   global current_function

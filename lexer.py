@@ -57,10 +57,18 @@ t_R_BRACE = '\}'
 t_L_BRACKET = '\['
 t_R_BRACKET = '\]'
 t_COLON = ':'
-t_INT_CONST = '-?[0-9]+'
-t_POS_INT_CONST = '[0-9]+'
 t_STRING_CONST = '"[^"]*"'
-t_FLOAT_CONST = '-?[0-9]+\.+[0-9]+'
+t_POS_INT_CONST = '[0-9]+'
+
+def t_FLOAT_CONST(t):
+  '-?[0-9]+\.+[0-9]+'
+  t.value = float(t.value)
+  return t
+
+def t_INT_CONST(t):
+  '-?[0-9]+'
+  t.value = int(t.value)
+  return t
 
 # LOC counter
 def t_newline(t):
