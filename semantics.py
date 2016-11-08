@@ -137,13 +137,14 @@ operators = {
 # Semantic functions #
 ######################
 def add_to_fun_dict():
-  global functions, current_function, current_scope
-  print('Saving function ', current_function['id'])
+  global functions, current_function, current_scope, variables
+  # print('Saving function ', current_function['id'])
   functions[current_function['id']] = FunctionDetails(current_function['type'],
                                                       current_function['params_types'],
                                                       current_function['params_ids'])
-  current_scope = 'function'
-  print('Saved in functions[', current_function['id'], ']')
+  # print('Saved in functions[', current_function['id'], ']')
+  # print('Current scope: ', current_scope)
+  variables['function'][current_function['id']] = {}
 
 def reset_current_function():
   global current_function
@@ -153,3 +154,4 @@ def reset_current_function():
     'params_types' : [],
     'params_ids'   : []
   }
+

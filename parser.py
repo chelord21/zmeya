@@ -41,7 +41,7 @@ def p_atomic(t):
             | BOOL'''
   global current_type
   current_type = t[1]
-  print('Current type: ', current_type)
+  # print('Current type: ', current_type)
   # print('ATOMIC')
 
 def p_block(t):
@@ -75,16 +75,17 @@ def p_content(t):
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
   global current_scope, current_type, current_id, current_function
-  print('Saving variable in scope: ', current_scope)
+  # print('Saving variable in scope: ', current_scope)
   if current_scope == 'global':
     variables[current_scope][current_id] = VariableDetails(current_type)
-    print('Saved in variables[', current_scope, '][', current_id, ']')
+    # print('Saved in variables[', current_scope, '][', current_id, ']')
     current_type = ''
     current_id = ''
-    print('Current id after save: ', current_id)
-    print('Current id after type: ', current_type)
+    # print('Current id after save: ', current_id)
+    # print('Current id after type: ', current_type)
   else:
-    variables[current_scope][current_function['id']][current_id] = VariableDetails(current_type)
+    aux_dict = variables[current_scope]
+    aux_dict[current_function['id']][current_id] = VariableDetails(current_type)
     current_type = ''
     current_id = ''
   # print('DECLARATION')
@@ -123,18 +124,14 @@ def p_funcall_params_loop(t):
   # print('FUNCALL PARAMS LOOP')
 
 def p_function(t):
-  'function : ID_FUN set_fun_id COLON function_types reset_function'
+  'function : ID_FUN set_fun_id COLON function_types'
   # print('FUNCTION')
 
 def p_set_fun_id(t):
   '''set_fun_id : '''
   global current_function
   current_function['id'] = t[-1]
-  print('Current function id: ', current_function['id'])
-
-def p_reset_function(t):
-  '''reset_function : '''
-  reset_current_function()
+  # print('Current function id: ', current_function['id'])
 
 def p_function_types(t):
   '''function_types : vfunction
@@ -184,8 +181,17 @@ def p_loops(t):
   # print('LOOPS')
 
 def p_main(t):
-  'main : MAIN rblock'
+  'main : MAIN set_main_function block'
   # print('MAIN')
+
+def p_set_main_function(t):
+  '''set_main_function : '''
+  global current_function, variables
+  current_function['id'] = 'main'
+  current_function['type'] = 'void'
+  current_function['params_types'] = []
+  current_function['params_ids'] = []
+  variables['function']['main'] = {}
 
 def p_oblock(t):
   'oblock : L_BRACE content_kleen oblock_opt R_BRACE'
@@ -205,14 +211,19 @@ def p_set_param_type(t):
   '''set_param_type : '''
   global current_type, current_function
   current_function['params_types'].append(current_type)
+  # print('Appended', current_type, 'to current_function[params_types]')
   current_type = ''
+  # print('Current type after append: ', current_type)
+
 
 # Append parameter id to the function's parameter names list
 def p_set_param_name(t):
   '''set_param_name : '''
   global current_id, current_function
   current_function['params_ids'].append(current_id)
+  # print('Appended', current_id, 'to current_function[params_ids]')
   current_id = ''
+  # print('Current id after append: ', current_id)
 
 def p_params_loop(t):
   '''params_loop : COMMA parameters
@@ -253,6 +264,7 @@ def p_set_fun_type(t):
   '''set_fun_type : '''
   global current_function, current_type
   current_function['type'] = current_type
+  # print('Current function type: ', current_function['type'])
   current_type = ''
 
 # Add function with its details to function dictionary and change current scope
@@ -260,6 +272,9 @@ def p_opt_params(t):
   '''opt_params : empty
                 | parameters'''
   add_to_fun_dict()
+  global current_scope
+  current_scope = 'function'
+  # print('New scope: ', current_scope)
   # print('OPT PARAMS')
 
 def p_sentence(t):
@@ -273,7 +288,7 @@ def p_variable(t):
   'variable : ID opt_array'
   global current_id
   current_id = t[1]
-  print('Current id: ', current_id)
+  # print('Current id: ', current_id)
   # print('VARIABLE')
 
 def p_opt_array(t):
@@ -289,7 +304,7 @@ def p_set_fun_void(t):
   '''set_fun_void : '''
   global current_function
   current_function['type'] = 'void'
-  print('Current function type: ', current_function['type'])
+  # print('Current function type: ', current_function['type'])
 
 def p_while(t):
   'while : WHILE L_PAREN expresion R_PAREN block'
@@ -307,22 +322,22 @@ def p_write_opt(t):
 def p_add_string_const(t):
   '''add_string_const : '''
   global constants
-  constants[t[0]] = 'string'
+  constants[t[-1]] = 'string'
 
 def p_print_everything(t):
   '''print_everything : '''
-  global variables, functions, constants
-  print('Variables')
-  for x in variables:
-    print (x)
-    for y in variables[x]:
-        print (y,':',variables[x][y])
-  print('Fucntions')
-  for x in functions:
-    print (x)
-  print('Constants')
-  for x in constants:
-    print (x)
+  # global variables, functions, constants
+  # print('Variables')
+  # for x in variables:
+  #   print (x)
+  #   for y in variables[x]:
+  #       print (y,':',variables[x][y])
+  # print('Fucntions')
+  # for x in functions:
+  #   print (x)
+  # print('Constants')
+  # for x in constants:
+  #   print (x)
 
 def p_empty(p):
   'empty :'
@@ -339,6 +354,6 @@ def p_error(p):
       exit(0)
 
 parser = yacc.yacc()
-file = open("inputs/input_function.txt", "r")
+file = open("inputs/input.txt", "r")
 yacc.parse(file.read())
 file.close()

@@ -1,8 +1,10 @@
 var j : int;
 var t : string;
+
 _voidFunc:void(){
   write("Hello World");
 }
+
 
 _intFunction2:int(int z){
   var m : int;
@@ -19,5 +21,34 @@ _intFunction2:int(int z){
 }
 
 main{
-  return 1;
+  var h : int;
+}
+
+
+main{
+  var p : int;
+  var true : bool;
+  var arr[10] : int;
+  p = 10;
+  s = "Hola";
+  b = T;
+  arr[6] = 6;
+  while(p > 10){
+    if(p % 2 == 0){
+      write(p);
+    }
+    while(p>0){
+      write(p+1);
+    }
+    p = p - 1;
+  }
+
+  repeat(4){
+    read(p);
+    write("You wrote");
+    write(p);
+  }
+
+  true = _trueFunction();
+  p = _intFunction2(4) + 1;
 }

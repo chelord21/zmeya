@@ -1,6 +1,5 @@
 var i : int;
 var f : float;
-var g : char;
 var s : string;
 var b : bool;
 
@@ -8,18 +7,18 @@ _voidFunction : void (int w, float p){
   i = w + p - 3;
 }
 
-_voidFunction2:void (){
+_voidFunction2 : void (){
   var z : int;
   z = 10;
-  _voidFunction(5, z);
+  _voidFunction( 5, z );
 }
 
-_intFunction:int (int m){
+_intFunction : int ( int m ){
   m = f + m;
   return m;
 }
 
-_intFunction2:int(int z){
+_intFunction2 : int( int z ){
   if ( z == 1 )
   {
     return 1;
@@ -32,20 +31,15 @@ _intFunction2:int(int z){
   return 1;
 }
 
-_trueFunction:bool(){
+_trueFunction : bool(){
   return T;
 }
 
 main{
-  var p:int;
-  var true:bool;
-  var arr[10] : int;
-  p = 10;
-  a = 0;
-  f = 0;
-  s = "Hola";
-  b = T;
-  arr[6] = 6;
+  var p : int;
+  var true : bool;
+  var false : bool;
+  p = 1;
   while(p > 10){
     if(p % 2 == 0){
       write(p);
@@ -55,14 +49,4 @@ main{
     }
     p = p - 1;
   }
-
-  repeat(4){
-    read(p);
-    write("You wrote");
-    write(p);
-  }
-
-  true = _trueFunction();
-  p = _intFunction2(4) + 1;
-  return 1;
 }
