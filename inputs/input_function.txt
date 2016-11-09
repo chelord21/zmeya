@@ -1,54 +1,9 @@
-var j : int;
-var t : string;
-
-_voidFunc:void(){
-  write("Hello World");
-}
-
-
-_intFunction2:int(int z){
-  var m : int;
-  if ( z == 1 )
-  {
-    return 1;
-  }
-  else
-  {
-    z = -4.0;
-    return _intFunction2(z - 1);
-  }
-  return 1;
-}
-
-main{
-  var h : int;
-}
-
-
 main{
   var p : int;
   var true : bool;
   var arr[10] : int;
-  p = 10;
-  s = "Hola";
-  b = T;
-  arr[6] = 6;
-  while(p > 10){
-    if(p % 2 == 0){
-      write(p);
-    }
-    while(p>0){
-      write(p+1);
-    }
-    p = p - 1;
-  }
 
-  repeat(4){
-    read(p);
-    write("You wrote");
-    write(p);
+  repeat(10){
+    n = 10;
   }
-
-  true = _trueFunction();
-  p = _intFunction2(4) + 1;
 }

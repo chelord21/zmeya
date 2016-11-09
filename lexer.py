@@ -58,7 +58,6 @@ t_L_BRACKET = '\['
 t_R_BRACKET = '\]'
 t_COLON = ':'
 t_STRING_CONST = '"[^"]*"'
-t_POS_INT_CONST = '[0-9]+'
 
 def t_FLOAT_CONST(t):
   '-?[0-9]+\.+[0-9]+'

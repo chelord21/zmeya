@@ -34,12 +34,14 @@ _intFunction2 : int( int z ){
 _trueFunction : bool(){
   return T;
 }
-
 main{
   var p : int;
   var true : bool;
-  var false : bool;
-  p = 1;
+  var arr[10] : int;
+  p = 10;
+  s = "Hola";
+  b = T;
+  arr[6] = 6;
   while(p > 10){
     if(p % 2 == 0){
       write(p);
@@ -49,4 +51,13 @@ main{
     }
     p = p - 1;
   }
+
+  repeat(4){
+    read(p);
+    write("You wrote");
+    write(p);
+  }
+
+  true = _trueFunction();
+  p = _intFunction2(4) + 1;
 }

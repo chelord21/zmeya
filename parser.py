@@ -14,12 +14,12 @@ tokens= lexer.tokens
 
 def p_program(t):
   'program : decl_kleen function_kleen main print_everything'
-  # print('PROGRAM')
+  print('PROGRAM')
 
 def p_decl_kleen(t):
   '''decl_kleen : empty
                 | declaration decl_kleen'''
-  # print('DECL KLEEN')
+  print('DECL KLEEN')
 
 def p_function_kleen(t):
   '''function_kleen : empty
@@ -31,8 +31,9 @@ def p_assignment(t):
   # print('ASSIGNMENT')
 
 def p_assignment_opts(t):
-  '''assignment_opts : expresion'''
-  # print('ASSIGNMET OPTS')
+  '''assignment_opts : expresion
+                     | STRING_CONST'''
+  print('ASSIGNMENT_OPTS')
 
 def p_atomic(t):
   '''atomic : STRING
@@ -46,7 +47,7 @@ def p_atomic(t):
 
 def p_block(t):
   'block : L_BRACE decl_kleen content_kleen R_BRACE'
-  # print('BLOCK')
+  print('BLOCK')
 
 def p_condition(t):
   'condition : IF L_PAREN expresion R_PAREN oblock else_condition'
@@ -70,7 +71,7 @@ def p_content(t):
   '''content : sentence
              | loops
              | condition'''
-  # print('CONTENT')
+  print('CONTENT')
 
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
@@ -88,16 +89,16 @@ def p_declaration(t):
     aux_dict[current_function['id']][current_id] = VariableDetails(current_type)
     current_type = ''
     current_id = ''
-  # print('DECLARATION')
+  print('DECLARATION')
 
 def p_dimensions(t):
-  'dimensions : L_BRACKET POS_INT_CONST R_BRACKET dim_loop'
-  # print('DIMENSIONS')
+  'dimensions : L_BRACKET INT_CONST R_BRACKET dim_loop'
+  print('DIMENSIONS')
 
 def p_dim_loop(t):
   '''dim_loop : dimensions
               | empty'''
-  # print('DIM LOOP')
+  print('DIM LOOP')
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
@@ -143,42 +144,42 @@ def p_level0(t):
             | constant
             | variable
             | fun_call'''
-  # print('LEVEL0')
+  print('LEVEL0')
 
 def p_level1(t):
   'level1 : level0 level1_loop'
-  # print('LEVEL1')
+  print('LEVEL1')
 
 def p_level1_loop(t):
   '''level1_loop : empty
                  | MOD level1
                  | DIV level1
                  | MULT level1'''
-  # print('LEVEL1 LOOP')
+  print('LEVEL1 LOOP')
 
 def p_level2(t):
   'level2 : level1 level2_loop'
-  # print('LEVEL2')
+  print('LEVEL2')
 
 def p_level2_loop(t):
   '''level2_loop : SUM level2
                  | MINUS level2
                  | empty'''
-  # print('LEVEL2 LOOP')
+  print('LEVEL2 LOOP')
 
 def p_level3(t):
   'level3 : level2 level3_loop'
-  # print('LEVEL3')
+  print('LEVEL3')
 
 def p_level3_loop(t):
   '''level3_loop : empty
                  | relational level3'''
-  # print('LEVEL3 LOOP')
+  print('LEVEL3 LOOP')
 
 def p_loops(t):
   '''loops : while
            | repeat'''
-  # print('LOOPS')
+  print('LOOPS')
 
 def p_main(t):
   'main : MAIN set_main_function block'
@@ -237,7 +238,7 @@ def p_rblock(t):
 def p_content_kleen(t):
   '''content_kleen : empty
                    | content content_kleen'''
-  # print('CONTENT KLEEN')
+  print('CONTENT KLEEN')
 
 def p_read(t):
   'read : READ L_PAREN variable R_PAREN'
@@ -253,8 +254,8 @@ def p_relational(t):
   # print('RELATIONAL')
 
 def p_repeat(t):
-  'repeat : REPEAT L_PAREN POS_INT_CONST R_PAREN block'
-  # print('REPEAT')
+  'repeat : REPEAT L_PAREN INT_CONST R_PAREN block'
+  print('REPEAT')
 
 def p_rfunction(t):
   'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
@@ -282,19 +283,19 @@ def p_sentence(t):
               | write SEMICOLON
               | read SEMICOLON
               | fun_call SEMICOLON'''
-  # print('SENTENCE')
+  print('SENTENCE')
 
 def p_variable(t):
   'variable : ID opt_array'
   global current_id
   current_id = t[1]
   # print('Current id: ', current_id)
-  # print('VARIABLE')
+  print('VARIABLE')
 
 def p_opt_array(t):
   '''opt_array : empty
                | dimensions'''
-  # print('OPT ARRAY')
+  print('OPT ARRAY')
 
 def p_vfunction(t):
   'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
@@ -346,10 +347,10 @@ def p_empty(p):
 # Función de error del parser
 def p_error(p):
     if type(p).__name__ == 'NoneType':
-      # print('Syntax error')
+      print('Syntax error')
       exit(0)
     else:
-      # print('Syntax error in ', p.value, ' at line ', p.lineno)
+      print('Syntax error in ', p.value, ' at line ', p.lineno)
       p.lineno = 0
       exit(0)
 
