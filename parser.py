@@ -162,7 +162,7 @@ def p_function_types(t):
   # print('FUNCTION TYPES')
 
 def p_level0(t):
-  '''level0 : L_PAREN add_bottom expresion R_PAREN
+  '''level0 : L_PAREN add_bottom expresion R_PAREN remove_bottom
             | constant
             | variable
             | fun_call'''
@@ -170,12 +170,17 @@ def p_level0(t):
 
 def p_add_bottom(t):
     'add_bottom : '
-    operators.push
+    operators.push(quadruple_operations.index('('))
 
+def p_remove_bottom(t):
+    'remove_bottom : '
+    operators.pop()
 
 def p_evaluate_level0(t):
     'evaluate_level0 : '
-    if(levels(operators.top()) == 1):
+    global tempCount
+    operators.print()
+    if(operators.size() and levels[operators.top()] == 1):
         #TODO semantic validation
         types.pop()
         types.pop()
@@ -206,7 +211,9 @@ def p_level1_opers(t):
 
 def p_evaluate_level1(t):
     'evaluate_level1 : '
-    if(levels(operators.top()) == 2):
+    global tempCount
+    operators.print()
+    if(operators.size() and levels[operators.top()] == 2):
         #TODO semantic validation
         types.pop()
         types.pop()
@@ -236,7 +243,9 @@ def p_level2_opers(t):
 
 def p_evaluate_level2(t):
     'evaluate_level2 : '
-    if(levels(operators.top()) == 3):
+    global tempCount
+    operators.print()
+    if(operators.size() and levels[operators.top()] == 3):
         #TODO semantic validation
         types.pop()
         types.pop()

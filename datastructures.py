@@ -23,7 +23,9 @@ quadruple_operations = [
         'param',
         'print',
         'read',
-        'write'
+        'write',
+        '(', # 25
+        ')'
         ]
 
 class zStack:
@@ -43,6 +45,13 @@ class zStack:
     # returns wether the stack is empty or not
     def empty(self):
         return (1 if len(self.arr) else 0)
+    # returns the size of the stack
+    def size(self):
+        return len(self.arr)
+    # print the stack
+    def print(self):
+        for x in range(0, len(self.arr)):
+            print('<',x,',',self.arr[x],'>')
 
 class zQueue:
     """Traditional queue implementation"""
