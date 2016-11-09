@@ -17,6 +17,7 @@ tokens = lexer.tokens
 operands = zStack()
 operators = zStack()
 types = zStack()
+tempQuad = Quadruple()
 
 #arithmetic
 tempCount = 1
@@ -113,7 +114,8 @@ def p_dim_loop(t):
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
-  print('EXPRESION: ' + str(t.lexer.lineno))
+  print('EXPRESION: ')
+  QuadrupleList.print()
 
 def p_expresion_loop(t):
   '''expresion_loop : expresion_operations expresion
@@ -170,6 +172,7 @@ def p_level0(t):
 
 def p_add_bottom(t):
     'add_bottom : '
+    print(quadruple_operations.index('('), "<<<<<")
     operators.push(quadruple_operations.index('('))
 
 def p_remove_bottom(t):
@@ -179,7 +182,8 @@ def p_remove_bottom(t):
 def p_evaluate_level0(t):
     'evaluate_level0 : '
     global tempCount
-    operators.print()
+    tempQuad = Quadruple()
+    # operators.print()
     if(operators.size() and levels[operators.top()] == 1):
         #TODO semantic validation
         types.pop()
@@ -189,6 +193,8 @@ def p_evaluate_level0(t):
         operand1 = operands.pop()
         result = 'temp' + str(tempCount)
         tempCount += 1
+        tempQuad.build(operator, operand1, operand2, result)
+        QuadrupleList.push(tempQuad)
         operands.push(result)
         types.push(type(result))
 
@@ -208,11 +214,13 @@ def p_level1_opers(t):
     operators.push(quadruple_operations.index(t[1]))
     types.push(type(t[1]))
     print('LEVEL1 OPERS ', quadruple_operations.index(t[1]))
+    operators.print()
 
 def p_evaluate_level1(t):
     'evaluate_level1 : '
     global tempCount
-    operators.print()
+    tempQuad = Quadruple()
+    # operators.print()
     if(operators.size() and levels[operators.top()] == 2):
         #TODO semantic validation
         types.pop()
@@ -222,6 +230,8 @@ def p_evaluate_level1(t):
         operand1 = operands.pop()
         result = 'temp' + str(tempCount)
         tempCount += 1
+        tempQuad.build(operator, operand1, operand2, result)
+        QuadrupleList.push(tempQuad)
         operands.push(result)
         types.push(type(result))
 
@@ -240,11 +250,13 @@ def p_level2_opers(t):
     operators.push(quadruple_operations.index(t[1]))
     types.push(type(t[1]))
     print('LEVEL2 OPERS ', quadruple_operations.index(t[1]))
+    operators.print()
 
 def p_evaluate_level2(t):
     'evaluate_level2 : '
     global tempCount
-    operators.print()
+    tempQuad = Quadruple()
+    # operators.print()
     if(operators.size() and levels[operators.top()] == 3):
         #TODO semantic validation
         types.pop()
@@ -254,6 +266,8 @@ def p_evaluate_level2(t):
         operand1 = operands.pop()
         result = 'temp' + str(tempCount)
         tempCount += 1
+        tempQuad.build(operator, operand1, operand2, result)
+        QuadrupleList.push(tempQuad)
         operands.push(result)
         types.push(type(result))
 
@@ -276,6 +290,7 @@ def p_level3_opers(t):
   operators.push(quadruple_operations.index(t[1]))
   types.push(type(t[1]))
   print('LEVEL3 OPERS ', quadruple_operations.index(t[1]))
+  operators.print()
 
 def p_loops(t):
   '''loops : while
@@ -420,6 +435,7 @@ def p_print_everything(t):
 def p_empty(p):
   'empty :'
   pass
+
 # Check if symbol is of a certain level
 levels = {0:2, # +
             1:2, # -
@@ -432,9 +448,10 @@ levels = {0:2, # +
             8:3, # <
             9:3, # <=
             10:3, # >=
-            11:3 # <>
+            11:3, # <>
+            25:0, # (
+            26:0  # )
             }
-
 
 # Función de error del parser
 def p_error(p):

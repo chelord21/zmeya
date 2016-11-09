@@ -50,6 +50,7 @@ class zStack:
         return len(self.arr)
     # print the stack
     def print(self):
+        print('---')
         for x in range(0, len(self.arr)):
             print('<',x,',',self.arr[x],'>')
 

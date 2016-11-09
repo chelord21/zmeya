@@ -27,8 +27,8 @@ class Quadruple(object):
 
         Prints all arguments in quadruple
         """
-        op = quadruple_operations.index(self.operator)
-        return [op, self.left, self.right, self.result]
+        op = quadruple_operations[self.operator]
+        print( [op, self.left, self.right, self.result] )
 
 class QuadrupleList(object):
     """ Quadruple LIst
@@ -44,6 +44,15 @@ class QuadrupleList(object):
 
         Push a Quadruple to the list"""
         quad.id = self.next_quadruple
-        next_quadruple += 1
-        quadruple_list.append(quad)
+        self.next_quadruple += 1
+        self.quadruple_list.append(quad)
+
+    @classmethod
+    def print(self):
+        """Print Quadruples
+
+        Prints all the Quadruplues"""
+        print("---")
+        for i in range(0, len(self.quadruple_list)):
+            self.quadruple_list[i].print()
 
