@@ -5,7 +5,7 @@ from function_details import FunctionDetails
 #################
 # Semantic Cube #
 #################
-# Operator values 
+# Operator values
 # 1: +
 # 2: -
 # 3: *

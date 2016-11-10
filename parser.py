@@ -163,6 +163,7 @@ def p_function_types(t):
                     | rfunction'''
   # print('FUNCTION TYPES')
 
+## LEVEL 0 - constant, variable, fun_call, parenthesis
 def p_level0(t):
   '''level0 : L_PAREN add_bottom expresion R_PAREN remove_bottom
             | constant
@@ -181,23 +182,11 @@ def p_remove_bottom(t):
 
 def p_evaluate_level0(t):
     'evaluate_level0 : '
-    global tempCount
-    tempQuad = Quadruple()
-    # operators.print()
     if(operators.size() and levels[operators.top()] == 1):
         #TODO semantic validation
-        types.pop()
-        types.pop()
-        operator = operators.pop()
-        operand2 = operands.pop()
-        operand1 = operands.pop()
-        result = 'temp' + str(tempCount)
-        tempCount += 1
-        tempQuad.build(operator, operand1, operand2, result)
-        QuadrupleList.push(tempQuad)
-        operands.push(result)
-        types.push(type(result))
+        arithmetic_quadruple()
 
+## LEVEL 1 - %, *, /
 def p_level1(t):
   'level1 : level0 evaluate_level0 level1_loop'
   # print('LEVEL1')
@@ -218,23 +207,12 @@ def p_level1_opers(t):
 
 def p_evaluate_level1(t):
     'evaluate_level1 : '
-    global tempCount
-    tempQuad = Quadruple()
     # operators.print()
     if(operators.size() and levels[operators.top()] == 2):
         #TODO semantic validation
-        types.pop()
-        types.pop()
-        operator = operators.pop()
-        operand2 = operands.pop()
-        operand1 = operands.pop()
-        result = 'temp' + str(tempCount)
-        tempCount += 1
-        tempQuad.build(operator, operand1, operand2, result)
-        QuadrupleList.push(tempQuad)
-        operands.push(result)
-        types.push(type(result))
+        arithmetic_quadruple()
 
+## LEVEL 2 - +, -
 def p_level2(t):
   'level2 : level1 evaluate_level1 level2_loop'
   # print('LEVEL2')
@@ -254,23 +232,12 @@ def p_level2_opers(t):
 
 def p_evaluate_level2(t):
     'evaluate_level2 : '
-    global tempCount
-    tempQuad = Quadruple()
     # operators.print()
     if(operators.size() and levels[operators.top()] == 3):
         #TODO semantic validation
-        types.pop()
-        types.pop()
-        operator = operators.pop()
-        operand2 = operands.pop()
-        operand1 = operands.pop()
-        result = 'temp' + str(tempCount)
-        tempCount += 1
-        tempQuad.build(operator, operand1, operand2, result)
-        QuadrupleList.push(tempQuad)
-        operands.push(result)
-        types.push(type(result))
+        arithmetic_quadruple()
 
+## LEVEL 3 - <, >, <=, >=, <>, ==
 def p_level3(t):
   'level3 : level2 evaluate_level2 level3_loop'
   # print('LEVEL3')
@@ -462,6 +429,22 @@ def p_error(p):
       # print('Syntax error in ', p.value, ' at line ', p.lineno)
       p.lineno = 0
       exit(0)
+
+# Helper functions
+def arithmetic_quadruple():
+    global tempCount
+    tempQuad = Quadruple()
+    types.pop()
+    types.pop()
+    operator = operators.pop()
+    operand2 = operands.pop()
+    operand1 = operands.pop()
+    result = 'temp' + str(tempCount)
+    tempCount += 1
+    tempQuad.build(operator, operand1, operand2, result)
+    QuadrupleList.push(tempQuad)
+    operands.push(result)
+    types.push(type(result))
 
 parser = yacc.yacc()
 file = open("inputs/arithmetic.txt", "r")
