@@ -153,3 +153,10 @@ def reset_current_function():
     'params_types' : [],
     'params_ids'   : []
   }
+
+####################
+# Helper Functions #
+####################
+
+def typeString(s):
+    return s.split("'")[1]
