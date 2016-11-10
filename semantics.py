@@ -100,21 +100,14 @@ constants = {}
 int_types = {
   'int'     : 1,
   'float'   : 2,
-  'string'  : 3,
+  'str'     : 3,
   'bool'    : 4,
   'void'    : 5,
   'error'   : -1
 }
 
-# Translation of types to int
-string_types = {
-   1 : 'int',
-   2 : 'float',
-   3 : 'string',
-   4 : 'bool',
-   5 : 'void',
-  -1 : 'error'
-}
+# Translation of int to int
+string_types = {v: k for k, v in int_types.items()}
 
 operations = {
  '+'  : 1,
@@ -134,7 +127,6 @@ operations = {
  '('  : 15,
  ')'  : 16,
 }
-
 inverse_operations = {v: k for k, v in operations.items()}
 
 ######################

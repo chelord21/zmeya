@@ -4,7 +4,6 @@
 # Sergio Cordero a01191167
 
 # Imports
-from semantics import *
 from variable_details import VariableDetails
 from function_details import FunctionDetails
 from quadruple import *
@@ -422,17 +421,25 @@ def p_error(p):
       exit(0)
 
 # Helper functions
+def get_type_from_stack():
+    return str(types.pop()).split("'")[1]
+
 def push_operator(t):
     operators.push(operations[t[1]])
 
 def arithmetic_quadruple():
     global tempCount
     tempQuad = Quadruple()
-    types.pop()
-    types.pop()
+    type2 = get_type_from_stack()
+    type1 = get_type_from_stack()
+
+    print(":: Types2: ", type2, "::", int_types[type2])
+    print(":: Types1: ", type1, "::", int_types[type1])
     operator = operators.pop()
     operand2 = operands.pop()
     operand1 = operands.pop()
+    print(":: Operand2: ", operand2)
+    print(":: Operand1: ", operand1)
     result = 'temp' + str(tempCount)
     tempCount += 1
     tempQuad.build(operator, operand1, operand2, result)
