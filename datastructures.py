@@ -1,33 +1,3 @@
-quadruple_operations = [
-        '+', # 0
-        '-',
-        '*',
-        '/',
-        '%',
-        '=', # 5
-        '==',
-        '>',
-        '<',
-        '<=',
-        '>=', # 10
-        '<>',
-        'and',
-        'or',
-        'goto',
-        'gotof', # 15
-        'gotot',
-        'ret',
-        'return',
-        'gosub',
-        'era', # 20
-        'param',
-        'print',
-        'read',
-        'write',
-        '(', # 25
-        ')'
-        ]
-
 class zStack:
     """Traditional stack implementation"""
     def __init__(self):

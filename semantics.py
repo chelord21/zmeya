@@ -96,6 +96,13 @@ functions = {}
 # Constants dictionary
 constants = {}
 
+type_examples = {
+  'int'    : 1,
+  'float'  : 1.0,
+  'string' : 'a',
+  'bool'   : True
+}
+
 # Translation of types to int
 int_types = {
   'int'     : 1,
@@ -116,23 +123,96 @@ string_types = {
   -1 : 'error'
 }
 
-operators = {
- '+'  : 1,
- '-'  : 2,
- '*'  : 3,
- '/'  : 4,
- '%'  : 5,
- '='  : 6,
- '==' : 7,
- '>'  : 8,
- '<'  : 9,
- '<=' : 10,
- '>=' : 11,
- '<>' : 12,
- '&&' : 13,
- '||' : 14
+operations = {
+ '+'      : 1,
+ '-'      : 2,
+ '*'      : 3,
+ '/'      : 4,
+ '%'      : 5,
+ '='      : 6,
+ '=='     : 7,
+ '>'      : 8,
+ '<'      : 9,
+ '<='     : 10,
+ '>='     : 11,
+ '<>'     : 12,
+ '&&'     : 13,
+ '||'     : 14,
+ 'goto'   : 15,
+ 'gotof'  : 16,
+ 'gotot'  : 17,
+ 'ret'    : 18,
+ 'return' : 19,
+ 'gosub'  : 20,
+ 'era'    : 21,
+ 'param'  : 22,
+ 'print'  : 23,
+ 'read'   : 24,
+ 'write'  : 25,
+ '('      : 26,
+ ')'      : 27
 }
 
+inverse_operations = {
+ 1  : '+',
+ 2  : '-',
+ 3  : '*',
+ 4  : '/',
+ 5  : '%',
+ 6  : '=',
+ 7  : '==',
+ 8  : '>',
+ 9  : '<',
+ 10 : '<=',
+ 11 : '>=',
+ 12 : '<>',
+ 13 : '&&',
+ 14 : '||',
+ 15 : 'goto',
+ 16 : 'gotof',
+ 17 : 'gotot',
+ 18 : 'ret',
+ 19 : 'return',
+ 20 : 'gosub',
+ 21 : 'era',
+ 22 : 'param',
+ 23 : 'print',
+ 24 : 'read',
+ 25 : 'write',
+ 26 : '(',
+ 27 : ')'
+}
+
+quadruple_operations = [
+  '',
+  '+', # 1
+  '-',
+  '*',
+  '/',
+  '%',
+  '=', # 6
+  '==',
+  '>',
+  '<',
+  '<=',
+  '>=', # 11
+  '<>',
+  'and',
+  'or',
+  'goto',
+  'gotof', # 16
+  'gotot',
+  'ret',
+  'return',
+  'gosub',
+  'era', # 21
+  'param',
+  'print',
+  'read',
+  'write',
+  '(', # 2
+  ')'
+]
 ######################
 # Semantic functions #
 ######################

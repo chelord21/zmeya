@@ -23,8 +23,8 @@ tempQuad = Quadruple()
 tempCount = 1
 
 def p_program(t):
-  'program : decl_kleen function_kleen main print_everything'
-  print('PROGRAM')
+  'program : decl_kleen function_kleen main'
+  # print('PROGRAM')
 
 def p_decl_kleen(t):
   '''decl_kleen : empty
@@ -51,7 +51,7 @@ def p_atomic(t):
             | BOOL'''
   global current_type
   current_type = t[1]
-  print('Current type: ', current_type)
+  # print('Current type: ', current_type)
   # print('ATOMIC')
 
 def p_block(t):
@@ -89,14 +89,14 @@ def p_content(t):
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
   global current_scope, current_type, current_id, current_function
-  print('Saving variable in scope: ', current_scope)
+  # print('Saving variable in scope: ', current_scope)
   if current_scope == 'global':
     variables[current_scope][current_id] = VariableDetails(current_type)
-    print('Saved in variables[', current_scope, '][', current_id, ']')
+    # print('Saved in variables[', current_scope, '][', current_id, ']')
     current_type = ''
     current_id = ''
-    print('Current id after save: ', current_id)
-    print('Current id after type: ', current_type)
+    # print('Current id after save: ', current_id)
+    # print('Current id after type: ', current_type)
   else:
     variables[current_scope][current_function['id']][current_id] = VariableDetails(current_type)
     current_type = ''
@@ -114,7 +114,7 @@ def p_dim_loop(t):
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
-  print('EXPRESION: ')
+  # print('EXPRESION: ')
   QuadrupleList.print()
 
 def p_expresion_loop(t):
@@ -125,10 +125,9 @@ def p_expresion_loop(t):
 def p_expresion_operations(t):
     '''expresion_operations : OR
                             | AND'''
-    operators.push(quadruple_operations.index(t[1]))
+    operators.push(operations[t[1]])
     types.push(type(t[1]))
-    print('EXPRESSION OPERS ', quadruple_operations.index(t[1]))
-
+    print('EXPRESSION OPERS ', operations[t[1]])
 
 def p_fun_call(t):
   'fun_call : ID_FUN L_PAREN fun_call_opts R_PAREN'
@@ -152,7 +151,7 @@ def p_set_fun_id(t):
   '''set_fun_id : '''
   global current_function
   current_function['id'] = t[-1]
-  print('Current function id: ', current_function['id'])
+  # print('Current function id: ', current_function['id'])
 
 def p_reset_function(t):
   '''reset_function : '''
@@ -172,8 +171,8 @@ def p_level0(t):
 
 def p_add_bottom(t):
     'add_bottom : '
-    print(quadruple_operations.index('('), "<<<<<")
-    operators.push(quadruple_operations.index('('))
+    print(operations['('], "<<<<<")
+    operators.push(operations['('])
 
 def p_remove_bottom(t):
     'remove_bottom : '
@@ -185,18 +184,23 @@ def p_evaluate_level0(t):
     tempQuad = Quadruple()
     # operators.print()
     if(operators.size() and levels[operators.top()] == 1):
-        #TODO semantic validation
-        types.pop()
-        types.pop()
-        operator = operators.pop()
-        operand2 = operands.pop()
-        operand1 = operands.pop()
-        result = 'temp' + str(tempCount)
-        tempCount += 1
-        tempQuad.build(operator, operand1, operand2, result)
-        QuadrupleList.push(tempQuad)
-        operands.push(result)
-        types.push(type(result))
+        type1 = types.pop()
+        type2 = types.pop()
+        if (type1 == type2):
+          operator = operators.pop()
+          index = str(type1).split("'")[1]
+          if(semantic_cube[int_types[index]][int_types[index]][operator] != -1):
+            operand2 = operands.pop()
+            operand1 = operands.pop()
+            result = 'temp' + str(tempCount)
+            tempCount += 1
+            tempQuad.build(operator, operand1, operand2, result)
+            QuadrupleList.push(tempQuad)
+            operands.push(result)
+            types.push(type(result))
+          else:
+            print('Type mismatch at ', p.lineno)
+            exit(-1)
 
 def p_level1(t):
   'level1 : level0 evaluate_level0 level1_loop'
@@ -211,29 +215,35 @@ def p_level1_opers(t):
     '''level1_opers : MOD
                     | DIV
                     | MULT'''
-    operators.push(quadruple_operations.index(t[1]))
+    operators.push(operations[t[1]])
     types.push(type(t[1]))
-    print('LEVEL1 OPERS ', quadruple_operations.index(t[1]))
+    print('LEVEL1 OPERS ', operations[t[1]])
     operators.print()
 
 def p_evaluate_level1(t):
     'evaluate_level1 : '
-    global tempCount
+    global tempCount, type_examples
     tempQuad = Quadruple()
     # operators.print()
     if(operators.size() and levels[operators.top()] == 2):
         #TODO semantic validation
-        types.pop()
-        types.pop()
-        operator = operators.pop()
-        operand2 = operands.pop()
-        operand1 = operands.pop()
-        result = 'temp' + str(tempCount)
-        tempCount += 1
-        tempQuad.build(operator, operand1, operand2, result)
-        QuadrupleList.push(tempQuad)
-        operands.push(result)
-        types.push(type(result))
+        type1 = types.pop()
+        type2 = types.pop()
+        if (type1 == type2):
+          operator = operators.pop()
+          index = str(type1).split("'")[1]
+          if(semantic_cube[int_types[index]][int_types[index]][inverse_operations[operator]] != -1):
+            operand2 = operands.pop()
+            operand1 = operands.pop()
+            result = 'temp' + str(tempCount)
+            tempCount += 1
+            tempQuad.build(operator, operand1, operand2, result)
+            QuadrupleList.push(tempQuad)
+            operands.push(result)
+            types.push(type(result))
+          else:
+            print('Type mismatch at ', p.lineno)
+            exit(-1)
 
 def p_level2(t):
   'level2 : level1 evaluate_level1 level2_loop'
@@ -247,9 +257,9 @@ def p_level2_loop(t):
 def p_level2_opers(t):
     '''level2_opers : SUM
                     | MINUS'''
-    operators.push(quadruple_operations.index(t[1]))
+    operators.push(operations[t[1]])
     types.push(type(t[1]))
-    print('LEVEL2 OPERS ', quadruple_operations.index(t[1]))
+    print('LEVEL2 OPERS ', operations[t[1]])
     operators.print()
 
 def p_evaluate_level2(t):
@@ -259,17 +269,24 @@ def p_evaluate_level2(t):
     # operators.print()
     if(operators.size() and levels[operators.top()] == 3):
         #TODO semantic validation
-        types.pop()
-        types.pop()
-        operator = operators.pop()
-        operand2 = operands.pop()
-        operand1 = operands.pop()
-        result = 'temp' + str(tempCount)
-        tempCount += 1
-        tempQuad.build(operator, operand1, operand2, result)
-        QuadrupleList.push(tempQuad)
-        operands.push(result)
-        types.push(type(result))
+        type1 = types.pop()
+        type2 = types.pop()
+        if (type1 == type2):
+          operator = operators.pop()
+          index = str(type1).split("'")[1]
+          if(semantic_cube[int_types[index]][int_types[index]][inverse_operations[operator]] != -1):
+            operand2 = operands.pop()
+            operand1 = operands.pop()
+            result = 'temp' + str(tempCount)
+            tempCount += 1
+            tempQuad.build(operator, operand1, operand2, result)
+            QuadrupleList.push(tempQuad)
+            operands.push(result)
+            types.push(type(result))
+          else:
+            print('Type mismatch at ', p.lineno)
+            exit(-1)
+
 
 def p_level3(t):
   'level3 : level2 evaluate_level2 level3_loop'
@@ -287,9 +304,9 @@ def p_level3_opers(t):
                   | GREATER
                   | N_EQUAL
                   | EQUALITY'''
-  operators.push(quadruple_operations.index(t[1]))
+  operators.push(operations[t[1]])
   types.push(type(t[1]))
-  print('LEVEL3 OPERS ', quadruple_operations.index(t[1]))
+  print('LEVEL3 OPERS ', operations[t[1]])
   operators.print()
 
 def p_loops(t):
@@ -378,7 +395,7 @@ def p_variable(t):
   'variable : ID opt_array'
   global current_id
   current_id = t[1]
-  print('Current id: ', current_id)
+  # print('Current id: ', current_id)
     # arithmetic
   operands.push(t[1])
   types.push(type(t[1]))
@@ -397,7 +414,7 @@ def p_set_fun_void(t):
   '''set_fun_void : '''
   global current_function
   current_function['type'] = 'void'
-  print('Current function type: ', current_function['type'])
+  # print('Current function type: ', current_function['type'])
 
 def p_while(t):
   'while : WHILE L_PAREN expresion R_PAREN block'
@@ -417,20 +434,20 @@ def p_add_string_const(t):
   global constants
   constants[t[0]] = 'string'
 
-def p_print_everything(t):
-  '''print_everything : '''
-  global variables, functions, constants
-  print('Variables')
-  for x in variables:
-    print (x)
-    for y in variables[x]:
-        print (y,':',variables[x][y])
-  print('Fucntions')
-  for x in functions:
-    print (x)
-  print('Constants')
-  for x in constants:
-    print (x)
+# def p_print_everything(t):
+#   '''print_everything : '''
+#   global variables, functions, constants
+#   print('Variables')
+#   for x in variables:
+#     print (x)
+#     for y in variables[x]:
+#         print (y,':',variables[x][y])
+#   print('Fucntions')
+#   for x in functions:
+#     print (x)
+#   print('Constants')
+#   for x in constants:
+#     print (x)
 
 def p_empty(p):
   'empty :'
@@ -453,15 +470,17 @@ levels = {0:2, # +
             26:0  # )
             }
 
+
+
 # Función de error del parser
 def p_error(p):
     if type(p).__name__ == 'NoneType':
       # print('Syntax error')
       exit(0)
     else:
-      # print('Syntax error in ', p.value, ' at line ', p.lineno)
+      print('Syntax error in ', p.value, ' at line ', p.lineno)
       p.lineno = 0
-      exit(0)
+      exit(-1)
 
 parser = yacc.yacc()
 file = open("inputs/arithmetic.txt", "r")

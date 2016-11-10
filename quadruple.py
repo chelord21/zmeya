@@ -1,4 +1,5 @@
 from datastructures import *
+from semantics import *
 
 class Quadruple(object):
     """ Quadruple class
@@ -27,7 +28,8 @@ class Quadruple(object):
 
         Prints all arguments in quadruple
         """
-        op = quadruple_operations[self.operator]
+        # op = quadruple_operations[self.operator]
+        op = inverse_operations[self.operator]
         print( [op, self.left, self.right, self.result] )
 
 class QuadrupleList(object):
