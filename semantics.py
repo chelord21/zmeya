@@ -116,7 +116,7 @@ string_types = {
   -1 : 'error'
 }
 
-operators = {
+operations = {
  '+'  : 1,
  '-'  : 2,
  '*'  : 3,
@@ -130,8 +130,12 @@ operators = {
  '>=' : 11,
  '<>' : 12,
  '&&' : 13,
- '||' : 14
+ '||' : 14,
+ '('  : 15,
+ ')'  : 16,
 }
+
+inverse_operations = {v: k for k, v in operations.items()}
 
 ######################
 # Semantic functions #

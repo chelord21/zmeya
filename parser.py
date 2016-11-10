@@ -125,9 +125,7 @@ def p_expresion_loop(t):
 def p_expresion_operations(t):
     '''expresion_operations : OR
                             | AND'''
-    operators.push(quadruple_operations.index(t[1]))
-    types.push(type(t[1]))
-    print('EXPRESSION OPERS ', quadruple_operations.index(t[1]))
+    push_operator(t)
 
 
 def p_fun_call(t):
@@ -173,8 +171,8 @@ def p_level0(t):
 
 def p_add_bottom(t):
     'add_bottom : '
-    print(quadruple_operations.index('('), "<<<<<")
-    operators.push(quadruple_operations.index('('))
+    #operators.push(quadruple_operations.index('('))
+    operators.push(operations['('])
 
 def p_remove_bottom(t):
     'remove_bottom : '
@@ -200,10 +198,7 @@ def p_level1_opers(t):
     '''level1_opers : MOD
                     | DIV
                     | MULT'''
-    operators.push(quadruple_operations.index(t[1]))
-    types.push(type(t[1]))
-    print('LEVEL1 OPERS ', quadruple_operations.index(t[1]))
-    operators.print()
+    push_operator(t)
 
 def p_evaluate_level1(t):
     'evaluate_level1 : '
@@ -225,10 +220,7 @@ def p_level2_loop(t):
 def p_level2_opers(t):
     '''level2_opers : SUM
                     | MINUS'''
-    operators.push(quadruple_operations.index(t[1]))
-    types.push(type(t[1]))
-    print('LEVEL2 OPERS ', quadruple_operations.index(t[1]))
-    operators.print()
+    push_operator(t)
 
 def p_evaluate_level2(t):
     'evaluate_level2 : '
@@ -254,10 +246,7 @@ def p_level3_opers(t):
                   | GREATER
                   | N_EQUAL
                   | EQUALITY'''
-  operators.push(quadruple_operations.index(t[1]))
-  types.push(type(t[1]))
-  print('LEVEL3 OPERS ', quadruple_operations.index(t[1]))
-  operators.print()
+  push_operator(t)
 
 def p_loops(t):
   '''loops : while
@@ -404,20 +393,22 @@ def p_empty(p):
   pass
 
 # Check if symbol is of a certain level
-levels = {0:2, # +
-            1:2, # -
-            2:1, # *
-            3:1, # /
-            4:1, # %
-            5:10, # =
-            6:3, # ==
-            7:3, # >
-            8:3, # <
-            9:3, # <=
-            10:3, # >=
-            11:3, # <>
-            25:0, # (
-            26:0  # )
+levels = {1:2, # +
+            2:2, # -
+            3:1, # *
+            4:1, # /
+            5:1, # %
+            6:10, # =
+            7:3, # ==
+            8:3, # >
+            9:3, # <
+            10:3, # <=
+            11:3, # >=
+            12:3, # <>
+            13:4, # &&
+            14:4, # ||
+            15:0, # (
+            16:0  # )
             }
 
 # Función de error del parser
@@ -431,6 +422,9 @@ def p_error(p):
       exit(0)
 
 # Helper functions
+def push_operator(t):
+    operators.push(operations[t[1]])
+
 def arithmetic_quadruple():
     global tempCount
     tempQuad = Quadruple()
