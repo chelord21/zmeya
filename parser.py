@@ -17,7 +17,6 @@ operands = zStack()
 operators = zStack()
 types = zStack()
 tempQuad = Quadruple()
-
 #arithmetic
 tempCount = 1
 
@@ -58,13 +57,29 @@ def p_block(t):
   # print('BLOCK')
 
 def p_condition(t):
-  'condition : IF L_PAREN expresion R_PAREN oblock else_condition'
+  'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock else_condition if_double_check'
   # print('CONDITION')
+
+def p_if_quadruple(t):
+  '''if_quadruple : '''
+  if_quadruple()
+
+def p_if_double_check(t):
+  '''if_double_check : '''
+  if_double_check()
 
 def p_else_condition(t):
   '''else_condition : empty
-                    | ELSE oblock'''
+                    | ELSE else_quadruple oblock else_finish_quad'''
   # print('ELSE CONDITION')
+
+def p_else_quadruple(t):
+  '''else_quadruple : '''
+  else_quadruple()
+
+def p_else_finish_quad(t):
+  '''else_finish_quad : '''
+  esle_finish_quadruple()
 
 def p_constant(t):
   '''constant : INT_CONST
@@ -253,7 +268,7 @@ def p_loops(t):
   # print('LOOPS')
 
 def p_main(t):
-  'main : MAIN rblock'
+  'main : MAIN block'
   # print('MAIN')
 
 def p_oblock(t):
@@ -372,6 +387,7 @@ def p_add_string_const(t):
   global constants
   constants[t[0]] = 'string'
 
+# Function used to print variables saved
 def p_print_everything(t):
   '''print_everything : '''
   global variables, functions, constants
@@ -427,6 +443,10 @@ def get_type_from_stack():
 def push_operator(t):
     operators.push(operations[t[1]])
 
+##################################
+# Quadruple generation functions #
+##################################
+
 def arithmetic_quadruple():
     global tempCount
     tempQuad = Quadruple()
@@ -447,7 +467,63 @@ def arithmetic_quadruple():
     operands.push(result)
     types.push(type(result))
 
+# Generates gotof quadruple after if condition token is presented
+# jump pending until end of block or else encountered
+def if_quadruple():
+  # global operations
+  jumps = QuadrupleList.jump_stack # Get jump stack from QuadrupleList class
+  jumps.push(QuadrupleList.next_quadruple) # Push next_quadruple to jumps stack to keep track
+  lastQuad = QuadrupleList.quadruple_list[-1] # Get last quadruple
+  lastResult = lastQuad.result # Get result of expression to be evaluated in condition
+  tempQuad = Quadruple()
+  tempQuad.build(operations['gotof'], lastResult, None, None) # Generate gotof quadruple
+  QuadrupleList.push(tempQuad) # Push it to Quadruples list
+  # Debug
+  # print('-----IF GENERATION CHECK-----')
+  # QuadrupleList.print()
+
+# Else encountered. Complete corresponding if quadruple and generate goto quadruple
+def else_quadruple():
+  complete_if()
+  jumps = QuadrupleList.jump_stack # Get jump stack from QuadrupleList class
+  jumps.push(QuadrupleList.next_quadruple) # Push next_quadruple to jumps stack to keep track
+  tempQuad = Quadruple()
+  tempQuad.build(operations['goto'], None, None, None) # Generate goto quadruple
+  QuadrupleList.push(tempQuad) # Push it to quadruples list
+  # Debug
+  # print('-----ELSE CHECK-----')
+  # QuadrupleList.print()
+
+# Completes corresponding if quadruple because block ended or else found
+def complete_if():
+  quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
+  ifQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
+  ifQuad.result = QuadrupleList.next_quadruple # Asign next quadruple to quadruple's result
+  # Debug
+  # print('-----IF COMPLETION CHECK-----')
+  # QuadrupleList.print()
+
+# Check if IF quadruple was completed by an else, if not, completed by end of block
+def if_double_check():
+  if(QuadrupleList.jump_stack.size() > 0):
+    quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
+    ifQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
+    if(ifQuad.result is None): # If IF quadruple is not completed yet by an else token, complete if by end of block
+      complete_if()
+    # Debug
+    # print('-----IF DOUBLE CHECK-----')
+    # QuadrupleList.print()
+
+def esle_finish_quadruple():
+  quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
+  elseQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
+  elseQuad.result = QuadrupleList.next_quadruple # Asign next quadruple to quadruple's result
+  # Debug
+  # print('-----ELSE COMPLETION CHECK-----')
+  # QuadrupleList.print()
+
 parser = yacc.yacc()
-file = open("inputs/arithmetic.txt", "r")
+file = open("inputs/conditions.zm", "r")
 yacc.parse(file.read())
 file.close()
+
