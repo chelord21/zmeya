@@ -355,8 +355,16 @@ def p_set_fun_void(t):
   print('Current function type: ', current_function['type'])
 
 def p_while(t):
-  'while : WHILE L_PAREN expresion R_PAREN block'
+  'while : WHILE L_PAREN expresion while_quadruple R_PAREN block complete_while_quadruple'
   # print('WHILE')
+
+def p_while_quadruple(t):
+  '''while_quadruple : '''
+  while_quadruple()
+
+def p_complete_while_quadruple(t):
+  '''complete_while_quadruple : '''
+  complete_while_quadruple()
 
 def p_write(t):
   'write : WRITE L_PAREN write_opt R_PAREN'
@@ -446,6 +454,26 @@ def arithmetic_quadruple():
     QuadrupleList.push(tempQuad)
     operands.push(result)
     types.push(type(result))
+
+def while_quadruple():
+  lastQuad = QuadrupleList.quadruple_list[-1] # Get last quadruple from list
+  result = lastQuad.result # Get result from last quadruple
+  jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
+  jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
+  tempQuad = Quadruple() # Build empty quadruple
+  tempQuad.build('gotof', result, None, None) # Give data to empty quadruple
+  QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
+  # Debug
+  print('---------WHILE CHECK---------')
+  QuadrupleList.print()
+
+def complete_while_quadruple():
+  tempQuad = Quadruple() # Build empty quadruple
+  tempQuad.build('goto', None, None, None)
+  index = QuadrupleList.jump_stack.pop # Get while quadruple index
+  whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
+  whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
+
 
 parser = yacc.yacc()
 file = open("inputs/arithmetic.txt", "r")
