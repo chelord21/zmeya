@@ -469,10 +469,14 @@ def while_quadruple():
 
 def complete_while_quadruple():
   tempQuad = Quadruple() # Build empty quadruple
-  tempQuad.build('goto', None, None, None)
-  index = QuadrupleList.jump_stack.pop # Get while quadruple index
+  tempQuad.build('goto', None, None, QuadrupleList.jump_stack.top()) # Set jump to check while condition again
+  QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
+  index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
   whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
+  # Debug
+  print('---------WHILE COMPLETION CHECK---------')
+  QuadrupleList.print()
 
 
 parser = yacc.yacc()
