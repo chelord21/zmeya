@@ -302,8 +302,12 @@ def p_read(t):
   # print('READ')
 
 def p_repeat(t):
-  'repeat : REPEAT L_PAREN POS_INT_CONST R_PAREN block'
+  'repeat : REPEAT L_PAREN INT_CONST get_repeat_iterations R_PAREN block'
   # print('REPEAT')
+
+def p_get_repeat_iterations(t):
+  '''get_repeat_iterations : '''
+  repeat_quadruple(t[-1])
 
 def p_rfunction(t):
   'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
@@ -461,23 +465,25 @@ def while_quadruple():
   jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
   jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
   tempQuad = Quadruple() # Build empty quadruple
-  tempQuad.build('gotof', result, None, None) # Give data to empty quadruple
+  tempQuad.build(operations['gotof'], result, None, None) # Give data to empty quadruple
   QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
   # Debug
-  print('---------WHILE CHECK---------')
-  QuadrupleList.print()
+  # print('---------WHILE CHECK---------')
+  # QuadrupleList.print()
 
 def complete_while_quadruple():
   tempQuad = Quadruple() # Build empty quadruple
-  tempQuad.build('goto', None, None, QuadrupleList.jump_stack.top()) # Set jump to check while condition again
+  tempQuad.build(operations['goto'], None, None, QuadrupleList.jump_stack.top()) # Set jump to check while condition again
   QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
   index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
   whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
   # Debug
-  print('---------WHILE COMPLETION CHECK---------')
-  QuadrupleList.print()
+  # print('---------WHILE COMPLETION CHECK---------')
+  # QuadrupleList.print()
 
+def repeat_quadruple(iterations):
+  # TODO: Analyze situation
 
 parser = yacc.yacc()
 file = open("inputs/loops.zm", "r")
