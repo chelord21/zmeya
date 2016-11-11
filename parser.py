@@ -480,6 +480,6 @@ def complete_while_quadruple():
 
 
 parser = yacc.yacc()
-file = open("inputs/arithmetic.txt", "r")
+file = open("inputs/loops.zm", "r")
 yacc.parse(file.read())
 file.close()
