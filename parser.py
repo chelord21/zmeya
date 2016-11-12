@@ -36,12 +36,11 @@ def p_function_kleen(t):
   # print('FUNCTION KLEEN')
 
 def p_assignment(t):
-  'assignment : variable EQUALS assignment_opts'
-  # print('ASSIGNMENT')
+  'assignment : variable EQUALS expresion'
+  assignment_quadruple()
+  QuadrupleList.print()
 
-def p_assignment_opts(t):
-  '''assignment_opts : expresion'''
-  # print('ASSIGNMET OPTS')
+  #print('ASSIGNMENT')
 
 def p_atomic(t):
   '''atomic : STRING
@@ -77,7 +76,7 @@ def p_constant(t):
   operands.push(t[1])
   print(operands.top())
   types.push(type(t[1]))
-  #print('CONSTANT: ' + str(t[1]))
+  # print('CONSTANT: ' + str(t[1]))
 
 def p_content(t):
   '''content : sentence
@@ -125,7 +124,6 @@ def p_expresion_operations(t):
     '''expresion_operations : OR
                             | AND'''
     push_operator(t)
-
 
 def p_fun_call(t):
   'fun_call : ID_FUN L_PAREN fun_call_opts R_PAREN'
@@ -334,7 +332,7 @@ def p_variable(t):
   global current_id
   current_id = t[1]
   print('Current id: ', current_id)
-    # arithmetic
+  #  # arithmetic
   operands.push(t[1])
   types.push(type(t[1]))
   # print('VARIABLE')
@@ -359,13 +357,21 @@ def p_while(t):
   # print('WHILE')
 
 def p_write(t):
+    #TODO writes with parenthesis in the expression don't work
   'write : WRITE L_PAREN write_opt R_PAREN'
   # print('WRITE')
 
 def p_write_opt(t):
-  '''write_opt : expresion
+  '''write_opt : expresion write_expression
                | STRING_CONST add_string_const'''
   # print('WRITE OPT')
+
+def p_write_expression(t):
+    'write_expression : '
+    #print(t[-1], "::::::")
+    write_expression_quadruple(t)
+    QuadrupleList.print()
+    # print('WRITE EXPRESSION')
 
 def p_add_string_const(t):
   '''add_string_const : '''
@@ -426,6 +432,32 @@ def get_type_from_stack():
 
 def push_operator(t):
     operators.push(operations[t[1]])
+
+def write_expression_quadruple(t):
+    print(t[-1], ">>>>>")
+    tempQuad = Quadruple()
+    # TODO semantic validation between current_type and input
+    lastQuad = QuadrupleList.get_last()
+    operand = operands.pop()
+    operation = operations['WRITE']
+    tempQuad.build(operation, None, None, operand)
+    QuadrupleList.push(tempQuad)
+
+def read_quadruple():
+    tempQuad = Quadruple()
+    # TODO semantic validation between current_type and input
+    operation = operations['READ']
+    tempQuad.build(operation, None, None, current_id)
+    QuadrupleList.push(tempQuad)
+
+def assignment_quadruple():
+    tempQuad = Quadruple()
+    typeExp = get_type_from_stack()
+    # TODO semantic validation between typeExp and current_type
+    operation = operations['=']
+    operand = operands.pop()
+    tempQuad.build(operation, operand, None, current_id)
+    QuadrupleList.push(tempQuad)
 
 def arithmetic_quadruple():
     global tempCount

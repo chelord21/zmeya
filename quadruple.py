@@ -49,6 +49,13 @@ class QuadrupleList(object):
         self.quadruple_list.append(quad)
 
     @classmethod
+    def get_last(self):
+        """Get last Quadruple
+
+        Gets the last Quadruple in the list"""
+        return self.quadruple_list[-1]
+
+    @classmethod
     def print(self):
         """Print Quadruples
 
