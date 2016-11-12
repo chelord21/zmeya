@@ -127,7 +127,8 @@ operations = {
  '('      : 15,
  ')'      : 16,
  'goto'   : 17,
- 'gotof'  : 18
+ 'gotof'  : 18,
+ 'gotoz'  : 19
 }
 
 inverse_operations = {v: k for k, v in operations.items()}

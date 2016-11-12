@@ -57,16 +57,16 @@ def p_block(t):
   # print('BLOCK')
 
 def p_condition(t):
-  'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock else_condition if_double_check'
+  'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock complete_if else_condition'
   # print('CONDITION')
 
 def p_if_quadruple(t):
   '''if_quadruple : '''
   if_quadruple()
 
-def p_if_double_check(t):
-  '''if_double_check : '''
-  if_double_check()
+def p_complete_if(t):
+  '''complete_if : '''
+  complete_if()
 
 def p_else_condition(t):
   '''else_condition : empty
@@ -79,7 +79,7 @@ def p_else_quadruple(t):
 
 def p_else_finish_quad(t):
   '''else_finish_quad : '''
-  esle_finish_quadruple()
+  else_finish_quadruple()
 
 def p_constant(t):
   '''constant : INT_CONST
@@ -317,12 +317,17 @@ def p_read(t):
   # print('READ')
 
 def p_repeat(t):
-  'repeat : REPEAT L_PAREN INT_CONST get_repeat_iterations R_PAREN block'
+  'repeat : REPEAT L_PAREN INT_CONST get_repeat_iterations R_PAREN block finish_repeat'
   # print('REPEAT')
 
 def p_get_repeat_iterations(t):
   '''get_repeat_iterations : '''
-  repeat_quadruple(t[-1])
+  repeat_tmp_var(t[-1])
+  repeat_quadruple()
+
+def p_finish_repeat(t):
+  '''finish_repeat : '''
+  complete_repeat()
 
 def p_rfunction(t):
   'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
@@ -408,12 +413,15 @@ def p_print_everything(t):
     print (x)
     for y in variables[x]:
         print (y,':',variables[x][y])
-  print('Fucntions')
+  print('Functions')
   for x in functions:
     print (x)
   print('Constants')
   for x in constants:
     print (x)
+  print('--------------------')
+  print('----QUADRUPLES-----')
+  QuadrupleList.print()
 
 def p_empty(p):
   'empty :'
@@ -504,11 +512,25 @@ def complete_while_quadruple():
   # print('---------WHILE COMPLETION CHECK---------')
   # QuadrupleList.print()
 
+# Creates a variable with initial value = constant inside repeat
+def repeat_tmp_var(iterations):
+  n = iterations
+  # TODO: Save new temp variable in memory with the constant value of iterations
+  # e.g. memory[5000+offset] = iterations
+
 # Generates quadruple for repeat loop
 def repeat_quadruple(iterations):
-  # TODO: Save new variable in memory with the constant value of iterations
-  # e.g. memory[5000+offset] = iterations
-  # Generate new cuadruple
+  tempQuad = Quadruple()
+  # tempQuad.build(operations['gotoz'], tmpx, None, None) # Build quadruple with new varible created as 'condition'
+  # jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
+  # jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
+  # QuadrupleList.push(tempQuad)
+
+# Completetes repeat gotoz quadruple by adding the jump back if 0
+def complete_repeat():
+  index = QuadrupleList.jump_stack.pop() # Get the index of repeat quadruple
+  repeatQuad = QuadrupleList.quadruple_list[index] # Get repeat quadruple from  list
+  repeatQuad.result = QuadrupleList.next_quadruple # Set repeat gotoz jump to next quadruple
 
 # Generates gotof quadruple after if condition token is presented
 # jump pending until end of block or else encountered
@@ -527,7 +549,7 @@ def if_quadruple():
 
 # Else encountered. Complete corresponding if quadruple and generate goto quadruple
 def else_quadruple():
-  complete_if()
+  # complete_if()
   jumps = QuadrupleList.jump_stack # Get jump stack from QuadrupleList class
   jumps.push(QuadrupleList.next_quadruple) # Push next_quadruple to jumps stack to keep track
   tempQuad = Quadruple()
@@ -537,27 +559,16 @@ def else_quadruple():
   # print('-----ELSE CHECK-----')
   # QuadrupleList.print()
 
-# Completes corresponding if quadruple because block ended or else found
+# Completes corresponding if quadruple because block ended
 def complete_if():
   quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
   ifQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
-  ifQuad.result = QuadrupleList.next_quadruple # Asign next quadruple to quadruple's result
+  ifQuad.result = QuadrupleList.next_quadruple + 1 # Asign next quadruple to quadruple's result
   # Debug
   # print('-----IF COMPLETION CHECK-----')
   # QuadrupleList.print()
 
-# Check if IF quadruple was completed by an else, if not, completed by end of block
-def if_double_check():
-  if(QuadrupleList.jump_stack.size() > 0):
-    quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
-    ifQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
-    if(ifQuad.result is None): # If IF quadruple is not completed yet by an else token, complete if by end of block
-      complete_if()
-    # Debug
-    # print('-----IF DOUBLE CHECK-----')
-    # QuadrupleList.print()
-
-def esle_finish_quadruple():
+def else_finish_quadruple():
   quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
   elseQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
   elseQuad.result = QuadrupleList.next_quadruple # Asign next quadruple to quadruple's result
@@ -566,6 +577,6 @@ def esle_finish_quadruple():
   # QuadrupleList.print()
 
 parser = yacc.yacc()
-file = open("inputs/conditions.zm", "r")
+file = open("inputs/conditions_loops.zm", "r")
 yacc.parse(file.read())
 file.close()
