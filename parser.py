@@ -483,7 +483,9 @@ def complete_while_quadruple():
   # QuadrupleList.print()
 
 def repeat_quadruple(iterations):
-  # TODO: Analyze situation
+  # TODO: Save new variable in memory with the constant value of iterations
+  # e.g. memory[5000+offset] = iterations
+  # Generate new cuadruple
 
 parser = yacc.yacc()
 file = open("inputs/loops.zm", "r")
