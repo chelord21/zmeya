@@ -1,0 +1,10 @@
+main{
+  var x: int;
+  x = 2 + 4 / 10 - 5 * (3 + 10) * 8;
+  x = 3 - 2;
+  write(7);
+  write(x);
+  write(2+3);
+  write(66);
+  x = 33+1;
+}
