@@ -251,7 +251,7 @@ def p_loops(t):
   # print('LOOPS')
 
 def p_main(t):
-  'main : MAIN rblock'
+  'main : MAIN block'
   # print('MAIN')
 
 def p_oblock(t):
@@ -369,6 +369,7 @@ def p_write_opt(t):
 def p_write_expression(t):
     'write_expression : '
     #print(t[-1], "::::::")
+    print(t, ">>>>>>>>>> >> >>")
     write_expression_quadruple(t)
     QuadrupleList.print()
     # print('WRITE EXPRESSION')
@@ -434,7 +435,6 @@ def push_operator(t):
     operators.push(operations[t[1]])
 
 def write_expression_quadruple(t):
-    print(t[-1], ">>>>>")
     tempQuad = Quadruple()
     # TODO semantic validation between current_type and input
     lastQuad = QuadrupleList.get_last()
@@ -464,14 +464,13 @@ def arithmetic_quadruple():
     tempQuad = Quadruple()
     type2 = get_type_from_stack()
     type1 = get_type_from_stack()
-
-    print(":: Types2: ", type2, "::", int_types[type2])
-    print(":: Types1: ", type1, "::", int_types[type1])
+    #print(":: Types2: ", type2, "::", int_types[type2])
+    #print(":: Types1: ", type1, "::", int_types[type1])
     operator = operators.pop()
     operand2 = operands.pop()
     operand1 = operands.pop()
-    print(":: Operand2: ", operand2)
-    print(":: Operand1: ", operand1)
+    #print(":: Operand2: ", operand2)
+    #print(":: Operand1: ", operand1)
     result = 'temp' + str(tempCount)
     tempCount += 1
     tempQuad.build(operator, operand1, operand2, result)

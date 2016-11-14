@@ -4,5 +4,7 @@ main{
   x = 3 - 2;
   write(7);
   write(x);
-  write(2+3*4+(2-3));
+  write(2+3);
+  write(66);
+  x = 33+1;
 }
