@@ -88,7 +88,8 @@ def p_declaration(t):
   global current_scope, current_type, current_id, current_function
   # print('Saving variable in scope: ', current_scope)
   if current_scope == 'global':
-    variables[current_scope][current_id] = VariableDetails(current_type)
+    variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
+    # print(variables[current_scope][current_id].vmemory)
     # print('Saved in variables[', current_scope, '][', current_id, ']')
     current_type = ''
     current_id = ''
@@ -96,7 +97,8 @@ def p_declaration(t):
     # print('Current id after type: ', current_type)
   else:
     aux_dict = variables[current_scope]
-    aux_dict[current_function['id']][current_id] = VariableDetails(current_type)
+    aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
+    # print(aux_dict[current_function['id']][current_id].vmemory)
     current_type = ''
     current_id = ''
   print('DECLARATION')
@@ -316,6 +318,7 @@ def p_repeat(t):
 
 def p_rfunction(t):
   'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
+  
   # print('RFUNCTION')
 
 def p_set_fun_type(t):
@@ -396,18 +399,18 @@ def p_add_string_const(t):
 
 def p_print_everything(t):
   '''print_everything : '''
-  # global variables, functions, constants
-  # print('Variables')
-  # for x in variables:
-  #   print (x)
-  #   for y in variables[x]:
-  #       print (y,':',variables[x][y])
-  # print('Fucntions')
-  # for x in functions:
-  #   print (x)
-  # print('Constants')
-  # for x in constants:
-  #   print (x)
+  global variables, functions, constants
+  print('Variables')
+  for x in variables:
+    print (x)
+    for y in variables[x]:
+        print (y,':',variables[x][y])
+  print('Fucntions')
+  for x in functions:
+    print (x)
+  print('Constants')
+  for x in constants:
+    print (x)
 
 def p_empty(p):
   'empty :'
@@ -494,6 +497,6 @@ def arithmetic_quadruple():
     types.push(type(result))
 
 parser = yacc.yacc()
-file = open("inputs/input.txt", "r")
+file = open("inputs/helper.zm", "r")
 yacc.parse(file.read())
 file.close()

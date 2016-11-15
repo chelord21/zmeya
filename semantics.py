@@ -131,6 +131,27 @@ operations = {
 }
 inverse_operations = {v: k for k, v in operations.items()}
 
+#####################
+# Memory management #
+#####################
+
+# Memory counters per data type
+# int, float, string, bool
+global_mem_counter    = [0, 1500, 3000, 4500]
+constants_mem_counter = [6000, 7500, 9000, 10500]
+function_mem_counter  = [12000, 13500, 15000, 16500]
+# Temporals array might not be needed 
+temporals_mem_counter = [18000, 19500, 21000, 22500]
+
+# Actual Memory
+# Lists of list, each list consisting of data types
+# Sublist 0: int, 1: float, 2: string, 3: bool
+global_memory    = [[] for i in range(4)]
+constants_memory = []
+function_memory  = [[] for i in range(4)]
+
+# Function to reset 
+
 ######################
 # Semantic functions #
 ######################
@@ -152,6 +173,61 @@ def reset_current_function():
     'params_types' : [],
     'params_ids'   : []
   }
+
+def reset_function_memory_counters():
+
+# Given scope and data type of variable, return corresponding virtual memory index
+def get_var_mem(scope, vtype):
+  if(scope == 'global'): # Condition to check which counter should be accessed
+    if(vtype == 'int'): # Conditionto check which index should be modified
+      global_mem_counter[0] += 1 # Add one to memory counter
+      if(global_mem_counter[0] > 1499): # Check if too many variables
+        print('Memory Exceeded. You declared too many integers.')
+        exit(0) # Too many variables
+      return global_mem_counter[0] - 1 # Return virtual memory position
+    elif(vtype == 'float'):
+      global_mem_counter[1] += 1
+      if(global_mem_counter[1] > 2999):
+        print('Memory Exceeded. You declared too many floats.')
+        exit(0)
+      return global_mem_counter[1] - 1
+    elif(vtype == 'string'):
+      global_mem_counter[2] += 1
+      if(global_mem_counter[2] > 4499):
+        print('Memory Exceeded. You declared too many strings.')
+        exit(0)
+      return global_mem_counter[2] - 1
+    elif(vtype == 'bool'):
+      global_mem_counter[3] += 1
+      if(global_mem_counter[3] > 5999):
+        print('Memory Exceeded. You declared too many strings.')
+        exit(0)
+      return global_mem_counter[2] - 1
+  else: # If it's not global, then we don't care about the scope. We know it's a function
+    if(vtype == 'int'): # Conditionto check which index should be modified
+      function_mem_counter[0] += 1 # Add one to memory counter
+      if(function_mem_counter[0] > 13499): # Check if too many variables
+        print('Memory Exceeded. You declared too many integers.')
+        exit(0) # Too many variables
+      return function_mem_counter[0] - 1 # Return virtual memory position
+    elif(vtype == 'float'):
+      function_mem_counter[1] += 1
+      if(function_mem_counter[1] > 14999):
+        print('Memory Exceeded. You declared too many floats.')
+        exit(0)
+      return function_mem_counter[1] - 1
+    elif(vtype == 'string'):
+      function_mem_counter[2] += 1
+      if(function_mem_counter[2] > 16499):
+        print('Memory Exceeded. You declared too many strings.')
+        exit(0)
+      return function_mem_counter[2] - 1
+    elif(vtype == 'bool'):
+      function_mem_counter[3] += 1
+      if(function_mem_counter[3] > 17999):
+        print('Memory Exceeded. You declared too many bools.')
+        exit(0)
+      return function_mem_counter[3] - 1
 
 ####################
 # Helper Functions #

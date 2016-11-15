@@ -1,0 +1,13 @@
+var x : int;
+var y : float;
+
+_myf : void() {
+  var z : bool;
+}
+
+main{
+  var w : int;
+  var m : string;
+
+  w = 6;
+}

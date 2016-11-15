@@ -39,7 +39,6 @@ main{
   var true : bool;
   var arr[10] : int;
   p = 10;
-  s = "Hola";
   b = T;
   arr[6] = 6;
   while(p > 10){
