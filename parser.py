@@ -17,7 +17,6 @@ operands = zStack()
 operators = zStack()
 types = zStack()
 tempQuad = Quadruple()
-
 #arithmetic
 tempCount = 1
 
@@ -56,13 +55,29 @@ def p_block(t):
   print('BLOCK')
 
 def p_condition(t):
-  'condition : IF L_PAREN expresion R_PAREN oblock else_condition'
+  'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock complete_if else_condition'
   # print('CONDITION')
+
+def p_if_quadruple(t):
+  '''if_quadruple : '''
+  if_quadruple()
+
+def p_complete_if(t):
+  '''complete_if : '''
+  complete_if()
 
 def p_else_condition(t):
   '''else_condition : empty
-                    | ELSE oblock'''
+                    | ELSE else_quadruple oblock else_finish_quad'''
   # print('ELSE CONDITION')
+
+def p_else_quadruple(t):
+  '''else_quadruple : '''
+  else_quadruple()
+
+def p_else_finish_quad(t):
+  '''else_finish_quad : '''
+  else_finish_quadruple()
 
 def p_constant(t):
   '''constant : INT_CONST
@@ -253,7 +268,6 @@ def p_loops(t):
 
 def p_main(t):
   'main : MAIN set_main_function block'
-
   # print('MAIN')
 
 def p_set_main_function(t):
@@ -316,8 +330,17 @@ def p_read(t):
   # print('READ')
 
 def p_repeat(t):
-  'repeat : REPEAT L_PAREN INT_CONST R_PAREN block'
-  print('REPEAT')
+  'repeat : REPEAT L_PAREN INT_CONST get_repeat_iterations R_PAREN block finish_repeat'
+  # print('REPEAT')
+
+def p_get_repeat_iterations(t):
+  '''get_repeat_iterations : '''
+  repeat_tmp_var(t[-1])
+  repeat_quadruple()
+
+def p_finish_repeat(t):
+  '''finish_repeat : '''
+  complete_repeat()
 
 def p_rfunction(t):
   'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
@@ -374,8 +397,16 @@ def p_set_fun_void(t):
   # print('Current function type: ', current_function['type'])
 
 def p_while(t):
-  'while : WHILE L_PAREN expresion R_PAREN block'
+  'while : WHILE L_PAREN expresion while_quadruple R_PAREN block complete_while_quadruple'
   # print('WHILE')
+
+def p_while_quadruple(t):
+  '''while_quadruple : '''
+  while_quadruple()
+
+def p_complete_while_quadruple(t):
+  '''complete_while_quadruple : '''
+  complete_while_quadruple()
 
 def p_write(t):
     #TODO writes with parenthesis in the expression don't work
@@ -400,6 +431,7 @@ def p_add_string_const(t):
   global constants
   constants[t[-1]] = 'string'
 
+# Function used to print variables saved
 def p_print_everything(t):
   '''print_everything : '''
   global variables, functions, constants
@@ -408,12 +440,15 @@ def p_print_everything(t):
     print (x)
     for y in variables[x]:
         print (y,':',variables[x][y])
-  print('Fucntions')
+  print('Functions')
   for x in functions:
     print (x)
   print('Constants')
   for x in constants:
     print (x)
+  print('--------------------')
+  print('----QUADRUPLES-----')
+  QuadrupleList.print()
 
 def p_empty(p):
   'empty :'
@@ -454,6 +489,10 @@ def get_type_from_stack():
 
 def push_operator(t):
     operators.push(operations[t[1]])
+
+##################################
+# Quadruple generation functions #
+##################################
 
 def write_expression_quadruple(t):
     tempQuad = Quadruple()
@@ -498,6 +537,95 @@ def arithmetic_quadruple():
     QuadrupleList.push(tempQuad)
     operands.push(result)
     types.push(type(result))
+
+# Generates while quaruple with jump pending
+def while_quadruple():
+  lastQuad = QuadrupleList.quadruple_list[-1] # Get last quadruple from list
+  result = lastQuad.result # Get result from last quadruple
+  jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
+  jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
+  tempQuad = Quadruple() # Build empty quadruple
+  tempQuad.build(operations['gotof'], result, None, None) # Give data to empty quadruple
+  QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
+  # Debug
+  # print('---------WHILE CHECK---------')
+  # QuadrupleList.print()
+
+# Put the corresponding jump to while quadruple previously generated
+def complete_while_quadruple():
+  tempQuad = Quadruple() # Build empty quadruple
+  tempQuad.build(operations['goto'], None, None, QuadrupleList.jump_stack.top()) # Set jump to check while condition again
+  QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
+  index = QuadrupleList.jump_stack.pop() # Get while quadruple index
+  whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
+  whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
+  # Debug
+  # print('---------WHILE COMPLETION CHECK---------')
+  # QuadrupleList.print()
+
+# Creates a variable with initial value = constant inside repeat
+def repeat_tmp_var(iterations):
+  n = iterations
+  # TODO: Save new temp variable in memory with the constant value of iterations
+  # e.g. memory[5000+offset] = iterations
+
+# Generates quadruple for repeat loop
+def repeat_quadruple(iterations):
+  tempQuad = Quadruple()
+  # tempQuad.build(operations['gotoz'], tmpx, None, None) # Build quadruple with new varible created as 'condition'
+  # jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
+  # jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
+  # QuadrupleList.push(tempQuad)
+
+# Completetes repeat gotoz quadruple by adding the jump back if 0
+def complete_repeat():
+  index = QuadrupleList.jump_stack.pop() # Get the index of repeat quadruple
+  repeatQuad = QuadrupleList.quadruple_list[index] # Get repeat quadruple from  list
+  repeatQuad.result = QuadrupleList.next_quadruple # Set repeat gotoz jump to next quadruple
+
+# Generates gotof quadruple after if condition token is presented
+# jump pending until end of block or else encountered
+def if_quadruple():
+  # global operations
+  jumps = QuadrupleList.jump_stack # Get jump stack from QuadrupleList class
+  jumps.push(QuadrupleList.next_quadruple) # Push next_quadruple to jumps stack to keep track
+  lastQuad = QuadrupleList.quadruple_list[-1] # Get last quadruple
+  lastResult = lastQuad.result # Get result of expression to be evaluated in condition
+  tempQuad = Quadruple()
+  tempQuad.build(operations['gotof'], lastResult, None, None) # Generate gotof quadruple
+  QuadrupleList.push(tempQuad) # Push it to Quadruples list
+  # Debug
+  # print('-----IF GENERATION CHECK-----')
+  # QuadrupleList.print()
+
+# Else encountered. Complete corresponding if quadruple and generate goto quadruple
+def else_quadruple():
+  # complete_if()
+  jumps = QuadrupleList.jump_stack # Get jump stack from QuadrupleList class
+  jumps.push(QuadrupleList.next_quadruple) # Push next_quadruple to jumps stack to keep track
+  tempQuad = Quadruple()
+  tempQuad.build(operations['goto'], None, None, None) # Generate goto quadruple
+  QuadrupleList.push(tempQuad) # Push it to quadruples list
+  # Debug
+  # print('-----ELSE CHECK-----')
+  # QuadrupleList.print()
+
+# Completes corresponding if quadruple because block ended
+def complete_if():
+  quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
+  ifQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
+  ifQuad.result = QuadrupleList.next_quadruple + 1 # Asign next quadruple to quadruple's result
+  # Debug
+  # print('-----IF COMPLETION CHECK-----')
+  # QuadrupleList.print()
+
+def else_finish_quadruple():
+  quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
+  elseQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
+  elseQuad.result = QuadrupleList.next_quadruple # Asign next quadruple to quadruple's result
+  # Debug
+  # print('-----ELSE COMPLETION CHECK-----')
+  # QuadrupleList.print()
 
 parser = yacc.yacc()
 file = open("inputs/helper.zm", "r")
