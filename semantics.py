@@ -131,7 +131,9 @@ operations = {
  'gotof' : 18,
  'gotoz' : 19,
  'READ'  : 20,
- 'WRITE' : 21
+ 'WRITE' : 21,
+ 'RET'   : 22,
+ 'EP'    : 23
 }
 
 inverse_operations = {v: k for k, v in operations.items()}
@@ -152,7 +154,7 @@ temporals_mem_counter = [18000, 19500, 21000, 22500]
 # Lists of list, each list consisting of data types
 # Sublist 0: int, 1: float, 2: string, 3: bool
 global_memory    = [[] for i in range(4)]
-constants_memory = []
+constants_memory = [[] for i in range(4)]
 function_memory  = [[] for i in range(4)]
 
 # Function that resets virtual memory counters
@@ -178,7 +180,7 @@ def reset_mem_counter():
 # Given scope and data type of variable, return corresponding virtual memory index
 def get_var_mem(scope, vtype):
   if(scope == 'global'): # Condition to check which counter should be accessed
-    if(vtype == 'int'): # Conditionto check which index should be modified
+    if(vtype == 'int'): # Condition to check which index should be modified
       global_mem_counter[0] += 1 # Add one to memory counter
       if(global_mem_counter[0] > 1499): # Check if too many variables
         print('Memory Exceeded. You declared too many integers.')
@@ -201,7 +203,7 @@ def get_var_mem(scope, vtype):
       if(global_mem_counter[3] > 5999):
         print('Memory Exceeded. You declared too many bools.')
         exit(0)
-      return global_mem_counter[2] - 1
+      return global_mem_counter[3] - 1
   else: # If it's not global, then we don't care about the scope. We know it's a function
     if(vtype == 'int'): # Conditionto check which index should be modified
       function_mem_counter[0] += 1 # Add one to memory counter
@@ -227,6 +229,54 @@ def get_var_mem(scope, vtype):
         print('Memory Exceeded. You declared too many bools.')
         exit(0)
       return function_mem_counter[3] - 1
+
+def append_const(cons, cons_type):
+  if(cons_type == 'int'): # Condition to check which index should be modified
+    constants_mem_counter[0] += 1 # Add one to memory counter
+    if(constants_mem_counter[0] > 7499): # Check if too many variables
+      print('Memory Exceeded. You declared too many constant integers.')
+      exit(0) # Too many variables
+    constants_memory[0].append(cons)
+    return constants_mem_counter[0] - 1 # Return virtual memory position
+  elif(cons_type == 'float'):
+    constants_mem_counter[1] += 1
+    if(constants_mem_counter[1] > 8999):
+      print('Memory Exceeded. You declared too many constant floats.')
+      exit(0)
+    constants_memory[1].append(cons)
+    return constants_mem_counter[1] - 1
+  elif(cons_type == 'string'):
+    constants_mem_counter[2] += 1
+    if(constants_mem_counter[2] > 10499):
+      print('Memory Exceeded. You declared too many constant strings.')
+      exit(0)
+    constants_memory[2].append(cons)
+    return constants_mem_counter[2] - 1
+  elif(cons_type == 'bool'):
+    constants_mem_counter[3] += 1
+    if(constants_mem_counter[3] > 11999):
+      print('Memory Exceeded. You declared too many constant bools.')
+      exit(0)
+    constants_memory[3].append(cons)
+    return constants_mem_counter[3] - 1
+
+def get_operand_mem(op):
+  print('Variables')
+  for x in variables:
+    print (x)
+    for y in variables[x]:
+      print (y,':',variables[x][y])
+  var_mem = None
+  if op in variables['function'][current_function['id']]:
+    var_det = variables['function'][current_function['id']][op]
+    var_mem = var_det.vmemory
+  elif op in variables['global']:
+    var_det = variables['global'][op]
+    var_mem = var_det.vmemory
+  else:
+    print('Undefined varibale ', op)
+    exit(0)
+  return var_mem
 
 ######################
 # Semantic functions #

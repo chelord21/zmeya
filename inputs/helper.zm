@@ -1,17 +1,6 @@
 var x : int;
-var y : float;
-
-_myf : void() {
-  var z : bool;
-  z = 6 + 4;
-}
-
-_intFunc : int (){
-  return 4 * 20;
-}
 
 main{
-  var w : int;
-  var m : string;
-  w = 6;
+var x : int;
+  x = x + 4;
 }

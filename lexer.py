@@ -30,8 +30,7 @@ tokens = [
   'EQUALITY', 'GREATER', 'LESS', 'L_EQUAL', 'G_EQUAL',
   'N_EQUAL', 'SEMICOLON', 'COMMA', 'L_PAREN', 'R_PAREN',
   'L_BRACE', 'R_BRACE', 'L_BRACKET', 'R_BRACKET', 'INT_CONST',
-  'STRING_CONST', 'FLOAT_CONST', 'ID_FUN', 'ID', 'POS_INT_CONST',
-  'COLON'
+  'STRING_CONST', 'FLOAT_CONST', 'ID_FUN', 'ID', 'COLON'
   ] + list(reserved.values())
 
 # Token definitions

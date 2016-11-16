@@ -27,7 +27,7 @@ def p_program(t):
 def p_decl_kleen(t):
   '''decl_kleen : empty
                 | declaration decl_kleen'''
-  print('DECL KLEEN')
+  # print('DECL KLEEN')
 
 def p_function_kleen(t):
   '''function_kleen : empty
@@ -37,7 +37,6 @@ def p_function_kleen(t):
 def p_assignment(t):
   'assignment : variable EQUALS expresion'
   assignment_quadruple()
-  QuadrupleList.print()
   #print('ASSIGNMENT')
 
 def p_atomic(t):
@@ -52,7 +51,7 @@ def p_atomic(t):
 
 def p_block(t):
   'block : L_BRACE decl_kleen content_kleen R_BRACE'
-  print('BLOCK')
+  # print('BLOCK')
 
 def p_condition(t):
   'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock complete_if else_condition'
@@ -85,10 +84,13 @@ def p_constant(t):
               | TRUE
               | FALSE'''
   global constants
-  constants[t[1]] = type(t[1])
-    # arithmetic
-  operands.push(t[1])
-  print(operands.top())
+  cons_type = typeString(str(type(t[1]))) # Takes constant data type
+  cons_type = 'bool' if t[1] == 'T' or t[1] == 'F' else cons_type # Make T and F bool type because python recognize them as string
+  constants[t[1]] = cons_type # Save it in constants hash
+  cons_mem = append_const(t[1], cons_type) # Get virtual memory of hash
+  # operands.push(t[1]) # Push literal constant to operands stack
+  operands.push(cons_mem)
+  # print(operands.top())
   types.push(type(t[1]))
   # print('CONSTANT: ' + str(t[1]))
 
@@ -96,41 +98,33 @@ def p_content(t):
   '''content : sentence
              | loops
              | condition'''
-  print('CONTENT')
+  # print('CONTENT')
 
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
   global current_scope, current_type, current_id, current_function
-  # print('Saving variable in scope: ', current_scope)
   if current_scope == 'global':
     variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
-    # print(variables[current_scope][current_id].vmemory)
-    # print('Saved in variables[', current_scope, '][', current_id, ']')
-    current_type = ''
-    current_id = ''
-    # print('Current id after save: ', current_id)
-    # print('Current id after type: ', current_type)
   else:
     aux_dict = variables[current_scope]
     aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
-    # print(aux_dict[current_function['id']][current_id].vmemory)
-    current_type = ''
-    current_id = ''
-  print('DECLARATION')
+  current_type = ''
+  current_id = ''
+  # print('DECLARATION')
 
 def p_dimensions(t):
   'dimensions : L_BRACKET INT_CONST R_BRACKET dim_loop'
-  print('DIMENSIONS')
+  # print('DIMENSIONS')
 
 def p_dim_loop(t):
   '''dim_loop : dimensions
               | empty'''
-  print('DIM LOOP')
+  # print('DIM LOOP')
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
-  print('EXPRESION: ')
-  QuadrupleList.print()
+  # print('EXPRESION: ')
+  # QuadrupleList.print()
 
 def p_expresion_loop(t):
   '''expresion_loop : expresion_operations expresion
@@ -159,8 +153,9 @@ def p_funcall_params_loop(t):
 def p_function(t):
   'function : ID_FUN set_fun_id COLON function_types'
   tempQuad = Quadruple()
-  # TODO: Generate RET quadruple
-  # Rese funtion_memt_counter
+  tempQuad.build(operations['RET'], None, None, None)
+  QuadrupleList.push(tempQuad)
+  reset_mem_counter()
   # print('FUNCTION')
 
 def p_set_fun_id(t):
@@ -180,7 +175,7 @@ def p_level0(t):
             | constant
             | variable
             | fun_call'''
-  print('LEVEL0')
+  # print('LEVEL0')
 
 def p_add_bottom(t):
     'add_bottom : '
@@ -228,7 +223,7 @@ def p_level2(t):
 def p_level2_loop(t):
   '''level2_loop : level2_opers level2
                  | empty'''
-  print('LEVEL2 LOOP')
+  # print('LEVEL2 LOOP')
 
 def p_level2_opers(t):
     '''level2_opers : SUM
@@ -264,20 +259,24 @@ def p_level3_opers(t):
 def p_loops(t):
   '''loops : while
            | repeat'''
-  print('LOOPS')
+  # print('LOOPS')
 
 def p_main(t):
   'main : MAIN set_main_function block'
+  tempQuad = Quadruple()
+  tempQuad.build(operations['EP'], None, None, None)
+  QuadrupleList.push(tempQuad)
   # print('MAIN')
 
 def p_set_main_function(t):
   '''set_main_function : '''
-  global current_function, variables
+  global current_function, variables, current_scope
   current_function['id'] = 'main'
   current_function['type'] = 'void'
   current_function['params_types'] = []
   current_function['params_ids'] = []
   variables['function']['main'] = {}
+  current_scope = 'function'
 
 def p_oblock(t):
   'oblock : L_BRACE content_kleen oblock_opt R_BRACE'
@@ -323,7 +322,7 @@ def p_rblock(t):
 def p_content_kleen(t):
   '''content_kleen : empty
                    | content content_kleen'''
-  print('CONTENT KLEEN')
+  # print('CONTENT KLEEN')
 
 def p_read(t):
   'read : READ L_PAREN variable R_PAREN'
@@ -369,22 +368,20 @@ def p_sentence(t):
               | write SEMICOLON
               | read SEMICOLON
               | fun_call SEMICOLON'''
-  print('SENTENCE')
+  # print('SENTENCE')
 
 def p_variable(t):
   'variable : ID opt_array'
-  global current_id
-  current_id = t[1]
-  # print('Current id: ', current_id)
-  #  # arithmetic
-  operands.push(t[1])
-  types.push(type(t[1]))
+  global current_id, variables
+  current_id = t[1] # Set variable id as current_id 
+  operands.push(t[1]) # Push literal variable id to operands stack
+  types.push(type(t[1])) # Push variable type to types stack
   # print('VARIABLE')
 
 def p_opt_array(t):
   '''opt_array : empty
                | dimensions'''
-  print('OPT ARRAY')
+  # print('OPT ARRAY')
 
 def p_vfunction(t):
   'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
@@ -423,7 +420,7 @@ def p_write_expression(t):
     #print(t[-1], "::::::")
     print(t, ">>>>>>>>>> >> >>")
     write_expression_quadruple(t)
-    QuadrupleList.print()
+    # QuadrupleList.print()
     # print('WRITE EXPRESSION')
 
 def p_add_string_const(t):
@@ -434,7 +431,7 @@ def p_add_string_const(t):
 # Function used to print variables saved
 def p_print_everything(t):
   '''print_everything : '''
-  global variables, functions, constants
+  global variables, functions, constants, constants_memory
   print('Variables')
   for x in variables:
     print (x)
@@ -446,6 +443,11 @@ def p_print_everything(t):
   print('Constants')
   for x in constants:
     print (x)
+  print('--------------------')
+  print('----CONSTANTS-------')
+  for lists in constants_memory:
+    print('Sublist[', lists, ']')
+    print()
   print('--------------------')
   print('----QUADRUPLES-----')
   QuadrupleList.print()
@@ -529,6 +531,12 @@ def arithmetic_quadruple():
     operator = operators.pop()
     operand2 = operands.pop()
     operand1 = operands.pop()
+
+    if(typeString(str(type(operand1))) == 'str'):
+      operand1 = get_operand_mem(operand1)
+    if(typeString(str(type(operand2))) == 'str'):
+      operand2 = get_operand_mem(operand2)
+
     #print(":: Operand2: ", operand2)
     #print(":: Operand1: ", operand1)
     result = 'temp' + str(tempCount)
