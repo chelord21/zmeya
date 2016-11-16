@@ -143,6 +143,9 @@ def p_funcall_params_loop(t):
 
 def p_function(t):
   'function : ID_FUN set_fun_id COLON function_types'
+  tempQuad = Quadruple()
+  # TODO: Generate RET quadruple
+  # Rese funtion_memt_counter
   # print('FUNCTION')
 
 def p_set_fun_id(t):

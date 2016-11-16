@@ -79,7 +79,8 @@ current_function = {
   'id'           : '',
   'type'         : '',
   'params_types' : [],
-  'params_ids'   : []
+  'params_ids'   : [],
+  'mem_needed'   : []
 }
 
 # Variables dictionary with scope
@@ -150,31 +151,25 @@ global_memory    = [[] for i in range(4)]
 constants_memory = []
 function_memory  = [[] for i in range(4)]
 
-# Function to reset 
+# Function that resets virtual memory counters
+# And adds to function details memory needed
+def reset_mem_counter():
+  global function_mem_counter, current_function
+  # Get memory needed per data type for current function
+  memory_needed = [function_mem_counter[0] - 12000,
+                function_mem_counter[1] - 13500,
+                function_mem_counter[2] - 15000,
+                function_mem_counter[3] - 16500]
 
-######################
-# Semantic functions #
-######################
-def add_to_fun_dict():
-  global functions, current_function, current_scope, variables
-  # print('Saving function ', current_function['id'])
-  functions[current_function['id']] = FunctionDetails(current_function['type'],
-                                                      current_function['params_types'],
-                                                      current_function['params_ids'])
-  # print('Saved in functions[', current_function['id'], ']')
-  # print('Current scope: ', current_scope)
-  variables['function'][current_function['id']] = {}
+  # Set memory needed per data type for current function
+  functions[current_function['id']].mem_needed = memory_needed
+  # print(functions[current_function['id']].mem_needed)
 
-def reset_current_function():
-  global current_function
-  current_function = {
-    'id'           : '',
-    'type'         : '',
-    'params_types' : [],
-    'params_ids'   : []
-  }
-
-def reset_function_memory_counters():
+  # Reset function memory counters
+  function_mem_counter[0] = 12000
+  function_mem_counter[1] = 13500
+  function_mem_counter[2] = 15000
+  function_mem_counter[3] = 16500
 
 # Given scope and data type of variable, return corresponding virtual memory index
 def get_var_mem(scope, vtype):
@@ -200,7 +195,7 @@ def get_var_mem(scope, vtype):
     elif(vtype == 'bool'):
       global_mem_counter[3] += 1
       if(global_mem_counter[3] > 5999):
-        print('Memory Exceeded. You declared too many strings.')
+        print('Memory Exceeded. You declared too many bools.')
         exit(0)
       return global_mem_counter[2] - 1
   else: # If it's not global, then we don't care about the scope. We know it's a function
@@ -228,6 +223,35 @@ def get_var_mem(scope, vtype):
         print('Memory Exceeded. You declared too many bools.')
         exit(0)
       return function_mem_counter[3] - 1
+
+######################
+# Semantic functions #
+######################
+
+# Adds function details to function dictionary and adds 
+# function index to variables['function'] dictionary
+def add_to_fun_dict():
+  global functions, current_function, current_scope, variables
+  # print('Saving function ', current_function['id'])
+  # Adds 
+  functions[current_function['id']] = FunctionDetails(current_function['type'],
+                                                      current_function['params_types'],
+                                                      current_function['params_ids'],
+                                                      current_function['mem_needed'])
+  # print('Saved in functions[', current_function['id'], ']')
+  # print('Current scope: ', current_scope)
+  variables['function'][current_function['id']] = {}
+
+# Function that resets current_function details
+def reset_current_function():
+  global current_function
+  current_function = {
+    'id'           : '',
+    'type'         : '',
+    'params_types' : [],
+    'params_ids'   : [],
+    'mem_needed'   : []
+  }
 
 ####################
 # Helper Functions #
