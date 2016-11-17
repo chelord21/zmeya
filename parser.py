@@ -19,6 +19,7 @@ operators = zStack()
 tempQuad = Quadruple()
 #arithmetic
 tempCount = 1
+repeatCount = 1
 
 def p_program(t):
   'program : decl_kleen function_kleen main print_everything'
@@ -346,8 +347,7 @@ def p_repeat(t):
 
 def p_get_repeat_iterations(t):
   '''get_repeat_iterations : '''
-  repeat_tmp_var(t[-1])
-  repeat_quadruple()
+  repeat_quadruple(t[-1])
 
 def p_finish_repeat(t):
   '''finish_repeat : '''
@@ -644,23 +644,28 @@ def complete_while_quadruple():
   # print('---------WHILE COMPLETION CHECK---------')
   # QuadrupleList.print()
 
-# Creates a variable with initial value = constant inside repeat
-def repeat_tmp_var(iterations):
-  n = iterations
-  # TODO: Save new temp variable in memory with the constant value of iterations
-  # e.g. memory[5000+offset] = iterations
-
 # Generates quadruple for repeat loop
 def repeat_quadruple(iterations):
+  # Semantic evaluation
+  if(typeString(str(type(iterations))) != 'int'):
+    print('Repeat loop only accepts integer numbers as parameter.')
+    exit(0)
+  
+  jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
+  jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
   tempQuad = Quadruple()
-  # tempQuad.build(operations['gotoz'], tmpx, None, None) # Build quadruple with new varible created as 'condition'
-  # jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
-  # jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
-  # QuadrupleList.push(tempQuad)
+  tempQuad.build(operations['gotoz'], iterations, None, None) # Build quadruple with new varible created as 'condition'
+  QuadrupleList.push(tempQuad)
 
-# Completetes repeat gotoz quadruple by adding the jump back if 0
-def complete_repeat():
+# Completes repeat gotoz quadruple and generates goto to check integer 'condition' again
+def complete_repeat():  
   index = QuadrupleList.jump_stack.pop() # Get the index of repeat quadruple
+  dimQuad = Quadruple()
+  dimQuad.build(operations['DIM'], None, None, index) # DIM generated to substract one from gotof quadruple generated at beginning of repeat
+  QuadrupleList.push(dimQuad)
+  tempQuad = Quadruple()
+  tempQuad.build(operations['goto'], None, None, index)
+  QuadrupleList.push(tempQuad)
   repeatQuad = QuadrupleList.quadruple_list[index] # Get repeat quadruple from  list
   repeatQuad.result = QuadrupleList.next_quadruple # Set repeat gotoz jump to next quadruple
 

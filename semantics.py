@@ -146,7 +146,8 @@ operations = {
  'READ'  : 20,
  'WRITE' : 21,
  'RET'   : 22,
- 'EP'    : 23
+ 'EP'    : 23, # End Program
+ 'DIM'   : 24  # Substract value of given quadruple by one (used for repeat only)
 }
 
 inverse_operations = {v: k for k, v in operations.items()}
