@@ -35,9 +35,20 @@ def p_function_kleen(t):
   # print('FUNCTION KLEEN')
 
 def p_assignment(t):
-  'assignment : variable EQUALS expresion'
+  'assignment : assignation_variable EQUALS expresion'
   assignment_quadruple()
   # print('ASSIGNMENT')
+
+def p_assignation_variable(t):
+  'assignation_variable : ID ass_opt_array'
+
+def p_ass_opt_array(t):
+  '''ass_opt_array : dimensions
+                   | ass_var_to_stack'''
+
+def p_ass_var_to_stack(t):
+  '''ass_var_to_stack : '''
+  operands.push(t[-1])
 
 def p_atomic(t):
   '''atomic : STRING
@@ -422,7 +433,6 @@ def p_write_opt(t):
 def p_write_expression(t):
     'write_expression : '
     #print(t[-1], "::::::")
-    print(t, ">>>>>>>>>> >> >>")
     write_expression_quadruple(t)
     # QuadrupleList.print()
     # print('WRITE EXPRESSION')
@@ -545,25 +555,37 @@ def read_quadruple():
     QuadrupleList.push(tempQuad)
 
 def assignment_quadruple():
-    global variables, current_function, variables, semantic_cube, current_id
+    global variables, current_function, variables, semantic_cube
     tempQuad = Quadruple()
     operation = operations['=']
     operand = operands.pop()
+    ass_variable = operands.pop()
 
     # Semantic evaluation
-    if(current_id not in variables['function'][current_function['id']]):
-      print('Undefined variable ', current_id)
-      exit(0)
+    if(ass_variable not in variables['function'][current_function['id']]):
+      if(ass_variable not in variables['global']):
+        print('Undefined variable ', ass_variable)
+        exit(0)
+      else:
+        op_type = memory_to_data_type(operand)
+        var_det = variables['global'][ass_variable]
+        var_type = var_det.vtype
+        if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
+          print('Op type: ', op_type, ', Var type: ', var_type)
+          print('Type mismatch in assignment to ', ass_variable)
+          exit(0)
+        tempQuad.build(operation, operand, None, variables['global'][ass_variable].vmemory)
+        QuadrupleList.push(tempQuad)
     else:
       op_type = memory_to_data_type(operand)
-      var_det = variables['function'][current_function['id']][current_id]
+      var_det = variables['function'][current_function['id']][ass_variable]
       var_type = var_det.vtype
       if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
         print('Op type: ', op_type, ', Var type: ', var_type)
-        print('Type mismatch in assignment to ', current_id)
+        print('Type mismatch in assignment to ', ass_variable)
         exit(0)
-    tempQuad.build(operation, operand, None, variables['function'][current_function['id']][current_id].vmemory)
-    QuadrupleList.push(tempQuad)
+      tempQuad.build(operation, operand, None, variables['function'][current_function['id']][ass_variable].vmemory)
+      QuadrupleList.push(tempQuad)
 
 def arithmetic_quadruple():
     global tempCount, semantic_cube, variables, current_function
@@ -572,8 +594,6 @@ def arithmetic_quadruple():
     operator = operators.pop() # Get operator
     operand2 = operands.pop() # Get operands
     operand1 = operands.pop()
-
-    print(operand1, ' ', operand2, ' ', inverse_operations[operator])
 
     if(typeString(str(type(operand1))) == 'str'): # Check if operand1 is a variable
       operand1 = get_operand_mem(operand1, current_function) # Gets memory for the variable
