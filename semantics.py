@@ -145,9 +145,10 @@ operations = {
  'gotoz' : 19,
  'READ'  : 20,
  'WRITE' : 21,
- 'RET'   : 22,
- 'EP'    : 23, # End Program
- 'DIM'   : 24  # Substract value of given quadruple by one (used for repeat only)
+ 'RET'   : 22, # Return value
+ 'EPROC' : 23, # End Procedure
+ 'EPROG' : 24, # End Program
+ 'DIM'   : 25  # Substract value of given quadruple by one (used for repeat only)
 }
 
 inverse_operations = {v: k for k, v in operations.items()}

@@ -165,7 +165,7 @@ def p_funcall_params_loop(t):
 def p_function(t):
   'function : ID_FUN set_fun_id COLON function_types'
   tempQuad = Quadruple()
-  tempQuad.build(operations['RET'], None, None, None)
+  tempQuad.build(operations['EPROC'], None, None, None)
   QuadrupleList.push(tempQuad)
   reset_mem_counter()
   reset_current_function()
@@ -277,7 +277,7 @@ def p_loops(t):
 def p_main(t):
   'main : MAIN set_main_function block'
   tempQuad = Quadruple()
-  tempQuad.build(operations['EP'], None, None, None)
+  tempQuad.build(operations['EPROG'], None, None, None)
   QuadrupleList.push(tempQuad)
   # print('MAIN')
 
@@ -296,9 +296,13 @@ def p_oblock(t):
   # print('OBLOCK')
 
 def p_oblock_opt(t):
-    '''oblock_opt : RETURN expresion SEMICOLON
+    '''oblock_opt : RETURN expresion make_return_quad SEMICOLON
                   | empty'''
     # print('OBLOCK_OPT')
+
+def p_make_return_quad(t):
+  '''make_return_quad : '''
+  return_quadruple()
 
 def p_parameters(t):
   '''parameters : atomic set_param_type variable set_param_name params_loop'''
@@ -329,7 +333,7 @@ def p_params_loop(t):
   # print('PARAMS LOOP')
 
 def p_rblock(t):
-  'rblock : L_BRACE decl_kleen content_kleen RETURN expresion SEMICOLON R_BRACE'
+  'rblock : L_BRACE decl_kleen content_kleen RETURN expresion make_return_quad SEMICOLON R_BRACE'
   # print('RBLOCK')
 
 def p_content_kleen(t):
@@ -712,6 +716,22 @@ def else_finish_quadruple():
   # Debug
   # print('-----ELSE COMPLETION CHECK-----')
   # QuadrupleList.print()
+
+def return_quadruple():
+  global current_function
+  return_val = operands.pop() # Gets value to be returned
+  if(typeString(str(type(return_val))) == 'str'): # Check if value is a variable
+    return_val = get_operand_mem(return_val, current_function) # Gets memory for the variable
+  val_type = memory_to_data_type(return_val)
+
+  # Semantic evaluation
+  if(current_function['type'] != val_type):
+    print('Function ', current_function['id'], ' expecting return value type \'', current_function['type'], '\', but got \'', val_type, '\'')
+    exit(0)
+
+  tempQuad = Quadruple()
+  tempQuad.build(operations['RET'], None, None, return_val)
+  QuadrupleList.push(tempQuad)
 
 parser = yacc.yacc()
 file = open("inputs/input.txt", "r")
