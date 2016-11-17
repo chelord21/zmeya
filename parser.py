@@ -15,7 +15,7 @@ tokens = lexer.tokens
 #Operation structures
 operands = zStack()
 operators = zStack()
-types = zStack()
+# types = zStack()
 tempQuad = Quadruple()
 #arithmetic
 tempCount = 1
@@ -37,7 +37,7 @@ def p_function_kleen(t):
 def p_assignment(t):
   'assignment : variable EQUALS expresion'
   assignment_quadruple()
-  #print('ASSIGNMENT')
+  # print('ASSIGNMENT')
 
 def p_atomic(t):
   '''atomic : STRING
@@ -91,7 +91,7 @@ def p_constant(t):
   # operands.push(t[1]) # Push literal constant to operands stack
   operands.push(cons_mem)
   # print(operands.top())
-  types.push(type(t[1]))
+  # types.push(type(t[1]))
   # print('CONSTANT: ' + str(t[1]))
 
 def p_content(t):
@@ -156,6 +156,7 @@ def p_function(t):
   tempQuad.build(operations['RET'], None, None, None)
   QuadrupleList.push(tempQuad)
   reset_mem_counter()
+  reset_current_function()
   # print('FUNCTION')
 
 def p_set_fun_id(t):
@@ -343,7 +344,6 @@ def p_finish_repeat(t):
 
 def p_rfunction(t):
   'rfunction : atomic set_fun_type L_PAREN opt_params R_PAREN rblock'
-  
   # print('RFUNCTION')
 
 def p_set_fun_type(t):
@@ -357,9 +357,13 @@ def p_set_fun_type(t):
 def p_opt_params(t):
   '''opt_params : empty
                 | parameters'''
+  global current_scope, current_function, variables
   add_to_fun_dict()
-  global current_scope
   current_scope = 'function'
+  p_ids = current_function['params_ids']
+  p_types = current_function['params_types']
+  for i, _aux in enumerate(p_ids):
+    variables['function'][current_function['id']][p_ids[i]] = VariableDetails(p_types[i], get_var_mem('function', p_types[i]))
   # print('New scope: ', current_scope)
   # print('OPT PARAMS')
 
@@ -375,7 +379,7 @@ def p_variable(t):
   global current_id, variables
   current_id = t[1] # Set variable id as current_id 
   operands.push(t[1]) # Push literal variable id to operands stack
-  types.push(type(t[1])) # Push variable type to types stack
+  # types.push(type(t[1])) # Push variable type to types stack
   # print('VARIABLE')
 
 def p_opt_array(t):
@@ -436,7 +440,7 @@ def p_print_everything(t):
   for x in variables:
     print (x)
     for y in variables[x]:
-        print (y,':',variables[x][y])
+      print (y,':',variables[x][y])
   print('Functions')
   for x in functions:
     print (x)
@@ -485,12 +489,40 @@ def p_error(p):
       p.lineno = 0
       exit(0)
 
-# Helper functions
+####################
+# Helper functions #
+####################
+
 def get_type_from_stack():
     return str(types.pop()).split("'")[1]
 
 def push_operator(t):
     operators.push(operations[t[1]])
+
+# Function that resets current_function details
+def reset_current_function():
+  global current_function
+  current_function = {
+    'id'           : '',
+    'type'         : '',
+    'params_types' : [],
+    'params_ids'   : [],
+    'mem_needed'   : []
+  }
+
+# Adds function details to function dictionary and adds 
+# function index to variables['function'] dictionary
+def add_to_fun_dict():
+  global functions, current_function, current_scope, variables
+  # print('Saving function ', current_function['id'])
+  # Adds 
+  functions[current_function['id']] = FunctionDetails(current_function['type'],
+                                                      current_function['params_types'],
+                                                      current_function['params_ids'],
+                                                      current_function['mem_needed'])
+  # print('Saved in functions[', current_function['id'], ']')
+  # print('Current scope: ', current_scope)
+  variables['function'][current_function['id']] = {}
 
 ##################################
 # Quadruple generation functions #
@@ -513,38 +545,59 @@ def read_quadruple():
     QuadrupleList.push(tempQuad)
 
 def assignment_quadruple():
+    global variables, current_function, variables, semantic_cube, current_id
     tempQuad = Quadruple()
-    typeExp = get_type_from_stack()
-    # TODO semantic validation between typeExp and current_type
     operation = operations['=']
     operand = operands.pop()
-    tempQuad.build(operation, operand, None, current_id)
+
+    # Semantic evaluation
+    if(current_id not in variables['function'][current_function['id']]):
+      print('Undefined variable ', current_id)
+      exit(0)
+    else:
+      op_type = memory_to_data_type(operand)
+      var_det = variables['function'][current_function['id']][current_id]
+      var_type = var_det.vtype
+      if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
+        print('Op type: ', op_type, ', Var type: ', var_type)
+        print('Type mismatch in assignment to ', current_id)
+        exit(0)
+    tempQuad.build(operation, operand, None, variables['function'][current_function['id']][current_id].vmemory)
     QuadrupleList.push(tempQuad)
 
 def arithmetic_quadruple():
-    global tempCount
+    global tempCount, semantic_cube, variables, current_function
     tempQuad = Quadruple()
-    type2 = get_type_from_stack()
-    type1 = get_type_from_stack()
-    #print(":: Types2: ", type2, "::", int_types[type2])
-    #print(":: Types1: ", type1, "::", int_types[type1])
-    operator = operators.pop()
-    operand2 = operands.pop()
+
+    operator = operators.pop() # Get operator
+    operand2 = operands.pop() # Get operands
     operand1 = operands.pop()
 
-    if(typeString(str(type(operand1))) == 'str'):
-      operand1 = get_operand_mem(operand1)
-    if(typeString(str(type(operand2))) == 'str'):
-      operand2 = get_operand_mem(operand2)
+    print(operand1, ' ', operand2, ' ', inverse_operations[operator])
 
-    #print(":: Operand2: ", operand2)
-    #print(":: Operand1: ", operand1)
-    result = 'temp' + str(tempCount)
-    tempCount += 1
-    tempQuad.build(operator, operand1, operand2, result)
+    if(typeString(str(type(operand1))) == 'str'): # Check if operand1 is a variable
+      operand1 = get_operand_mem(operand1, current_function) # Gets memory for the variable
+    if(typeString(str(type(operand2))) == 'str'):
+      operand2 = get_operand_mem(operand2, current_function)
+
+    type1 = memory_to_data_type(operand1) # Get type of variable/constant given the memory slot
+    type2 = memory_to_data_type(operand2)
+
+    # Semantic evaluation
+    if(semantic_cube[int_types[type1]][int_types[type2]][operator] == -1):
+      print('Type mismatch between ', type1, ' and ', type2)
+      exit(0)
+
+    newid = 'tmp' + str(tempCount) # Create new tmp
+    tempCount += 1 # Increment tmp counter
+    newid_type = string_types[semantic_cube[int_types[type1]][int_types[type2]][operator]] # Get data type of temporal
+    tmp_mem = get_var_mem(current_scope, newid_type) # Assign memory to tmp
+    aux_dict = variables[current_scope] # Line used to reduce next's line length
+    aux_dict[current_function['id']][newid] = VariableDetails(newid_type, tmp_mem) # Saves tmp in variables hash under current_function 
+
+    tempQuad.build(operator, operand1, operand2, tmp_mem)
     QuadrupleList.push(tempQuad)
-    operands.push(result)
-    types.push(type(result))
+    operands.push(tmp_mem)
 
 # Generates while quaruple with jump pending
 def while_quadruple():
@@ -636,6 +689,6 @@ def else_finish_quadruple():
   # QuadrupleList.print()
 
 parser = yacc.yacc()
-file = open("inputs/helper.zm", "r")
+file = open("inputs/input.txt", "r")
 yacc.parse(file.read())
 file.close()

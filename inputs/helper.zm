@@ -2,5 +2,5 @@ var x : int;
 
 main{
 var x : int;
-  x = x + 4;
+  x = 4 + 6;
 }

@@ -38,6 +38,12 @@ semantic_cube[1][1][3] = 1 # int * int = int
 semantic_cube[1][1][4] = 2 # int / int = float
 semantic_cube[1][1][5] = 2 # int % int = float
 semantic_cube[1][1][6] = 1 # int = int = int
+semantic_cube[1][2][1] = 2 # int + float = float
+semantic_cube[1][2][2] = 2 # int - float = float
+semantic_cube[1][2][3] = 2 # int * float = float
+semantic_cube[1][2][4] = 2 # int / float = float
+semantic_cube[1][2][5] = 2 # int % float = float
+semantic_cube[1][2][6] = 1 # int = float = int
 semantic_cube[1][1][7] = 4 # int == int = bool
 semantic_cube[1][1][8] = 4 # int > int = bool
 semantic_cube[1][1][9] = 4 # int < int = bool
@@ -46,12 +52,18 @@ semantic_cube[1][1][11] = 4 # int >= int = bool
 semantic_cube[1][1][12] = 4 # int <> int = bool
 
 # Float operations
-semantic_cube[2][2][2] = 2 # float + float = float
+semantic_cube[2][2][1] = 2 # float + float = float
 semantic_cube[2][2][2] = 2 # float - float = float
 semantic_cube[2][2][3] = 2 # float * float = float
 semantic_cube[2][2][4] = 2 # float / float = float
 semantic_cube[2][2][5] = 2 # float % float = float
 semantic_cube[2][2][6] = 2 # float = float = float
+semantic_cube[2][1][1] = 2 # float + int = float
+semantic_cube[2][1][2] = 2 # float - int = float
+semantic_cube[2][1][3] = 2 # float * int = float
+semantic_cube[2][1][4] = 2 # float / int = float
+semantic_cube[2][1][5] = 2 # float % int = float
+semantic_cube[2][1][6] = 2 # float = int = float
 semantic_cube[2][2][7] = 4 # float == float = bool
 semantic_cube[2][2][8] = 4 # float > float = bool
 semantic_cube[2][2][9] = 4 # float < float = bool
@@ -60,6 +72,7 @@ semantic_cube[2][2][11] = 4 # float >= float = bool
 semantic_cube[2][2][12] = 4 # float <> float = bool
 
 # Boolean operations
+semantic_cube[4][4][6] = 4 # bool = bool = bool
 semantic_cube[4][4][7] = 4 # bool == bool = bool
 semantic_cube[4][4][8] = 4 # bool > bool = bool
 semantic_cube[4][4][9] = 4 # bool < bool = bool
@@ -107,7 +120,7 @@ int_types = {
   'error'   : -1
 }
 
-# Translation of int to int
+# Translation of types to string
 string_types = {v: k for k, v in int_types.items()}
 
 operations = {
@@ -148,7 +161,7 @@ global_mem_counter    = [0, 1500, 3000, 4500]
 constants_mem_counter = [6000, 7500, 9000, 10500]
 function_mem_counter  = [12000, 13500, 15000, 16500]
 # Temporals array might not be needed 
-temporals_mem_counter = [18000, 19500, 21000, 22500]
+# temporals_mem_counter = [18000, 19500, 21000, 22500]
 
 # Actual Memory
 # Lists of list, each list consisting of data types
@@ -183,50 +196,50 @@ def get_var_mem(scope, vtype):
     if(vtype == 'int'): # Condition to check which index should be modified
       global_mem_counter[0] += 1 # Add one to memory counter
       if(global_mem_counter[0] > 1499): # Check if too many variables
-        print('Memory Exceeded. You declared too many integers.')
+        print('Memory Exceeded.')
         exit(0) # Too many variables
       return global_mem_counter[0] - 1 # Return virtual memory position
     elif(vtype == 'float'):
       global_mem_counter[1] += 1
       if(global_mem_counter[1] > 2999):
-        print('Memory Exceeded. You declared too many floats.')
+        print('Memory Exceeded.')
         exit(0)
       return global_mem_counter[1] - 1
     elif(vtype == 'string'):
       global_mem_counter[2] += 1
       if(global_mem_counter[2] > 4499):
-        print('Memory Exceeded. You declared too many strings.')
+        print('Memory Exceeded.')
         exit(0)
       return global_mem_counter[2] - 1
     elif(vtype == 'bool'):
       global_mem_counter[3] += 1
       if(global_mem_counter[3] > 5999):
-        print('Memory Exceeded. You declared too many bools.')
+        print('Memory Exceeded.')
         exit(0)
       return global_mem_counter[3] - 1
   else: # If it's not global, then we don't care about the scope. We know it's a function
     if(vtype == 'int'): # Conditionto check which index should be modified
       function_mem_counter[0] += 1 # Add one to memory counter
       if(function_mem_counter[0] > 13499): # Check if too many variables
-        print('Memory Exceeded. You declared too many integers.')
+        print('Memory Exceeded.')
         exit(0) # Too many variables
       return function_mem_counter[0] - 1 # Return virtual memory position
     elif(vtype == 'float'):
       function_mem_counter[1] += 1
       if(function_mem_counter[1] > 14999):
-        print('Memory Exceeded. You declared too many floats.')
+        print('Memory Exceeded.')
         exit(0)
       return function_mem_counter[1] - 1
     elif(vtype == 'string'):
       function_mem_counter[2] += 1
       if(function_mem_counter[2] > 16499):
-        print('Memory Exceeded. You declared too many strings.')
+        print('Memory Exceeded.')
         exit(0)
       return function_mem_counter[2] - 1
     elif(vtype == 'bool'):
       function_mem_counter[3] += 1
       if(function_mem_counter[3] > 17999):
-        print('Memory Exceeded. You declared too many bools.')
+        print('Memory Exceeded.')
         exit(0)
       return function_mem_counter[3] - 1
 
@@ -234,38 +247,34 @@ def append_const(cons, cons_type):
   if(cons_type == 'int'): # Condition to check which index should be modified
     constants_mem_counter[0] += 1 # Add one to memory counter
     if(constants_mem_counter[0] > 7499): # Check if too many variables
-      print('Memory Exceeded. You declared too many constant integers.')
+      print('Memory Exceeded.')
       exit(0) # Too many variables
     constants_memory[0].append(cons)
     return constants_mem_counter[0] - 1 # Return virtual memory position
   elif(cons_type == 'float'):
     constants_mem_counter[1] += 1
     if(constants_mem_counter[1] > 8999):
-      print('Memory Exceeded. You declared too many constant floats.')
+      print('Memory Exceeded.')
       exit(0)
     constants_memory[1].append(cons)
     return constants_mem_counter[1] - 1
   elif(cons_type == 'string'):
     constants_mem_counter[2] += 1
     if(constants_mem_counter[2] > 10499):
-      print('Memory Exceeded. You declared too many constant strings.')
+      print('Memory Exceeded.')
       exit(0)
     constants_memory[2].append(cons)
     return constants_mem_counter[2] - 1
   elif(cons_type == 'bool'):
     constants_mem_counter[3] += 1
     if(constants_mem_counter[3] > 11999):
-      print('Memory Exceeded. You declared too many constant bools.')
+      print('Memory Exceeded.')
       exit(0)
     constants_memory[3].append(cons)
     return constants_mem_counter[3] - 1
 
-def get_operand_mem(op):
-  print('Variables')
-  for x in variables:
-    print (x)
-    for y in variables[x]:
-      print (y,':',variables[x][y])
+def get_operand_mem(op, cf):
+  current_function = cf
   var_mem = None
   if op in variables['function'][current_function['id']]:
     var_det = variables['function'][current_function['id']][op]
@@ -274,38 +283,29 @@ def get_operand_mem(op):
     var_det = variables['global'][op]
     var_mem = var_det.vmemory
   else:
-    print('Undefined varibale ', op)
+    print('Undefined variable ', op)
     exit(0)
   return var_mem
+
+def memory_to_data_type(mem):
+  if((mem >= 0 and mem < 1500) or 
+     (mem >= 6000 and mem < 7500) or
+     (mem >= 12000 and mem < 13500)):
+    return 'int'
+  elif((mem >= 1500 and mem < 3000) or 
+       (mem >= 7500 and mem < 9000) or
+       (mem >= 13500 and mem < 15000)):
+    return 'float'
+  elif((mem >= 3000 and mem < 4500) or 
+       (mem >= 9000 and mem < 10500) or
+       (mem >= 15000 and mem < 16500)):
+    return 'str'
+  else:
+    return 'bool'
 
 ######################
 # Semantic functions #
 ######################
-
-# Adds function details to function dictionary and adds 
-# function index to variables['function'] dictionary
-def add_to_fun_dict():
-  global functions, current_function, current_scope, variables
-  # print('Saving function ', current_function['id'])
-  # Adds 
-  functions[current_function['id']] = FunctionDetails(current_function['type'],
-                                                      current_function['params_types'],
-                                                      current_function['params_ids'],
-                                                      current_function['mem_needed'])
-  # print('Saved in functions[', current_function['id'], ']')
-  # print('Current scope: ', current_scope)
-  variables['function'][current_function['id']] = {}
-
-# Function that resets current_function details
-def reset_current_function():
-  global current_function
-  current_function = {
-    'id'           : '',
-    'type'         : '',
-    'params_types' : [],
-    'params_ids'   : [],
-    'mem_needed'   : []
-  }
 
 ####################
 # Helper Functions #

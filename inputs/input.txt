@@ -7,18 +7,16 @@ _voidFunction : void (int w, float p){
   i = w + p - 3;
 }
 
-_voidFunction2 : void (){
-  var z : int;
-  z = 10;
-  _voidFunction( 5, z );
+_voidFunction2 : void (int z){
+  z = 10 + 10;
 }
 
-_intFunction : int ( int m ){
+_intFunction : int (int m){
   m = f + m;
   return m;
 }
 
-_intFunction2 : int( int z ){
+_intFunction2 : int ( int z ){
   if ( z == 1 )
   {
     return 1;
@@ -26,7 +24,7 @@ _intFunction2 : int( int z ){
   else
   {
     z = -4;
-    return _intFunction2(z - 1);
+    return 4;
   }
   return 1;
 }
@@ -37,12 +35,10 @@ _trueFunction : bool(){
 main{
   var p : int;
   var true : bool;
-  var arr[10] : int;
-  p = 10;
-  b = T;
-  arr[6] = 6;
+  p = 4;
+  true = T;
   while(p > 10){
-    if(p % 2 == 0){
+    if(p % 2 == 0.0){
       write(p);
     }
     while(p>0){
@@ -50,13 +46,4 @@ main{
     }
     p = p - 1;
   }
-
-  repeat(4){
-    read(p);
-    write("You wrote");
-    write(p);
-  }
-
-  true = _trueFunction();
-  p = _intFunction2(4) + 1;
 }
