@@ -153,9 +153,16 @@ def p_fun_call(t):
   # print('FUN CALL')
 def p_save_fun_id(t):
   '''save_fun_id : '''
-  global current_fun_call
+  global current_fun_call, variables, functions
   if check_fun_call_exist(t[-1]):
     current_fun_call = t[-1]
+    fun_det = functions[current_fun_call]
+    if(fun_det.ftype == 'void'):
+      print('Function \'', current_fun_call, '\' can\'t be used in assignment because is type \'void\'')
+      exit(0)
+    else:
+      variables['global'][current_fun_call] = get_var_mem('global', fun_det.ftype) # Saves new global variable hashed with id : memory_assigned
+      operands.push(variables['global'][current_fun_call])
   else:
     print('Function ', t[-1], ' was not declared.')
     exit(0)
@@ -582,9 +589,6 @@ def assignment_quadruple():
     ass_variable = operands.pop()
     # QuadrupleList.print()
     # Semantic evaluation
-
-    print('SDKJFHALSDJHFASDHFASDALJDHFLK')
-    print(operand, ass_variable, operands.top())
     if(ass_variable not in variables['function'][current_function['id']]):
       if(ass_variable not in variables['global']):
         print('Undefined variable ', ass_variable)
@@ -675,7 +679,7 @@ def complete_while_quadruple():
   index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
   whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
-  print(operands.pop())
+  operands.pop()
   # Debug
   # print('---------WHILE COMPLETION CHECK---------')
   # QuadrupleList.print()
@@ -737,8 +741,7 @@ def complete_if():
   quadIndex = QuadrupleList.jump_stack.pop() # Get the index of corresponding if quadruple to complete
   ifQuad = QuadrupleList.quadruple_list[quadIndex] # Get the quadruple
   ifQuad.result = QuadrupleList.next_quadruple + 1 # Asign next quadruple to quadruple's result
-  print('KJDSHFLJHSDFLHALDFLHJASD')
-  print(operands.pop())
+  operands.pop()
   # Debug
   # print('-----IF COMPLETION CHECK-----')
   # QuadrupleList.print()
@@ -772,6 +775,7 @@ def add_fun_call_param():
   value = operands.pop() # Get result from expression
   fun_call_params.append(value)
 
+# TODO: Simular parche guadalupano. Ya se actualiza la variable global. Falta sacar el valor y hacerlo un tmp
 def validate_fun_call():
   global fun_call_params, functions, current_fun_call, variables
   types_list = []
@@ -781,7 +785,7 @@ def validate_fun_call():
   fun_details = functions[current_fun_call] # Get function details
   # Semantic evaluation
   if(types_list != fun_details.params_types):
-    print('Function call to ', current_fun_call, ' doesn\'t match declaration in paramters')
+    print('Function call to ', current_fun_call, ' doesn\'t match declaration in parameters')
     exit(0)
 
   fun_first_quad = fun_details.initial_quad # Get first quadruple of the function
