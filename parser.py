@@ -576,18 +576,22 @@ def read_quadruple():
     QuadrupleList.push(tempQuad)
 
 def assignment_quadruple():
-    global variables, current_function, variables, semantic_cube
+    global variables, current_function, variables, semantic_cube, functions
     tempQuad = Quadruple()
     operand = operands.pop()
     ass_variable = operands.pop()
     # QuadrupleList.print()
     # Semantic evaluation
+
+    print('SDKJFHALSDJHFASDHFASDALJDHFLK')
+    print(operand, ass_variable, operands.top())
     if(ass_variable not in variables['function'][current_function['id']]):
       if(ass_variable not in variables['global']):
         print('Undefined variable ', ass_variable)
         exit(0)
       else:
-        # Check for function
+        if(operand in functions):
+          print('hola')
         assignment_helper('global', operand, ass_variable)
     else:
       # Check for function

@@ -52,5 +52,5 @@ main{
     p = p + 1;
   }
   a = 1+1;
-  p = _intFunction2(6);
+  p = 6;
 }
