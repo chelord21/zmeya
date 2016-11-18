@@ -35,6 +35,7 @@ _trueFunction : bool(){
 main{
   var p : int;
   var true : bool;
+  var a : int;
   p = 4;
   true = T;
   while(p > 10){
@@ -50,4 +51,6 @@ main{
   repeat(6){
     p = p + 1;
   }
+  a = 1+1;
+  p = _intFunction2(6);
 }

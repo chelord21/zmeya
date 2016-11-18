@@ -62,5 +62,6 @@ class QuadrupleList(object):
         Prints all the Quadruplues"""
         print("---")
         for i in range(0, len(self.quadruple_list)):
+            print(i)
             self.quadruple_list[i].print()
 
