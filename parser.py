@@ -148,6 +148,25 @@ def p_expresion_operations(t):
                             | AND'''
     push_operator(t)
 
+def p_void_fun_call(t):
+  'void_fun_call : ID_FUN check_void_fun_call L_PAREN fun_call_opts R_PAREN fun_call_quadruples'
+
+def p_check_void_fun_call(t):
+  '''check_void_fun_call : '''
+  global current_fun_call, functions
+  fun_id = t[-1]
+  if check_fun_call_exist(fun_id):
+    fun_det = functions[fun_id]
+    if fun_det.ftype == 'void':
+      current_fun_call = t[-1]
+    else:
+      print('Error calling \'', fun_id, '\'. It should be a void function or assign the return value to a variable.')
+      exit(0)
+  else:
+    print('Function ', t[-1], ' was not declared.')
+    exit(0)
+
+
 def p_fun_call(t):
   'fun_call : ID_FUN save_fun_id L_PAREN fun_call_opts R_PAREN fun_call_quadruples'
   # print('FUN CALL')
@@ -403,7 +422,7 @@ def p_sentence(t):
   '''sentence : assignment SEMICOLON
               | write SEMICOLON
               | read SEMICOLON
-              | fun_call SEMICOLON'''
+              | void_fun_call SEMICOLON'''
   # print('SENTENCE')
 
 def p_variable(t):
@@ -738,7 +757,7 @@ def else_finish_quadruple():
   # QuadrupleList.print()
 
 def return_quadruple():
-  global current_function
+  global current_function, variables
   return_val = operands.pop() # Gets value to be returned
   if(typeString(str(type(return_val))) == 'str'): # Check if value is a variable
     return_val = get_operand_mem(return_val, current_function) # Gets memory for the variable
@@ -748,6 +767,9 @@ def return_quadruple():
   if(current_function['type'] != val_type):
     print('Function ', current_function['id'], ' expecting return value type \'', current_function['type'], '\', but got \'', val_type, '\'')
     exit(0)
+
+  # TODO: INSERT FUCKING PARCHE GUADALUPANO
+
 
   tempQuad = Quadruple()
   tempQuad.build(operations['RET'], None, None, return_val)
