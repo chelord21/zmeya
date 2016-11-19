@@ -149,7 +149,7 @@ def p_expresion_operations(t):
     push_operator(t)
 
 def p_fun_call(t):
-  'fun_call : ID_FUN save_fun_id L_PAREN fun_call_opts R_PAREN'
+  'fun_call : ID_FUN save_fun_id L_PAREN fun_call_opts R_PAREN fun_call_quadruples'
   # print('FUN CALL')
 
 def p_save_fun_id(t):
@@ -163,13 +163,21 @@ def p_save_fun_id(t):
 
 def p_fun_call_opts(t):
   '''fun_call_opts : empty
-                   | expresion funcall_params_loop'''
+                   | expresion set_fun_call_param funcall_params_loop'''
   # print('FUN CALL OPTS')
+
+def p_set_fun_call_param(t):
+  '''set_fun_call_param : '''
+  add_fun_call_param()
 
 def p_funcall_params_loop(t):
   '''funcall_params_loop : empty
                          | COMMA fun_call_opts'''
   # print('FUNCALL PARAMS LOOP')
+
+def p_fun_call_quadruples(t):
+  '''fun_call_quadruples : '''
+  fun_call_quadruples()
 
 def p_function(t):
   'function : ID_FUN set_fun_id COLON function_types'
@@ -744,6 +752,46 @@ def return_quadruple():
   tempQuad = Quadruple()
   tempQuad.build(operations['RET'], None, None, return_val)
   QuadrupleList.push(tempQuad)
+
+def add_fun_call_param():
+  global fun_call_params
+  value = operands.pop() # Get result from expression
+  fun_call_params.append(value)
+
+def fun_call_quadruples():
+  global fun_call_params, functions, current_fun_call, variables
+  types_list = []
+  for val in fun_call_params:
+    types_list.append(typeString(str(type(val)))) # Append into type's list the type of the value sent as param
+  
+  fun_details = functions[current_fun_call] # Get function details
+  # Semantic evaluation
+  if(types_list != fun_details.params_types):
+    print('Function call to ', current_fun_call, ' doesn\'t match declaration in paramters')
+    exit(0)
+
+  fun_first_quad = fun_details.initial_quad # Get first quadruple of the function
+  tmpQuad = Quadruple()
+  tmpQuad.build(operations['ERA'], None, None, current_fun_call)
+  QuadrupleList.push(tmpQuad) # Push to quadruples name of the function for easy search in execution time
+
+  var_mem = None # Variables to be changed with every iteration of next loop
+  var_det = None 
+  # Make all the params quadruples
+  for i, param in enumerate(fun_call_params):
+    tmpQuad2 = Quadruple()
+    var_det = variables['function'][current_fun_call][fun_details.params_names[i]]
+    var_mem = var_det.vmemory
+    tmpQuad2.build(operations['PARAM'], var_mem, None, fun_call_params[i])
+    QuadrupleList.push(tmpQuad2)
+  
+  tmpQuad3 = Quadruple()
+  tmpQuad3.build(operations['gosub'], None, None, fun_first_quad) # Go to subroutine's first quadruple
+  QuadrupleList.push(tmpQuad3)
+  
+  # Reset all memory used to generate quadruples
+  current_fun_call = ''
+  fun_call_params = []
 
 def check_fun_call_exist(id_fun):
   global functions

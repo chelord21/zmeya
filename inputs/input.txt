@@ -50,4 +50,5 @@ main{
   repeat(6){
     p = p + 1;
   }
+  _voidFunction2(5);
 }
