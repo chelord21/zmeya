@@ -769,10 +769,17 @@ def return_quadruple():
     exit(0)
 
   # TODO: INSERT FUCKING PARCHE GUADALUPANO
-
+  # Create global variable
+  global_var_type = current_function['type']
+  global_var_mem = get_var_mem('global', global_var_type)
+  trickQuad = Quadruple()
+  trickQuad.build(operations['='], return_val, None, global_var_mem)
+  QuadrupleList.push(trickQuad)
+  variables['global'][current_function['id']] = VariableDetails(global_var_type, global_var_mem)
+  operands.push(current_function['id'])
 
   tempQuad = Quadruple()
-  tempQuad.build(operations['RET'], None, None, return_val)
+  tempQuad.build(operations['RET'], None, None, global_var_mem)
   QuadrupleList.push(tempQuad)
 
 def add_fun_call_param():

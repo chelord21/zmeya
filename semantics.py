@@ -1,4 +1,6 @@
 from function_details import FunctionDetails
+from quadruple import *
+
 #
 # Semantic anaĺysis and structures
 #
@@ -291,8 +293,19 @@ def get_operand_mem(op, cf):
     var_det = variables['function'][current_function['id']][op]
     var_mem = var_det.vmemory
   elif op in variables['global']:
-    var_det = variables['global'][op]
-    var_mem = var_det.vmemory
+    if op[0] == '_':
+      # TODO: Generate new local tmp variable with return value of function
+      # and generate quadruple to assign the current value of global variable to tmp variable
+      global_var_det = variables['global'][op]
+      global_var_type = global_var_det.vtype
+      global_var_mem = global_var_det.vmemory
+      var_mem = get_var_mem('function', global_var_type)
+      tmpQuad = Quadruple()
+      tmpQuad.build(operations['='], global_var_mem, None, var_mem)
+      QuadrupleList.push(tmpQuad)
+    else:
+      var_det = variables['global'][op]
+      var_mem = var_det.vmemory
   else:
     print('Undefined variable ', op)
     exit(0)
