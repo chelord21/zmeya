@@ -149,8 +149,17 @@ def p_expresion_operations(t):
     push_operator(t)
 
 def p_fun_call(t):
-  'fun_call : ID_FUN L_PAREN fun_call_opts R_PAREN'
+  'fun_call : ID_FUN save_fun_id L_PAREN fun_call_opts R_PAREN'
   # print('FUN CALL')
+
+def p_save_fun_id(t):
+  '''save_fun_id : '''
+  global current_fun_call
+  if check_fun_call_exist(t[-1]):
+    current_fun_call = t[-1]
+  else:
+    print('Function ', t[-1], ' was not declared.')
+    exit(0)
 
 def p_fun_call_opts(t):
   '''fun_call_opts : empty
@@ -533,7 +542,8 @@ def add_to_fun_dict():
   functions[current_function['id']] = FunctionDetails(current_function['type'],
                                                       current_function['params_types'],
                                                       current_function['params_ids'],
-                                                      current_function['mem_needed'])
+                                                      current_function['mem_needed'],
+                                                      QuadrupleList.next_quadruple)
   # print('Saved in functions[', current_function['id'], ']')
   # print('Current scope: ', current_scope)
   variables['function'][current_function['id']] = {}
@@ -644,6 +654,7 @@ def complete_while_quadruple():
   index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
   whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
+  operands.pop()
   # Debug
   # print('---------WHILE COMPLETION CHECK---------')
   # QuadrupleList.print()
@@ -684,6 +695,7 @@ def if_quadruple():
   tempQuad = Quadruple()
   tempQuad.build(operations['gotof'], lastResult, None, None) # Generate gotof quadruple
   QuadrupleList.push(tempQuad) # Push it to Quadruples list
+  operands.pop()
   # Debug
   # print('-----IF GENERATION CHECK-----')
   # QuadrupleList.print()
@@ -732,6 +744,10 @@ def return_quadruple():
   tempQuad = Quadruple()
   tempQuad.build(operations['RET'], None, None, return_val)
   QuadrupleList.push(tempQuad)
+
+def check_fun_call_exist(id_fun):
+  global functions
+  return id_fun in functions
 
 parser = yacc.yacc()
 file = open("inputs/input.txt", "r")
