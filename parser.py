@@ -66,7 +66,7 @@ def p_block(t):
   # print('BLOCK')
 
 def p_condition(t):
-  'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock complete_if else_condition'
+  'condition : IF L_PAREN add_bottom expresion R_PAREN remove_bottom if_quadruple oblock complete_if else_condition'
   # print('CONDITION')
 
 def p_if_quadruple(t):
@@ -148,19 +148,55 @@ def p_expresion_operations(t):
                             | AND'''
     push_operator(t)
 
+def p_void_fun_call(t):
+  'void_fun_call : ID_FUN check_void_fun_call L_PAREN add_bottom fun_call_opts R_PAREN fun_call_quadruples'
+
+def p_check_void_fun_call(t):
+  '''check_void_fun_call : '''
+  global current_fun_call, functions
+  fun_id = t[-1]
+  if check_fun_call_exist(fun_id):
+    fun_det = functions[fun_id]
+    if fun_det.ftype == 'void':
+      current_fun_call = t[-1]
+    else:
+      print('Error calling \'', fun_id, '\'. It should be a void function or assign the return value to a variable.')
+      exit(0)
+  else:
+    print('Function ', t[-1], ' was not declared.')
+    exit(0)
+
+
 def p_fun_call(t):
-  'fun_call : ID_FUN L_PAREN fun_call_opts R_PAREN'
-  # print('FUN CALL')
+  'fun_call : ID_FUN save_fun_id L_PAREN add_bottom fun_call_opts R_PAREN remove_bottom fun_call_quadruples'
+  print('FUN CALL')
+
+def p_save_fun_id(t):
+  '''save_fun_id : '''
+  global current_fun_call
+  if check_fun_call_exist(t[-1]):
+    current_fun_call = t[-1]
+  else:
+    print('Function ', t[-1], ' was not declared.')
+    exit(0)
 
 def p_fun_call_opts(t):
   '''fun_call_opts : empty
-                   | expresion funcall_params_loop'''
+                   | expresion set_fun_call_param funcall_params_loop'''
   # print('FUN CALL OPTS')
+
+def p_set_fun_call_param(t):
+  '''set_fun_call_param : '''
+  add_fun_call_param()
 
 def p_funcall_params_loop(t):
   '''funcall_params_loop : empty
                          | COMMA fun_call_opts'''
   # print('FUNCALL PARAMS LOOP')
+
+def p_fun_call_quadruples(t):
+  '''fun_call_quadruples : '''
+  fun_call_quadruples()
 
 def p_function(t):
   'function : ID_FUN set_fun_id COLON function_types'
@@ -187,8 +223,12 @@ def p_level0(t):
   '''level0 : L_PAREN add_bottom expresion R_PAREN remove_bottom
             | constant
             | variable
-            | fun_call'''
+            | fun_call guadalupean_patch'''
   # print('LEVEL0')
+
+def p_guadalupean_patch(t):
+  '''guadalupean_patch : '''
+  guadalupean_patch()
 
 def p_add_bottom(t):
     'add_bottom : '
@@ -201,7 +241,7 @@ def p_remove_bottom(t):
 
 def p_evaluate_level0(t):
     'evaluate_level0 : '
-    if(operators.size() and levels[operators.top()] == 1):
+    if(operators.size() and levels[operators.top()] >= 1):
         #TODO semantic validation
         arithmetic_quadruple()
 
@@ -224,7 +264,7 @@ def p_level1_opers(t):
 def p_evaluate_level1(t):
     'evaluate_level1 : '
     # operators.print()
-    if(operators.size() and levels[operators.top()] == 2):
+    if(operators.size() and levels[operators.top()] >= 2):
         #TODO semantic validation
         arithmetic_quadruple()
 
@@ -246,7 +286,7 @@ def p_level2_opers(t):
 def p_evaluate_level2(t):
     'evaluate_level2 : '
     # operators.print()
-    if(operators.size() and levels[operators.top()] == 3):
+    if(operators.size() and levels[operators.top()] >= 3):
         #TODO semantic validation
         arithmetic_quadruple()
 
@@ -346,7 +386,7 @@ def p_read(t):
   # print('READ')
 
 def p_repeat(t):
-  'repeat : REPEAT L_PAREN INT_CONST get_repeat_iterations R_PAREN block finish_repeat'
+  'repeat : REPEAT L_PAREN add_bottom INT_CONST get_repeat_iterations R_PAREN remove_bottom block finish_repeat'
   # print('REPEAT')
 
 def p_get_repeat_iterations(t):
@@ -386,7 +426,7 @@ def p_sentence(t):
   '''sentence : assignment SEMICOLON
               | write SEMICOLON
               | read SEMICOLON
-              | fun_call SEMICOLON'''
+              | void_fun_call SEMICOLON'''
   # print('SENTENCE')
 
 def p_variable(t):
@@ -413,7 +453,7 @@ def p_set_fun_void(t):
   # print('Current function type: ', current_function['type'])
 
 def p_while(t):
-  'while : WHILE L_PAREN expresion while_quadruple R_PAREN block complete_while_quadruple'
+  'while : WHILE L_PAREN add_bottom expresion while_quadruple R_PAREN remove_bottom block complete_while_quadruple'
   # print('WHILE')
 
 def p_while_quadruple(t):
@@ -426,7 +466,7 @@ def p_complete_while_quadruple(t):
 
 def p_write(t):
     #TODO writes with parenthesis in the expression don't work
-  'write : WRITE L_PAREN write_opt R_PAREN'
+  'write : WRITE L_PAREN add_bottom write_opt R_PAREN remove_bottom'
   # print('WRITE')
 
 def p_write_opt(t):
@@ -475,7 +515,7 @@ def p_empty(p):
   pass
 
 # Check if symbol is of a certain level
-levels = {1:2, # +
+levels = {  1:2, # +
             2:2, # -
             3:1, # *
             4:1, # /
@@ -533,7 +573,8 @@ def add_to_fun_dict():
   functions[current_function['id']] = FunctionDetails(current_function['type'],
                                                       current_function['params_types'],
                                                       current_function['params_ids'],
-                                                      current_function['mem_needed'])
+                                                      current_function['mem_needed'],
+                                                      QuadrupleList.next_quadruple)
   # print('Saved in functions[', current_function['id'], ']')
   # print('Current scope: ', current_scope)
   variables['function'][current_function['id']] = {}
@@ -575,7 +616,6 @@ def assignment_quadruple():
         var_det = variables['global'][ass_variable]
         var_type = var_det.vtype
         if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
-          print('Op type: ', op_type, ', Var type: ', var_type)
           print('Type mismatch in assignment to ', ass_variable)
           exit(0)
         tempQuad.build(operation, operand, None, variables['global'][ass_variable].vmemory)
@@ -585,7 +625,6 @@ def assignment_quadruple():
       var_det = variables['function'][current_function['id']][ass_variable]
       var_type = var_det.vtype
       if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
-        print('Op type: ', op_type, ', Var type: ', var_type)
         print('Type mismatch in assignment to ', ass_variable)
         exit(0)
       tempQuad.build(operation, operand, None, variables['function'][current_function['id']][ass_variable].vmemory)
@@ -644,6 +683,7 @@ def complete_while_quadruple():
   index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
   whileQuad.result = QuadrupleList.next_quadruple # Set while gotof jump to next quadruple
+  operands.pop()
   # Debug
   # print('---------WHILE COMPLETION CHECK---------')
   # QuadrupleList.print()
@@ -684,6 +724,7 @@ def if_quadruple():
   tempQuad = Quadruple()
   tempQuad.build(operations['gotof'], lastResult, None, None) # Generate gotof quadruple
   QuadrupleList.push(tempQuad) # Push it to Quadruples list
+  operands.pop()
   # Debug
   # print('-----IF GENERATION CHECK-----')
   # QuadrupleList.print()
@@ -718,10 +759,10 @@ def else_finish_quadruple():
   # QuadrupleList.print()
 
 def return_quadruple():
-  global current_function
+  global current_function, variables
   return_val = operands.pop() # Gets value to be returned
   if(typeString(str(type(return_val))) == 'str'): # Check if value is a variable
-    return_val = get_operand_mem(return_val, current_function) # Gets memory for the variable
+    return_val = get_operand_mem(return_val, current_function) # Gets local memory for the variable
   val_type = memory_to_data_type(return_val)
 
   # Semantic evaluation
@@ -729,11 +770,87 @@ def return_quadruple():
     print('Function ', current_function['id'], ' expecting return value type \'', current_function['type'], '\', but got \'', val_type, '\'')
     exit(0)
 
+  # TODO: INSERT FUCKING PARCHE GUADALUPANO
+  # Create global variable
+  global_var_type = current_function['type']
+  global_var_mem = get_var_mem('global', global_var_type)
+  trickQuad = Quadruple()
+  trickQuad.build(operations['='], return_val, None, global_var_mem)
+  QuadrupleList.push(trickQuad)
+  variables['global'][current_function['id']] = VariableDetails(global_var_type, global_var_mem)
+  operands.push(current_function['id'])
+
   tempQuad = Quadruple()
-  tempQuad.build(operations['RET'], None, None, return_val)
+  tempQuad.build(operations['RET'], None, None, global_var_mem)
   QuadrupleList.push(tempQuad)
 
+def add_fun_call_param():
+  global fun_call_params
+  print('Tope de pila antes de meter a params', operands.top())
+  value = operands.pop() # Get result from expression
+  fun_call_params.append(value)
+  print('Tope de pila después de meter a params', operands.top())
+
+
+def fun_call_quadruples():
+  global fun_call_params, functions, current_fun_call, variables
+  types_list = []
+  for val in fun_call_params:
+    types_list.append(typeString(str(type(val)))) # Append into type's list the type of the value sent as param
+    print("Calling : ", current_fun_call, " with ", types_list)
+
+  QuadrupleList.print()
+  fun_details = functions[current_fun_call] # Get function details
+  # Semantic evaluation
+  if(types_list != fun_details.params_types):
+    print('Function call to ', current_fun_call, ' doesn\'t match declaration in paramters')
+    exit(0)
+
+  fun_first_quad = fun_details.initial_quad # Get first quadruple of the function
+  tmpQuad = Quadruple()
+  tmpQuad.build(operations['ERA'], None, None, current_fun_call)
+  QuadrupleList.push(tmpQuad) # Push to quadruples name of the function for easy search in execution time
+
+  var_mem = None # Variables to be changed with every iteration of next loop
+  var_det = None
+  # Make all the params quadruples
+  for i, param in enumerate(fun_call_params):
+    tmpQuad2 = Quadruple()
+    var_det = variables['function'][current_fun_call][fun_details.params_names[i]]
+    var_mem = var_det.vmemory
+    tmpQuad2.build(operations['PARAM'], var_mem, None, fun_call_params[i])
+    QuadrupleList.push(tmpQuad2)
+
+  tmpQuad3 = Quadruple()
+  tmpQuad3.build(operations['gosub'], None, None, fun_first_quad) # Go to subroutine's first quadruple
+  QuadrupleList.push(tmpQuad3)
+
+  # Reset all memory used to generate quadruples
+  # current_fun_call = ''
+  # fun_call_params = []
+
+def guadalupean_patch():
+  # var_id = operands.pop() # Gets function_id pushed in return quadruple function
+  global current_fun_call, fun_call_params
+  var_det = variables['global'][current_fun_call]
+  global_var_mem = var_det.vmemory # Gets global memory where value was saved
+  # Generate tmp to assign return value in local scope and push it to operands
+  local_var_mem = get_var_mem('function', var_det.vtype)
+  operands.push(local_var_mem)
+  # Make assign quadruple and push it to list
+  tmpQuad = Quadruple()
+  tmpQuad.build(operations['='], global_var_mem, None, local_var_mem)
+  QuadrupleList.push(tmpQuad)
+
+  # Reset all memory used to generate quadruples
+  #current_fun_call = ''
+  fun_call_params = []
+
+def check_fun_call_exist(id_fun):
+  global functions
+  return id_fun in functions
+
 parser = yacc.yacc()
-file = open("inputs/print.zm", "r")
+file = open("inputs/fun_calls.zm", "r")
 yacc.parse(file.read())
 file.close()

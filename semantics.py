@@ -1,4 +1,6 @@
 from function_details import FunctionDetails
+from quadruple import *
+
 #
 # Semantic anaĺysis and structures
 #
@@ -110,6 +112,12 @@ functions = {}
 # Constants dictionary
 constants = {}
 
+# Function call parameters
+fun_call_params = []
+
+# Current function call auxiliar variable
+current_fun_call = ''
+
 # Translation of types to int
 int_types = {
   'int'     : 1,
@@ -148,7 +156,10 @@ operations = {
  'RET'   : 22, # Return value
  'EPROC' : 23, # End Procedure
  'EPROG' : 24, # End Program
- 'DIM'   : 25  # Substract value of given quadruple by one (used for repeat only)
+ 'DIM'   : 25,  # Substract value of given quadruple by one (used for repeat only)
+ 'PARAM' : 26,
+ 'gosub' : 27,
+ 'ERA'   : 28 
 }
 
 inverse_operations = {v: k for k, v in operations.items()}
@@ -282,6 +293,16 @@ def get_operand_mem(op, cf):
     var_det = variables['function'][current_function['id']][op]
     var_mem = var_det.vmemory
   elif op in variables['global']:
+  #   if op[0] == '_':
+  #     # TODO: Generate new local tmp variable with return value of function
+  #     # and generate quadruple to assign the current value of global variable to tmp variable
+  #     global_var_det = variables['global'][op]
+  #     global_var_type = global_var_det.vtype
+  #     global_var_mem = global_var_det.vmemory
+  #     var_mem = get_var_mem('function', global_var_type)
+  #     tmpQuad = Quadruple()
+  #     tmpQuad.build(operations['='], global_var_mem, None, var_mem)
+  # else:
     var_det = variables['global'][op]
     var_mem = var_det.vmemory
   else:

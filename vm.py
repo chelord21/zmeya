@@ -23,6 +23,7 @@ def get_sublist(memAddress):
     elif(memAddress < 6000):
         return 3 #bool
 
+# Returns [scope, data_type, real mem address]
 def get_address(memAddress):
     if(get_scope(memAddress) == 0):
         if(get_sublist(memAddress) == 0): # G I
@@ -81,11 +82,13 @@ def get_value(memAddress):
         elif(get_sublist(memAddress) == 3): # L B
             return function_memory[1][memAddress-16500]
 
+# TODO: Load memory needed for globals, constants & local
+
 for quad in QuadrupleList.quadruple_list:
     if quad.operator == 1: # +
         resultAddr = getAddress(quad.result)
-        if(resultAddr[0] == 0):
-            global_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left) + get_value(quad.right)
+        
+
         print("+")
     elif quad.operator == 2: # -
         print("-")
