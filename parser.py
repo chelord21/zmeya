@@ -483,8 +483,9 @@ def p_write_expression(t):
 
 def p_add_string_const(t):
   '''add_string_const : '''
+  # TODO: Create quadruple for string const
   global constants
-  constants[t[-1]] = 'string'
+  # constants[t[-1]] = 'string'
 
 # Function used to print variables saved
 def p_print_everything(t):
