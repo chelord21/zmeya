@@ -169,7 +169,7 @@ def p_check_void_fun_call(t):
 
 def p_fun_call(t):
   'fun_call : ID_FUN save_fun_id L_PAREN fun_call_opts R_PAREN fun_call_quadruples'
-  # print('FUN CALL')
+  print('FUN CALL')
 
 def p_save_fun_id(t):
   '''save_fun_id : '''
@@ -223,8 +223,12 @@ def p_level0(t):
   '''level0 : L_PAREN add_bottom expresion R_PAREN remove_bottom
             | constant
             | variable
-            | fun_call'''
+            | fun_call guadalupean_patch'''
   # print('LEVEL0')
+
+def p_guadalupean_patch(t):
+  '''guadalupean_patch : '''
+  guadalupean_patch()
 
 def p_add_bottom(t):
     'add_bottom : '
@@ -237,7 +241,7 @@ def p_remove_bottom(t):
 
 def p_evaluate_level0(t):
     'evaluate_level0 : '
-    if(operators.size() and levels[operators.top()] == 1):
+    if(operators.size() and levels[operators.top()] >= 1):
         #TODO semantic validation
         arithmetic_quadruple()
 
@@ -260,7 +264,7 @@ def p_level1_opers(t):
 def p_evaluate_level1(t):
     'evaluate_level1 : '
     # operators.print()
-    if(operators.size() and levels[operators.top()] == 2):
+    if(operators.size() and levels[operators.top()] >= 2):
         #TODO semantic validation
         arithmetic_quadruple()
 
@@ -282,7 +286,7 @@ def p_level2_opers(t):
 def p_evaluate_level2(t):
     'evaluate_level2 : '
     # operators.print()
-    if(operators.size() and levels[operators.top()] == 3):
+    if(operators.size() and levels[operators.top()] >= 3):
         #TODO semantic validation
         arithmetic_quadruple()
 
@@ -511,7 +515,7 @@ def p_empty(p):
   pass
 
 # Check if symbol is of a certain level
-levels = {1:2, # +
+levels = {  1:2, # +
             2:2, # -
             3:1, # *
             4:1, # /
@@ -612,7 +616,6 @@ def assignment_quadruple():
         var_det = variables['global'][ass_variable]
         var_type = var_det.vtype
         if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
-          print('Op type: ', op_type, ', Var type: ', var_type)
           print('Type mismatch in assignment to ', ass_variable)
           exit(0)
         tempQuad.build(operation, operand, None, variables['global'][ass_variable].vmemory)
@@ -622,7 +625,6 @@ def assignment_quadruple():
       var_det = variables['function'][current_function['id']][ass_variable]
       var_type = var_det.vtype
       if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
-        print('Op type: ', op_type, ', Var type: ', var_type)
         print('Type mismatch in assignment to ', ass_variable)
         exit(0)
       tempQuad.build(operation, operand, None, variables['function'][current_function['id']][ass_variable].vmemory)
@@ -760,7 +762,7 @@ def return_quadruple():
   global current_function, variables
   return_val = operands.pop() # Gets value to be returned
   if(typeString(str(type(return_val))) == 'str'): # Check if value is a variable
-    return_val = get_operand_mem(return_val, current_function) # Gets memory for the variable
+    return_val = get_operand_mem(return_val, current_function) # Gets local memory for the variable
   val_type = memory_to_data_type(return_val)
 
   # Semantic evaluation
@@ -784,8 +786,11 @@ def return_quadruple():
 
 def add_fun_call_param():
   global fun_call_params
+  print('Tope de pila antes de meter a params', operands.top())
   value = operands.pop() # Get result from expression
   fun_call_params.append(value)
+  print('Tope de pila después de meter a params', operands.top())
+
 
 def fun_call_quadruples():
   global fun_call_params, functions, current_fun_call, variables
@@ -819,6 +824,23 @@ def fun_call_quadruples():
   QuadrupleList.push(tmpQuad3)
   
   # Reset all memory used to generate quadruples
+  # current_fun_call = ''
+  # fun_call_params = []
+
+def guadalupean_patch():
+  # var_id = operands.pop() # Gets function_id pushed in return quadruple function
+  global current_fun_call, fun_call_params
+  var_det = variables['global'][current_fun_call]
+  global_var_mem = var_det.vmemory # Gets global memory where value was saved
+  # Generate tmp to assign return value in local scope and push it to operands
+  local_var_mem = get_var_mem('function', var_det.vtype)
+  operands.push(local_var_mem)
+  # Make assign quadruple and push it to list
+  tmpQuad = Quadruple()
+  tmpQuad.build(operations['='], global_var_mem, None, local_var_mem)
+  QuadrupleList.push(tmpQuad)
+
+  # Reset all memory used to generate quadruples
   current_fun_call = ''
   fun_call_params = []
 
@@ -827,6 +849,6 @@ def check_fun_call_exist(id_fun):
   return id_fun in functions
 
 parser = yacc.yacc()
-file = open("inputs/input.txt", "r")
+file = open("inputs/fun_calls.zm", "r")
 yacc.parse(file.read())
 file.close()

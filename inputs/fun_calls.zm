@@ -1,0 +1,9 @@
+_rec : int (int x){
+  x = 10;
+  return x;
+}
+
+main{
+  var m : int;
+  m = _rec(5) + _rec(7);
+}
