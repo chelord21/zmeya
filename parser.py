@@ -392,7 +392,7 @@ def p_sentence(t):
 def p_variable(t):
   'variable : ID opt_array'
   global current_id, variables
-  current_id = t[1] # Set variable id as current_id 
+  current_id = t[1] # Set variable id as current_id
   operands.push(t[1]) # Push literal variable id to operands stack
   # types.push(type(t[1])) # Push variable type to types stack
   # print('VARIABLE')
@@ -524,12 +524,12 @@ def reset_current_function():
     'mem_needed'   : []
   }
 
-# Adds function details to function dictionary and adds 
+# Adds function details to function dictionary and adds
 # function index to variables['function'] dictionary
 def add_to_fun_dict():
   global functions, current_function, current_scope, variables
   # print('Saving function ', current_function['id'])
-  # Adds 
+  # Adds
   functions[current_function['id']] = FunctionDetails(current_function['type'],
                                                       current_function['params_types'],
                                                       current_function['params_ids'],
@@ -734,6 +734,6 @@ def return_quadruple():
   QuadrupleList.push(tempQuad)
 
 parser = yacc.yacc()
-file = open("inputs/input.txt", "r")
+file = open("inputs/print.zm", "r")
 yacc.parse(file.read())
 file.close()

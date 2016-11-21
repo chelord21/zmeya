@@ -162,7 +162,7 @@ inverse_operations = {v: k for k, v in operations.items()}
 global_mem_counter    = [0, 1500, 3000, 4500]
 constants_mem_counter = [6000, 7500, 9000, 10500]
 function_mem_counter  = [12000, 13500, 15000, 16500]
-# Temporals array might not be needed 
+# Temporals array might not be needed
 # temporals_mem_counter = [18000, 19500, 21000, 22500]
 
 # Actual Memory

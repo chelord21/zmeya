@@ -1,0 +1,8 @@
+main{
+  var x : int;
+  x = 3;
+  write(x - 3 + 1);
+  write(5);
+  write(x);
+  write("alfa");
+}
