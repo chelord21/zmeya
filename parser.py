@@ -149,7 +149,7 @@ def p_expresion_operations(t):
     push_operator(t)
 
 def p_void_fun_call(t):
-  'void_fun_call : ID_FUN check_void_fun_call L_PAREN fun_call_opts R_PAREN fun_call_quadruples'
+  'void_fun_call : ID_FUN check_void_fun_call L_PAREN add_bottom fun_call_opts R_PAREN remove_bottom fun_call_quadruples'
 
 def p_check_void_fun_call(t):
   '''check_void_fun_call : '''
@@ -168,7 +168,7 @@ def p_check_void_fun_call(t):
 
 
 def p_fun_call(t):
-  'fun_call : ID_FUN save_fun_id L_PAREN fun_call_opts R_PAREN fun_call_quadruples'
+  'fun_call : ID_FUN save_fun_id L_PAREN add_bottom fun_call_opts R_PAREN remove_bottom fun_call_quadruples'
   print('FUN CALL')
 
 def p_save_fun_id(t):
