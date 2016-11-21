@@ -66,7 +66,7 @@ def p_block(t):
   # print('BLOCK')
 
 def p_condition(t):
-  'condition : IF L_PAREN expresion R_PAREN if_quadruple oblock complete_if else_condition'
+  'condition : IF L_PAREN add_bottom expresion R_PAREN remove_bottom if_quadruple oblock complete_if else_condition'
   # print('CONDITION')
 
 def p_if_quadruple(t):
@@ -149,7 +149,7 @@ def p_expresion_operations(t):
     push_operator(t)
 
 def p_void_fun_call(t):
-  'void_fun_call : ID_FUN check_void_fun_call L_PAREN add_bottom fun_call_opts R_PAREN remove_bottom fun_call_quadruples'
+  'void_fun_call : ID_FUN check_void_fun_call L_PAREN add_bottom fun_call_opts R_PAREN fun_call_quadruples'
 
 def p_check_void_fun_call(t):
   '''check_void_fun_call : '''
@@ -386,7 +386,7 @@ def p_read(t):
   # print('READ')
 
 def p_repeat(t):
-  'repeat : REPEAT L_PAREN INT_CONST get_repeat_iterations R_PAREN block finish_repeat'
+  'repeat : REPEAT L_PAREN add_bottom INT_CONST get_repeat_iterations R_PAREN remove_bottom block finish_repeat'
   # print('REPEAT')
 
 def p_get_repeat_iterations(t):
@@ -453,7 +453,7 @@ def p_set_fun_void(t):
   # print('Current function type: ', current_function['type'])
 
 def p_while(t):
-  'while : WHILE L_PAREN expresion while_quadruple R_PAREN block complete_while_quadruple'
+  'while : WHILE L_PAREN add_bottom expresion while_quadruple R_PAREN remove_bottom block complete_while_quadruple'
   # print('WHILE')
 
 def p_while_quadruple(t):
@@ -466,7 +466,7 @@ def p_complete_while_quadruple(t):
 
 def p_write(t):
     #TODO writes with parenthesis in the expression don't work
-  'write : WRITE L_PAREN write_opt R_PAREN'
+  'write : WRITE L_PAREN add_bottom write_opt R_PAREN remove_bottom'
   # print('WRITE')
 
 def p_write_opt(t):
