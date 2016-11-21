@@ -84,7 +84,23 @@ def get_value(memAddress):
       return function_memory[1][memAddress-16500]
 
 # TODO: Load memory needed for globals, constants & local
+global_memory[0] = None * global_mem_counter[0]
+global_memory[1] = None * (global_mem_counter[1] - 1500)
+global_memory[2] = None * (global_mem_counter[2] - 3000)
+global_memory[3] = None * (global_mem_counter[3] - 4500)
 
+constants_memory[0] = None * (constants_mem_counter[0] - 6000)
+constants_memory[1] = None * (constants_mem_counter[1] - 7500)
+constants_memory[2] = None * (constants_mem_counter[2] - 9000)
+constants_memory[3] = None * (constants_mem_counter[3] - 10500)
+
+# Load main memory
+main_mem_det = functions['main']
+main_mem_needed = main_mem_det.mem_needed
+function_memory[0] = None * (function_mem_counter[0] - 12000)
+function_memory[1] = None * (function_mem_counter[1] - 12000)
+function_memory[2] = None * (function_mem_counter[2] - 12000)
+function_memory[3] = None * (function_mem_counter[3] - 12000)
 
 # global_memory    = [[] for i in range(4)]
 # constants_memory = [[] for i in range(4)]

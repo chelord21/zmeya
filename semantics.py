@@ -262,28 +262,28 @@ def append_const(cons, cons_type):
     if(constants_mem_counter[0] > 7499): # Check if too many variables
       print('Memory Exceeded.')
       exit(0) # Too many variables
-    constants_memory[0].append(cons)
+    # constants_memory[0].append(cons)
     return constants_mem_counter[0] - 1 # Return virtual memory position
   elif(cons_type == 'float'):
     constants_mem_counter[1] += 1
     if(constants_mem_counter[1] > 8999):
       print('Memory Exceeded.')
       exit(0)
-    constants_memory[1].append(cons)
+    # constants_memory[1].append(cons)
     return constants_mem_counter[1] - 1
   elif(cons_type == 'string'):
     constants_mem_counter[2] += 1
     if(constants_mem_counter[2] > 10499):
       print('Memory Exceeded.')
       exit(0)
-    constants_memory[2].append(cons)
+    # constants_memory[2].append(cons)
     return constants_mem_counter[2] - 1
   elif(cons_type == 'bool'):
     constants_mem_counter[3] += 1
     if(constants_mem_counter[3] > 11999):
       print('Memory Exceeded.')
       exit(0)
-    constants_memory[3].append(cons)
+    # constants_memory[3].append(cons)
     return constants_mem_counter[3] - 1
 
 def get_operand_mem(op, cf):
