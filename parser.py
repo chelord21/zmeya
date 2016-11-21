@@ -797,7 +797,9 @@ def fun_call_quadruples():
   types_list = []
   for val in fun_call_params:
     types_list.append(typeString(str(type(val)))) # Append into type's list the type of the value sent as param
-  
+    print("Calling : ", current_fun_call, " with ", types_list)
+
+  QuadrupleList.print()
   fun_details = functions[current_fun_call] # Get function details
   # Semantic evaluation
   if(types_list != fun_details.params_types):
@@ -810,7 +812,7 @@ def fun_call_quadruples():
   QuadrupleList.push(tmpQuad) # Push to quadruples name of the function for easy search in execution time
 
   var_mem = None # Variables to be changed with every iteration of next loop
-  var_det = None 
+  var_det = None
   # Make all the params quadruples
   for i, param in enumerate(fun_call_params):
     tmpQuad2 = Quadruple()
@@ -818,11 +820,11 @@ def fun_call_quadruples():
     var_mem = var_det.vmemory
     tmpQuad2.build(operations['PARAM'], var_mem, None, fun_call_params[i])
     QuadrupleList.push(tmpQuad2)
-  
+
   tmpQuad3 = Quadruple()
   tmpQuad3.build(operations['gosub'], None, None, fun_first_quad) # Go to subroutine's first quadruple
   QuadrupleList.push(tmpQuad3)
-  
+
   # Reset all memory used to generate quadruples
   # current_fun_call = ''
   # fun_call_params = []
@@ -841,7 +843,7 @@ def guadalupean_patch():
   QuadrupleList.push(tmpQuad)
 
   # Reset all memory used to generate quadruples
-  current_fun_call = ''
+  #current_fun_call = ''
   fun_call_params = []
 
 def check_fun_call_exist(id_fun):
