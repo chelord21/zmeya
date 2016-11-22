@@ -450,7 +450,7 @@ def p_sentence(t):
   # print('SENTENCE')
 
 def p_variable(t):
-  'variable : ID set_variable opt_array print_everything'
+  'variable : ID set_variable opt_array'
   print('VARIABLE')
 
 def p_set_variable(t):
@@ -563,8 +563,8 @@ def p_print_everything(t):
   for x in variables:
     print (x)
     for y in variables[x]:
-        print (y,':',variables[x][y])
-        #print (y,':',variables[x][y],':',variables[x][y].vmemory)
+        #print (y,':',variables[x][y])
+        print (y,':',variables[x][y],':',variables[x][y].vmemory)
   print('Functions')
   for x in functions:
     print (x)
