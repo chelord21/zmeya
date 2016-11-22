@@ -23,7 +23,7 @@ tempCount = 1
 repeatCount = 1
 
 def p_program(t):
-  'program : goto_main decl_kleen function_kleen main'
+  'program : goto_main decl_kleen function_kleen main print_everything'
   # print('PROGRAM')
   load_initial_memory()
   make_magic()
@@ -506,8 +506,8 @@ def p_add_string_const(t):
   QuadrupleList.push(tmpQuad)
 
 # Function used to print variables saved
-# def p_print_everything(t):
-#   '''print_everything : '''
+def p_print_everything(t):
+  '''print_everything : '''
 #   global variables, functions, constants, constants_memory
 #   print('Variables')
 #   for x in variables:
@@ -527,7 +527,7 @@ def p_add_string_const(t):
 #     print()
 #   print('--------------------')
 #   print('----QUADRUPLES-----')
-#   QuadrupleList.print()
+  QuadrupleList.print()
 
 def p_empty(p):
   'empty :'
@@ -802,6 +802,13 @@ def return_quadruple():
   tempQuad = Quadruple()
   tempQuad.build(operations['RET'], None, None, global_var_mem)
   QuadrupleList.push(tempQuad)
+
+  tempQuad2 = Quadruple()
+  tempQuad2.build(operations['EPROC'], None, None, None)
+  QuadrupleList.push(tempQuad2)
+
+  reset_mem_counter(current_function)
+  reset_current_function()
 
 def add_fun_call_param():
   global fun_call_params
