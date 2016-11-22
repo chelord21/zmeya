@@ -159,7 +159,7 @@ operations = {
  'DIM'   : 25,  # Substract value of given quadruple by one (used for repeat only)
  'PARAM' : 26,
  'gosub' : 27,
- 'ERA'   : 28 
+ 'ERA'   : 28
 }
 
 inverse_operations = {v: k for k, v in operations.items()}
@@ -185,13 +185,14 @@ function_memory  = [[] for i in range(4)]
 
 # Function that resets virtual memory counters
 # And adds to function details memory needed
-def reset_mem_counter():
+def reset_mem_counter(cf):
   global function_mem_counter, current_function
+  current_function = cf
   # Get memory needed per data type for current function
   memory_needed = [function_mem_counter[0] - 12000,
-                function_mem_counter[1] - 13500,
-                function_mem_counter[2] - 15000,
-                function_mem_counter[3] - 16500]
+                   function_mem_counter[1] - 13500,
+                   function_mem_counter[2] - 15000,
+                   function_mem_counter[3] - 16500]
 
   # Set memory needed per data type for current function
   functions[current_function['id']].mem_needed = memory_needed
@@ -262,28 +263,28 @@ def append_const(cons, cons_type):
     if(constants_mem_counter[0] > 7499): # Check if too many variables
       print('Memory Exceeded.')
       exit(0) # Too many variables
-    # constants_memory[0].append(cons)
+    constants_memory[0].append(cons)
     return constants_mem_counter[0] - 1 # Return virtual memory position
   elif(cons_type == 'float'):
     constants_mem_counter[1] += 1
     if(constants_mem_counter[1] > 8999):
       print('Memory Exceeded.')
       exit(0)
-    # constants_memory[1].append(cons)
+    constants_memory[1].append(cons)
     return constants_mem_counter[1] - 1
   elif(cons_type == 'string'):
     constants_mem_counter[2] += 1
     if(constants_mem_counter[2] > 10499):
       print('Memory Exceeded.')
       exit(0)
-    # constants_memory[2].append(cons)
+    constants_memory[2].append(cons)
     return constants_mem_counter[2] - 1
   elif(cons_type == 'bool'):
     constants_mem_counter[3] += 1
     if(constants_mem_counter[3] > 11999):
       print('Memory Exceeded.')
       exit(0)
-    # constants_memory[3].append(cons)
+    constants_memory[3].append(cons)
     return constants_mem_counter[3] - 1
 
 def get_operand_mem(op, cf):
