@@ -196,6 +196,7 @@ def reset_mem_counter(cf):
 
   # Set memory needed per data type for current function
   functions[current_function['id']].mem_needed = memory_needed
+  # print('Current function: ', current_function['id'], ' needs: ', memory_needed)
   # print(functions[current_function['id']].mem_needed)
 
   # Reset function memory counters

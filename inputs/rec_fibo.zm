@@ -1,0 +1,18 @@
+_fibo : int (int x){
+  if(x <= 1){
+    if(x == 0){
+      return 0;
+    }
+    else{
+      return 1;
+    }
+  }
+  else{
+    return _fibo(x - 1) + _fibo(x - 2);
+  }
+  return 0;
+}
+
+main{
+  write(_fibo(8));
+}
