@@ -5,7 +5,7 @@ _fibo : int (int x){
   else{
     return _fibo(x -  1) + _fibo(x - 2);
   }
-} 
+}
 
 main{
   write(_fibo(4));

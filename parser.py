@@ -215,7 +215,7 @@ def p_function(t):
   tempQuad.build(operations['EPROC'], None, None, None)
   QuadrupleList.push(tempQuad)
   reset_mem_counter(current_function)
-  reset_current_function()
+  # reset_current_function()
   # print('FUNCTION')
 
 def p_set_fun_id(t):
@@ -558,6 +558,7 @@ def p_error(p):
       print('Syntax error')
       exit(0)
     else:
+      QuadrupleList.print()
       print('Syntax error in ', p.value, ' at line ', p.lineno)
       p.lineno = 0
       exit(0)
@@ -656,7 +657,8 @@ def arithmetic_quadruple():
     operator = operators.pop() # Get operator
     operand2 = operands.pop() # Get operands
     operand1 = operands.pop()
-
+    print('op1 ', operand1, ' op2 ', operand2)
+    print('Current function: ', current_function['id'])
     if(typeString(str(type(operand1))) == 'str'): # Check if operand1 is a variable
       operand1 = get_operand_mem(operand1, current_function) # Gets memory for the variable
     if(typeString(str(type(operand2))) == 'str'):
@@ -808,7 +810,7 @@ def return_quadruple():
   QuadrupleList.push(tempQuad2)
 
   reset_mem_counter(current_function)
-  reset_current_function()
+  # reset_current_function()
 
 def add_fun_call_param():
   global fun_call_params
