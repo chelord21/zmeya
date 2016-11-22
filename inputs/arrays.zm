@@ -5,6 +5,7 @@ var j[2][2] : int;
 var z : int;
 
 main{
-  x = 10;
-  write(x);
+  x = j[1][1];
+  i[1] = 3;
+  write(6);
 }

@@ -44,20 +44,21 @@ def p_function_kleen(t):
   # print('FUNCTION KLEEN')
 
 def p_assignment(t):
-  'assignment : assignation_variable EQUALS expresion'
+  'assignment : variable EQUALS expresion'
+  #'assignment : assignation_variable EQUALS expresion'
   assignment_quadruple()
-  # print('ASSIGNMENT')
+  print('ASSIGNMENT')
 
-def p_assignation_variable(t):
-  'assignation_variable : ID ass_opt_array'
-
-def p_ass_opt_array(t):
-  '''ass_opt_array : dimensions
-                   | ass_var_to_stack'''
-
-def p_ass_var_to_stack(t):
-  '''ass_var_to_stack : '''
-  operands.push(t[-1])
+#def p_assignation_variable(t):
+#  'assignation_variable : ID ass_opt_array'
+#
+#def p_ass_opt_array(t):
+#  '''ass_opt_array : dimensions
+#                   | ass_var_to_stack'''
+#
+#def p_ass_var_to_stack(t):
+#  '''ass_var_to_stack : '''
+#  operands.push(t[-1])
 
 def p_atomic(t):
   '''atomic : STRING
@@ -124,10 +125,13 @@ def p_declaration(t):
   'declaration : VAR variable_decl COLON atomic register_dimensions SEMICOLON'
   global current_scope, current_type, current_id, current_function, isArray, arrayDetails, r, totalSize
   if current_scope == 'global':
-    variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
+    alfa = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
+    #print(alfa.arrayDetails.details, "<-------------")
+    variables[current_scope][current_id] = alfa
   else:
     aux_dict = variables[current_scope]
-    aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
+    alfa = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
+    aux_dict[current_function['id']][current_id] = alfa
   current_type = ''
   current_id = ''
   isArray = False
@@ -137,7 +141,7 @@ def p_declaration(t):
 
 def p_register_dimensions(t):
     'register_dimensions : '
-    global r, totalSize
+    global r, totalSize, arrayDetails
     print("Array dimensions: ", current_id, " : ", r)
     totalSize = r
     if(isArray):
@@ -150,7 +154,7 @@ def p_register_dimensions(t):
 def p_dim_loop(t):
   '''dim_loop : dimensions
               | empty'''
-  # print('DIM LOOP')
+    # print('DIM LOOP')
 
 def p_expresion(t):
   'expresion : level3 expresion_loop'
@@ -243,7 +247,7 @@ def p_level0(t):
             | constant
             | variable
             | fun_call guadalupean_patch'''
-  # print('LEVEL0')
+  print('LEVEL0')
 
 def p_guadalupean_patch(t):
   '''guadalupean_patch : '''
@@ -304,7 +308,6 @@ def p_evaluate_level2(t):
     'evaluate_level2 : '
     # operators.print()
     if(operators.size() and levels[operators.top()] >= 3):
-        #TODO semantic validation
         arithmetic_quadruple()
 
 ## LEVEL 3 - <, >, <=, >=, <>, ==
@@ -447,12 +450,16 @@ def p_sentence(t):
   # print('SENTENCE')
 
 def p_variable(t):
-  'variable : ID opt_array'
+  'variable : ID set_variable opt_array print_everything'
+  print('VARIABLE')
+
+def p_set_variable(t):
+  'set_variable : '
   global current_id, variables
-  current_id = t[1] # Set variable id as current_id
-  operands.push(t[1]) # Push literal variable id to operands stack
+  current_id = t[-1] # Set variable id as current_id
+  operands.push(t[-1]) # Push literal variable id to operands stack
   # types.push(type(t[1])) # Push variable type to types stack
-  # print('VARIABLE')
+  print('SETTING ',t[-1])
 
 def p_opt_array(t):
   '''opt_array : empty
@@ -466,6 +473,7 @@ def p_dimensions(t):
 def p_check_dimensions(t):
     'check_dimensions : '
     global current_id
+    #check_dimensions()
 
 def p_evaluate_index(t):
     'evaluate_index : '
@@ -498,15 +506,10 @@ def p_declare_dimension(t):
     global arrayDetails, r
     arrayDetails.add_details(Details(t[-1]))
     r = t[-1] * r
-    #print(t[-1],"<<<<<<<<<<")
 
 def p_start_array(t):
     'start_array : '
-    global arrayDetails, isArray, dim, r
-    arrayDetails = ArrayDetails()
-    isArray = True
-    dim = 1
-    r = 1
+    start_array()
 
 def p_vfunction(t):
   'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
@@ -561,6 +564,7 @@ def p_print_everything(t):
     print (x)
     for y in variables[x]:
         print (y,':',variables[x][y])
+        #print (y,':',variables[x][y],':',variables[x][y].vmemory)
   print('Functions')
   for x in functions:
     print (x)
@@ -613,11 +617,18 @@ def p_error(p):
 # Helper functions #
 ####################
 
+def start_array():
+    global arrayDetails, isArray, dim, r
+    arrayDetails = ArrayDetails()
+    isArray = True
+    dim = 1
+    r = 1
+
 def check_dimensions():
     global dim, var
     operand_id = operands.pop()
     if(typeString(str(type(operand_id))) == 'str'): # Check if operand1 is a variable
-      var = get_operand_mem(operand_id, current_function) # Gets memory for the variable
+      vmem = get_operand_mem(operand_id, current_function) # Gets memory for the variable
       if not var.isArray:
           #TODO ADD SIGNIFICANT ERROR MESSAGE
           print("error")
@@ -642,12 +653,12 @@ def reset_current_function():
     'mem_needed'   : []
   }
 
-# Adds function details to function dictionary and adds 
+# Adds function details to function dictionary and adds
 # function index to variables['function'] dictionary
 def add_to_fun_dict():
   global functions, current_function, current_scope, variables
   # print('Saving function ', current_function['id'])
-  # Adds 
+  # Adds
   functions[current_function['id']] = FunctionDetails(current_function['type'],
                                                       current_function['params_types'],
                                                       current_function['params_ids'],
@@ -662,9 +673,22 @@ def add_to_fun_dict():
 ##################################
 
 def validate_quadruple():
-    tempQuad = Quadruple()
-    index = operands.pop()
+    global current_function
+    print(">>>>>>>>>>>>>><<<<<<")
+    print(current_id)
+    var = get_operand_mem(current_id, current_function) # Gets memory for the variable
+    if current_id in variables['function'][current_function['id']]:
+        var_det = variables['function'][current_function['id']][current_id]
+    else :
+        var_det = variables['global'][current_id]
 
+    print(var_det.arrayDetails.details, "<-----------")
+    print(var_det.isArray)
+    print(var_det.vmemory)
+    print(">>>>>>>>>>>>>><<<<<<")
+    #tempQuad = Quadruple()
+    #index = operands.pop()
+    #tempQuad.build(operations.get('VERIFY'), -, 0, index)
 
 def write_expression_quadruple():
     tempQuad = Quadruple()

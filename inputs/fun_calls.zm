@@ -4,6 +4,6 @@ _rec : int (int x){
 }
 
 main{
-  write("Hello World");
+  write(_rec(_rec(1)+_rec(2+3)));
   write(3);
 }
