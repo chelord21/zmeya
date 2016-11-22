@@ -4,3 +4,4 @@ class VariableDetails:
   def __init__(self, vtype, vmemory):
     self.vtype = vtype
     self.vmemory = vmemory
+    self.isArray = False

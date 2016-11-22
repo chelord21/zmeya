@@ -1,0 +1,7 @@
+var x : int;
+var i[10] : int;
+
+main{
+  x = 10;
+  write(x);
+}

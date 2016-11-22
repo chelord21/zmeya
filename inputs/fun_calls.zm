@@ -4,6 +4,6 @@ _rec : int (int x){
 }
 
 main{
-  var m : int;
-  m = _rec(_rec(3)+_rec(2));
+  write("Hello World");
+  write(3);
 }

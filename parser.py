@@ -12,6 +12,8 @@ import lexer
 
 tokens = lexer.tokens
 
+#Array structures
+isArray = False
 #Operation structures
 operands = zStack()
 operators = zStack()
@@ -115,18 +117,15 @@ def p_content(t):
 def p_declaration(t):
   'declaration : VAR variable COLON atomic SEMICOLON'
   global current_scope, current_type, current_id, current_function
-  if current_scope == 'global':
-    variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
-  else:
-    aux_dict = variables[current_scope]
-    aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
-  current_type = ''
-  current_id = ''
+  if isArray:
+      if current_scope == 'global':
+        variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
+      else:
+        aux_dict = variables[current_scope]
+        aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
+      current_type = ''
+      current_id = ''
   # print('DECLARATION')
-
-def p_dimensions(t):
-  'dimensions : L_BRACKET INT_CONST R_BRACKET dim_loop'
-  # print('DIMENSIONS')
 
 def p_dim_loop(t):
   '''dim_loop : dimensions
@@ -242,7 +241,6 @@ def p_remove_bottom(t):
 def p_evaluate_level0(t):
     'evaluate_level0 : '
     if(operators.size() and levels[operators.top()] >= 1):
-        #TODO semantic validation
         arithmetic_quadruple()
 
 ## LEVEL 1 - %, *, /
@@ -265,7 +263,6 @@ def p_evaluate_level1(t):
     'evaluate_level1 : '
     # operators.print()
     if(operators.size() and levels[operators.top()] >= 2):
-        #TODO semantic validation
         arithmetic_quadruple()
 
 ## LEVEL 2 - +, -
@@ -432,7 +429,7 @@ def p_sentence(t):
 def p_variable(t):
   'variable : ID opt_array'
   global current_id, variables
-  current_id = t[1] # Set variable id as current_id 
+  current_id = t[1] # Set variable id as current_id
   operands.push(t[1]) # Push literal variable id to operands stack
   # types.push(type(t[1])) # Push variable type to types stack
   # print('VARIABLE')
@@ -440,7 +437,15 @@ def p_variable(t):
 def p_opt_array(t):
   '''opt_array : empty
                | dimensions'''
-  # print('OPT ARRAY')
+  print('OPT ARRAY')
+
+def p_dimensions(t):
+  'dimensions : L_BRACKET INT_CONST get_index R_BRACKET dim_loop'
+  # print('DIMENSIONS')
+
+def p_get_index(t):
+    'get_index :'
+    #print(t[-1],"<<<<<<<<<<")
 
 def p_vfunction(t):
   'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
@@ -694,7 +699,7 @@ def repeat_quadruple(iterations):
   if(typeString(str(type(iterations))) != 'int'):
     print('Repeat loop only accepts integer numbers as parameter.')
     exit(0)
-  
+
   jumps = QuadrupleList.jump_stack # Get QuadrupleList jumps stack
   jumps.push(QuadrupleList.next_quadruple) # Push into the stack next quadruple
   tempQuad = Quadruple()
@@ -851,6 +856,6 @@ def check_fun_call_exist(id_fun):
   return id_fun in functions
 
 parser = yacc.yacc()
-file = open("inputs/fun_calls.zm", "r")
+file = open("inputs/arrays.zm", "r")
 yacc.parse(file.read())
 file.close()
