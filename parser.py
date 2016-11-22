@@ -644,7 +644,23 @@ def assignment_quadruple():
         tempQuad.build(operation, operand, None, variables['global'][ass_variable].vmemory)
         QuadrupleList.push(tempQuad)
     else:
-      op_type = memory_to_data_type(operand)
+      #########################################################################3
+      print('SDFAHDFD ', operand, ass_variable)
+      if(typeString(str(type(operand))) == 'str'):
+        if(operand not in variables['function'][current_function['id']]):
+          if(operand not in variables['global']):
+            print('Operand ', operand, ' has not been defined.')
+          else:
+            op_det = variables['global'][operand]
+            op_type = op_det.vtype
+            operand = op_det.vmemory
+        else:
+          op_det = variables['function'][current_function['id']][operand]
+          op_type = op_det.vtype 
+          operand = op_det.vmemory
+      else:
+        op_type = memory_to_data_type(operand)
+      ####################################################################333
       var_det = variables['function'][current_function['id']][ass_variable]
       var_type = var_det.vtype
       if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
@@ -1247,6 +1263,6 @@ def reset_zombie_mem():
   zombie_memory = [[] for i in range(4)]
 
 parser = yacc.yacc()
-file = open("inputs/cic_factorial.zm", "r")
+file = open("inputs/rec_fibo.zm", "r")
 yacc.parse(file.read())
 file.close()
