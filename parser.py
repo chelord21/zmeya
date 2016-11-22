@@ -13,6 +13,7 @@ import lexer
 tokens = lexer.tokens
 
 #Array structures
+var = None
 totalSize = 0
 isArray = False
 dim = 0
@@ -455,8 +456,20 @@ def p_variable(t):
 
 def p_opt_array(t):
   '''opt_array : empty
-               | dimensions'''
+               | check_dimensions dimensions'''
   # print('OPT ARRAY')
+
+def p_dimensions(t):
+  'dimensions : L_BRACKET expresion evaluate_index R_BRACKET dim_loop'
+  # print('DIMENSIONS')
+
+def p_check_dimensions(t):
+    'check_dimensions : '
+    global current_id
+
+def p_evaluate_index(t):
+    'evaluate_index : '
+    validate_quadruple()
 
 def p_variable_decl(t):
   'variable_decl : ID opt_array_decl'
@@ -494,10 +507,6 @@ def p_start_array(t):
     isArray = True
     dim = 1
     r = 1
-
-def p_dimensions(t):
-  'dimensions : L_BRACKET INT_CONST R_BRACKET dim_loop'
-  # print('DIMENSIONS')
 
 def p_vfunction(t):
   'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
@@ -604,6 +613,18 @@ def p_error(p):
 # Helper functions #
 ####################
 
+def check_dimensions():
+    global dim, var
+    operand_id = operands.pop()
+    if(typeString(str(type(operand_id))) == 'str'): # Check if operand1 is a variable
+      var = get_operand_mem(operand_id, current_function) # Gets memory for the variable
+      if not var.isArray:
+          #TODO ADD SIGNIFICANT ERROR MESSAGE
+          print("error")
+          dim = 1
+          dimensionStack.push([operand_id, dim])
+          operators.push(operations['('])
+
 def get_type_from_stack():
     return str(types.pop()).split("'")[1]
 
@@ -639,6 +660,11 @@ def add_to_fun_dict():
 ##################################
 # Quadruple generation functions #
 ##################################
+
+def validate_quadruple():
+    tempQuad = Quadruple()
+    index = operands.pop()
+
 
 def write_expression_quadruple():
     tempQuad = Quadruple()
@@ -826,7 +852,6 @@ def return_quadruple():
     print('Function ', current_function['id'], ' expecting return value type \'', current_function['type'], '\', but got \'', val_type, '\'')
     exit(0)
 
-  # TODO: INSERT FUCKING PARCHE GUADALUPANO
   # Create global variable
   global_var_type = current_function['type']
   global_var_mem = get_var_mem('global', global_var_type)

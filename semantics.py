@@ -159,7 +159,8 @@ operations = {
  'DIM'   : 25,  # Substract value of given quadruple by one (used for repeat only)
  'PARAM' : 26,
  'gosub' : 27,
- 'ERA'   : 28 
+ 'ERA'   : 28,
+ 'VERIFY': 29
 }
 
 inverse_operations = {v: k for k, v in operations.items()}
