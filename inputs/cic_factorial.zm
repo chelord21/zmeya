@@ -5,10 +5,11 @@ _fact : int (int x){
   result = 1;
   while(a <= x){
     result = result * a;
+    a = a + 1;
   }
   return result;
 }
 
 main{
-  write(_fact(1));
+  write(_fact(5));
 }

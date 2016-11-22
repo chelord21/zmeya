@@ -702,7 +702,7 @@ def while_quadruple():
 # Put the corresponding jump to while quadruple previously generated
 def complete_while_quadruple():
   tempQuad = Quadruple() # Build empty quadruple
-  tempQuad.build(operations['goto'], None, None, QuadrupleList.jump_stack.top()) # Set jump to check while condition again
+  tempQuad.build(operations['goto'], None, None, QuadrupleList.jump_stack.top() - 1) # Set jump to check while condition again
   QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
   index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
@@ -1247,6 +1247,6 @@ def reset_zombie_mem():
   zombie_memory = [[] for i in range(4)]
 
 parser = yacc.yacc()
-file = open("inputs/rec_factorial.zm", "r")
+file = open("inputs/cic_factorial.zm", "r")
 yacc.parse(file.read())
 file.close()
