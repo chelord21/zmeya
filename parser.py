@@ -1247,6 +1247,6 @@ def reset_zombie_mem():
   zombie_memory = [[] for i in range(4)]
 
 parser = yacc.yacc()
-file = open("inputs/dummy.zm", "r")
+file = open("inputs/rec_factorial.zm", "r")
 yacc.parse(file.read())
 file.close()

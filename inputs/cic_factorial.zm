@@ -1,0 +1,14 @@
+_fact : int (int x){
+  var a : int;
+  var result : int;
+  a = 1;
+  result = 1;
+  while(a <= x){
+    result = result * a;
+  }
+  return result;
+}
+
+main{
+  write(_fact(1));
+}
