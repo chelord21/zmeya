@@ -204,57 +204,59 @@ def reset_mem_counter():
   function_mem_counter[3] = 16500
 
 # Given scope and data type of variable, return corresponding virtual memory index
-def get_var_mem(scope, vtype):
+def get_var_mem(scope, vtype, r=1):
+  r = r - 1
   if(scope == 'global'): # Condition to check which counter should be accessed
     if(vtype == 'int'): # Condition to check which index should be modified
-      global_mem_counter[0] += 1 # Add one to memory counter
+      global_mem_counter[0] += 1+r # Add one to memory counter plus whatever the array size is
       if(global_mem_counter[0] > 1499): # Check if too many variables
         print('Memory Exceeded.')
         exit(0) # Too many variables
-      return global_mem_counter[0] - 1 # Return virtual memory position
+      return global_mem_counter[0] - 1-r # Return virtual memory position
     elif(vtype == 'float'):
-      global_mem_counter[1] += 1
+      global_mem_counter[1] += 1+r
       if(global_mem_counter[1] > 2999):
         print('Memory Exceeded.')
         exit(0)
-      return global_mem_counter[1] - 1
+      return global_mem_counter[1] - 1-r
     elif(vtype == 'string'):
-      global_mem_counter[2] += 1
+      global_mem_counter[2] += 1+r
       if(global_mem_counter[2] > 4499):
         print('Memory Exceeded.')
         exit(0)
-      return global_mem_counter[2] - 1
+      return global_mem_counter[2] - 1-r
+
     elif(vtype == 'bool'):
-      global_mem_counter[3] += 1
+      global_mem_counter[3] += 1+r
       if(global_mem_counter[3] > 5999):
         print('Memory Exceeded.')
         exit(0)
-      return global_mem_counter[3] - 1
+      return global_mem_counter[3] - 1-r
   else: # If it's not global, then we don't care about the scope. We know it's a function
     if(vtype == 'int'): # Conditionto check which index should be modified
-      function_mem_counter[0] += 1 # Add one to memory counter
+      function_mem_counter[0] += 1+r # Add one to memory counter
       if(function_mem_counter[0] > 13499): # Check if too many variables
         print('Memory Exceeded.')
         exit(0) # Too many variables
-      return function_mem_counter[0] - 1 # Return virtual memory position
+      return function_mem_counter[0] - 1-r # Return virtual memory position
     elif(vtype == 'float'):
-      function_mem_counter[1] += 1
+      function_mem_counter[1] += 1+r
       if(function_mem_counter[1] > 14999):
         print('Memory Exceeded.')
         exit(0)
-      return function_mem_counter[1] - 1
+      return function_mem_counter[1] - 1-r
     elif(vtype == 'string'):
-      function_mem_counter[2] += 1
+      function_mem_counter[2] += 1+r
       if(function_mem_counter[2] > 16499):
         print('Memory Exceeded.')
         exit(0)
-      return function_mem_counter[2] - 1
+      return function_mem_counter[2] - 1-r
     elif(vtype == 'bool'):
-      function_mem_counter[3] += 1
+      function_mem_counter[3] += 1+r
       if(function_mem_counter[3] > 17999):
         print('Memory Exceeded.')
         exit(0)
-      return function_mem_counter[3] - 1
+      return function_mem_counter[3] - 1-r
 
 def append_const(cons, cons_type):
   if(cons_type == 'int'): # Condition to check which index should be modified

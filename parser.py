@@ -4,7 +4,7 @@
 # Sergio Cordero a01191167
 
 # Imports
-from variable_details import VariableDetails
+from variable_details import *
 from function_details import FunctionDetails
 from quadruple import *
 import ply.yacc as yacc
@@ -13,7 +13,12 @@ import lexer
 tokens = lexer.tokens
 
 #Array structures
+totalSize = 0
 isArray = False
+dim = 0
+r = 1
+arrayDetails = ArrayDetails()
+dimensionStack = zStack()
 #Operation structures
 operands = zStack()
 operators = zStack()
@@ -115,17 +120,31 @@ def p_content(t):
   # print('CONTENT')
 
 def p_declaration(t):
-  'declaration : VAR variable COLON atomic SEMICOLON'
-  global current_scope, current_type, current_id, current_function
-  if isArray:
-      if current_scope == 'global':
-        variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
-      else:
-        aux_dict = variables[current_scope]
-        aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type))
-      current_type = ''
-      current_id = ''
+  'declaration : VAR variable_decl COLON atomic register_dimensions SEMICOLON'
+  global current_scope, current_type, current_id, current_function, isArray, arrayDetails, r, totalSize
+  if current_scope == 'global':
+    variables[current_scope][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
+  else:
+    aux_dict = variables[current_scope]
+    aux_dict[current_function['id']][current_id] = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
+  current_type = ''
+  current_id = ''
+  isArray = False
+  arrayDetails.erase()
+  r = 1
   # print('DECLARATION')
+
+def p_register_dimensions(t):
+    'register_dimensions : '
+    global r, totalSize
+    print("Array dimensions: ", current_id, " : ", r)
+    totalSize = r
+    if(isArray):
+        for det in arrayDetails.details:
+            r = int(r / det.size)
+            det.set_m(r)
+        for det in arrayDetails.details:
+            print("[size, m][", det.size, ",", det.m, "]")
 
 def p_dim_loop(t):
   '''dim_loop : dimensions
@@ -437,15 +456,48 @@ def p_variable(t):
 def p_opt_array(t):
   '''opt_array : empty
                | dimensions'''
-  print('OPT ARRAY')
+  # print('OPT ARRAY')
 
-def p_dimensions(t):
-  'dimensions : L_BRACKET INT_CONST get_index R_BRACKET dim_loop'
+def p_variable_decl(t):
+  'variable_decl : ID opt_array_decl'
+  global current_id, variables
+  current_id = t[1] # Set variable id as current_id
+  operands.push(t[1]) # Push literal variable id to operands stack
+  # types.push(type(t[1])) # Push variable type to types stack
+  # print('VARIABLE')
+
+def p_opt_array_decl(t):
+  '''opt_array_decl : empty
+                    | start_array dimensions_decl'''
+  # print('OPT ARRAY')
+
+def p_dimensions_decl(t):
+  'dimensions_decl : L_BRACKET INT_CONST declare_dimension R_BRACKET dim_loop_decl'
   # print('DIMENSIONS')
 
-def p_get_index(t):
-    'get_index :'
+def p_dim_loop_decl(t):
+  '''dim_loop_decl : dimensions_decl
+                   | empty'''
+  # print('DIM LOOP')
+
+def p_declare_dimension(t):
+    'declare_dimension :'
+    global arrayDetails, r
+    arrayDetails.add_details(Details(t[-1]))
+    r = t[-1] * r
     #print(t[-1],"<<<<<<<<<<")
+
+def p_start_array(t):
+    'start_array : '
+    global arrayDetails, isArray, dim, r
+    arrayDetails = ArrayDetails()
+    isArray = True
+    dim = 1
+    r = 1
+
+def p_dimensions(t):
+  'dimensions : L_BRACKET INT_CONST R_BRACKET dim_loop'
+  # print('DIMENSIONS')
 
 def p_vfunction(t):
   'vfunction : VOID set_fun_void L_PAREN opt_params R_PAREN block'
@@ -482,7 +534,7 @@ def p_write_opt(t):
 def p_write_expression(t):
     'write_expression : '
     #print(t[-1], "::::::")
-    write_expression_quadruple(t)
+    write_expression_quadruple()
     # QuadrupleList.print()
     # print('WRITE EXPRESSION')
 
@@ -499,7 +551,7 @@ def p_print_everything(t):
   for x in variables:
     print (x)
     for y in variables[x]:
-      print (y,':',variables[x][y])
+        print (y,':',variables[x][y])
   print('Functions')
   for x in functions:
     print (x)
@@ -588,9 +640,8 @@ def add_to_fun_dict():
 # Quadruple generation functions #
 ##################################
 
-def write_expression_quadruple(t):
+def write_expression_quadruple():
     tempQuad = Quadruple()
-    # TODO semantic validation between current_type and input
     lastQuad = QuadrupleList.get_last()
     operand = operands.pop()
     operation = operations['WRITE']
