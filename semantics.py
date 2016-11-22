@@ -174,7 +174,7 @@ inverse_operations = {v: k for k, v in operations.items()}
 global_mem_counter    = [0, 1500, 3000, 4500]
 constants_mem_counter = [6000, 7500, 9000, 10500]
 function_mem_counter  = [12000, 13500, 15000, 16500]
-# Temporals array might not be needed 
+# Temporals array might not be needed
 # temporals_mem_counter = [18000, 19500, 21000, 22500]
 
 # Actual Memory
@@ -186,16 +186,18 @@ function_memory  = [[] for i in range(4)]
 
 # Function that resets virtual memory counters
 # And adds to function details memory needed
-def reset_mem_counter():
+def reset_mem_counter(cf):
   global function_mem_counter, current_function
+  current_function = cf
   # Get memory needed per data type for current function
   memory_needed = [function_mem_counter[0] - 12000,
-                function_mem_counter[1] - 13500,
-                function_mem_counter[2] - 15000,
-                function_mem_counter[3] - 16500]
+                   function_mem_counter[1] - 13500,
+                   function_mem_counter[2] - 15000,
+                   function_mem_counter[3] - 16500]
 
   # Set memory needed per data type for current function
   functions[current_function['id']].mem_needed = memory_needed
+  # print('Current function: ', current_function['id'], ' needs: ', memory_needed)
   # print(functions[current_function['id']].mem_needed)
 
   # Reset function memory counters

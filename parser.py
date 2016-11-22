@@ -7,6 +7,8 @@
 from variable_details import *
 from function_details import FunctionDetails
 from quadruple import *
+from memory import *
+# from vm import *
 import ply.yacc as yacc
 import lexer
 
@@ -20,6 +22,7 @@ dim = 0
 r = 1
 arrayDetails = ArrayDetails()
 dimensionStack = zStack()
+zombie_memory = [[] for i in range(4)]
 #Operation structures
 operands = zStack()
 operators = zStack()
@@ -30,8 +33,18 @@ tempCount = 1
 repeatCount = 1
 
 def p_program(t):
-  'program : decl_kleen function_kleen main print_everything'
-  print('PROGRAM')
+  'program : goto_main decl_kleen function_kleen main print_everything'
+  # print('PROGRAM')
+  load_initial_memory()
+  make_magic()
+
+def p_goto_main(t):
+  '''goto_main : '''
+  tmpQuad = Quadruple()
+  tmpQuad.build(operations['goto'], None, None, None)
+  jumps = QuadrupleList.jump_stack
+  jumps.push(QuadrupleList.next_quadruple)
+  QuadrupleList.push(tmpQuad)
 
 def p_decl_kleen(t):
   '''decl_kleen : empty
@@ -192,7 +205,7 @@ def p_check_void_fun_call(t):
 
 def p_fun_call(t):
   'fun_call : ID_FUN save_fun_id L_PAREN add_bottom fun_call_opts R_PAREN remove_bottom fun_call_quadruples'
-  print('FUN CALL')
+  # print('FUN CALL')
 
 def p_save_fun_id(t):
   '''save_fun_id : '''
@@ -226,8 +239,8 @@ def p_function(t):
   tempQuad = Quadruple()
   tempQuad.build(operations['EPROC'], None, None, None)
   QuadrupleList.push(tempQuad)
-  reset_mem_counter()
-  reset_current_function()
+  reset_mem_counter(current_function)
+  # reset_current_function()
   # print('FUNCTION')
 
 def p_set_fun_id(t):
@@ -337,6 +350,7 @@ def p_loops(t):
 def p_main(t):
   'main : MAIN set_main_function block'
   tempQuad = Quadruple()
+  reset_mem_counter(current_function)
   tempQuad.build(operations['EPROG'], None, None, None)
   QuadrupleList.push(tempQuad)
   # print('MAIN')
@@ -344,11 +358,15 @@ def p_main(t):
 def p_set_main_function(t):
   '''set_main_function : '''
   global current_function, variables, current_scope
+  mainQuad = QuadrupleList.quadruple_list[0]
+  mainQuad.result = QuadrupleList.next_quadruple
   current_function['id'] = 'main'
   current_function['type'] = 'void'
   current_function['params_types'] = []
   current_function['params_ids'] = []
-  variables['function']['main'] = {}
+  current_function['mem_needed'] = []
+  # variables['function']['main'] = {}
+  add_to_fun_dict()
   current_scope = 'function'
 
 def p_oblock(t):
@@ -356,9 +374,9 @@ def p_oblock(t):
   # print('OBLOCK')
 
 def p_oblock_opt(t):
-    '''oblock_opt : RETURN expresion make_return_quad SEMICOLON
-                  | empty'''
-    # print('OBLOCK_OPT')
+  '''oblock_opt : RETURN expresion make_return_quad SEMICOLON
+                | empty'''
+  # print('OBLOCK_OPT')
 
 def p_make_return_quad(t):
   '''make_return_quad : '''
@@ -458,6 +476,8 @@ def p_set_variable(t):
   global current_id, variables
   current_id = t[-1] # Set variable id as current_id
   operands.push(t[-1]) # Push literal variable id to operands stack
+  #current_id = t[1] # Set variable id as current_id
+  #operands.push(t[1]) # Push literal variable id to operands stack
   # types.push(type(t[1])) # Push variable type to types stack
   print('SETTING ',t[-1])
 
@@ -553,7 +573,10 @@ def p_write_expression(t):
 def p_add_string_const(t):
   '''add_string_const : '''
   global constants
-  constants[t[-1]] = 'string'
+  cons_mem = append_const(t[-1], 'string') # Get virtual memory of hash
+  tmpQuad = Quadruple()
+  tmpQuad.build(operations['WRITE'], None, None, cons_mem)
+  QuadrupleList.push(tmpQuad)
 
 # Function used to print variables saved
 def p_print_everything(t):
@@ -563,8 +586,8 @@ def p_print_everything(t):
   for x in variables:
     print (x)
     for y in variables[x]:
-        #print (y,':',variables[x][y])
-        print (y,':',variables[x][y],':',variables[x][y].vmemory)
+        print (y,':',variables[x][y])
+        #print (y,':',variables[x][y],':',variables[x][y].vmemory)
   print('Functions')
   for x in functions:
     print (x)
@@ -609,6 +632,7 @@ def p_error(p):
       print('Syntax error')
       exit(0)
     else:
+      QuadrupleList.print()
       print('Syntax error in ', p.value, ' at line ', p.lineno)
       p.lineno = 0
       exit(0)
@@ -727,7 +751,23 @@ def assignment_quadruple():
         tempQuad.build(operation, operand, None, variables['global'][ass_variable].vmemory)
         QuadrupleList.push(tempQuad)
     else:
-      op_type = memory_to_data_type(operand)
+      #########################################################################3
+      print('SDFAHDFD ', operand, ass_variable)
+      if(typeString(str(type(operand))) == 'str'):
+        if(operand not in variables['function'][current_function['id']]):
+          if(operand not in variables['global']):
+            print('Operand ', operand, ' has not been defined.')
+          else:
+            op_det = variables['global'][operand]
+            op_type = op_det.vtype
+            operand = op_det.vmemory
+        else:
+          op_det = variables['function'][current_function['id']][operand]
+          op_type = op_det.vtype 
+          operand = op_det.vmemory
+      else:
+        op_type = memory_to_data_type(operand)
+      ####################################################################333
       var_det = variables['function'][current_function['id']][ass_variable]
       var_type = var_det.vtype
       if(semantic_cube[int_types[op_type]][int_types[var_type]][operation] == -1):
@@ -743,6 +783,7 @@ def arithmetic_quadruple():
     operator = operators.pop() # Get operator
     operand2 = operands.pop() # Get operands
     operand1 = operands.pop()
+
 
     if(typeString(str(type(operand1))) == 'str'): # Check if operand1 is a variable
       operand1 = get_operand_mem(operand1, current_function) # Gets memory for the variable
@@ -784,7 +825,7 @@ def while_quadruple():
 # Put the corresponding jump to while quadruple previously generated
 def complete_while_quadruple():
   tempQuad = Quadruple() # Build empty quadruple
-  tempQuad.build(operations['goto'], None, None, QuadrupleList.jump_stack.top()) # Set jump to check while condition again
+  tempQuad.build(operations['goto'], None, None, QuadrupleList.jump_stack.top() - 1) # Set jump to check while condition again
   QuadrupleList.push(tempQuad) # Push quadruple to quadruples list
   index = QuadrupleList.jump_stack.pop() # Get while quadruple index
   whileQuad = QuadrupleList.quadruple_list[index] # Get while quadruple
@@ -877,24 +918,39 @@ def return_quadruple():
     exit(0)
 
   # Create global variable
-  global_var_type = current_function['type']
-  global_var_mem = get_var_mem('global', global_var_type)
-  trickQuad = Quadruple()
-  trickQuad.build(operations['='], return_val, None, global_var_mem)
-  QuadrupleList.push(trickQuad)
-  variables['global'][current_function['id']] = VariableDetails(global_var_type, global_var_mem)
-  operands.push(current_function['id'])
+  if(current_function['id'] not in variables['global']):
+    print('Crea una variable global con nombre ', current_function['id'])
+    global_var_type = current_function['type']
+    global_var_mem = get_var_mem('global', global_var_type)
+    trickQuad = Quadruple()
+    trickQuad.build(operations['='], return_val, None, global_var_mem)
+    QuadrupleList.push(trickQuad)
+    variables['global'][current_function['id']] = VariableDetails(global_var_type, global_var_mem)
+    operands.push(current_function['id'])
+  else:
+    print('Modifica memoria ya creada con el nombre ', current_function['id'])
+    global_var_det = variables['global'][current_function['id']]
+    global_var_mem = global_var_det.vmemory
+    trickQuad = Quadruple()
+    trickQuad.build(operations['='], return_val, None, global_var_mem)
+    QuadrupleList.push(trickQuad)
+    operands.push(current_function['id'])
 
   tempQuad = Quadruple()
   tempQuad.build(operations['RET'], None, None, global_var_mem)
   QuadrupleList.push(tempQuad)
 
+  tempQuad2 = Quadruple()
+  tempQuad2.build(operations['EPROC'], None, None, None)
+  QuadrupleList.push(tempQuad2)
+
+  # reset_mem_counter(current_function)
+  # reset_current_function()
+
 def add_fun_call_param():
   global fun_call_params
-  print('Tope de pila antes de meter a params', operands.top())
   value = operands.pop() # Get result from expression
   fun_call_params.append(value)
-  print('Tope de pila después de meter a params', operands.top())
 
 
 def fun_call_quadruples():
@@ -902,9 +958,7 @@ def fun_call_quadruples():
   types_list = []
   for val in fun_call_params:
     types_list.append(typeString(str(type(val)))) # Append into type's list the type of the value sent as param
-    print("Calling : ", current_fun_call, " with ", types_list)
 
-  QuadrupleList.print()
   fun_details = functions[current_fun_call] # Get function details
   # Semantic evaluation
   if(types_list != fun_details.params_types):
@@ -955,7 +1009,366 @@ def check_fun_call_exist(id_fun):
   global functions
   return id_fun in functions
 
+memoryStack = zStack()
+
+def get_scope(memAddress):
+  if(memAddress < 0 or memAddress >= 18000):
+    print('Memory segment overflow')
+    exit(0)
+  if(memAddress < 6000):
+    return 0 #global
+  elif(memAddress < 12000):
+    return 1 #constant
+  elif(memAddress < 18000):
+    return 2 #local
+
+def get_sublist(memAddress):
+  # print('memadress: ', memAddress)
+  memAddress = memAddress % 6000
+  if(memAddress < 1500):
+    return 0 #int
+  elif(memAddress < 3000):
+    return 1 #float
+  elif(memAddress < 4500):
+    return 2 #string
+  elif(memAddress < 6000):
+    return 3 #bool
+
+# Returns [scope, data_type, real mem address]
+def get_address(memAddress):
+  if(get_scope(memAddress) == 0):
+    if(get_sublist(memAddress) == 0): # G I
+      return [0,0,memAddress]
+    elif(get_sublist(memAddress) == 1): # G F
+      return [0,1,memAddress-1500]
+    elif(get_sublist(memAddress) == 2): # G S
+      return [0,2,memAddress-3000]
+    elif(get_sublist(memAddress) == 3): # G B
+      return [0,3,memAddress-4500]
+  elif(get_scope(memAddress) == 1):
+    if(get_sublist(memAddress) == 0): # C I
+      return [1,0,memAddress-6000]
+    elif(get_sublist(memAddress) == 1): # C F
+      return [1,1,memAddress-7500]
+    elif(get_sublist(memAddress) == 2): # C S
+      return [1,2,memAddress-9000]
+    elif(get_sublist(memAddress) == 3): # C B
+      return [1,3,memAddress-10500]
+  elif(get_scope(memAddress) == 2):
+    if(get_sublist(memAddress) == 0): # L I
+      return [2,0,memAddress-12000]
+    elif(get_sublist(memAddress) == 1): # L F
+      return [2,1,memAddress-13500]
+    elif(get_sublist(memAddress) == 2): # L S
+      return [2,2,memAddress-15000]
+    elif(get_sublist(memAddress) == 3): # L B
+      return [2,3,memAddress-16500]
+
+def get_value(memAddress):
+  global global_memory, function_memory, constants_memory, zombie_memory
+  if(get_scope(memAddress) == 0):
+    if(get_sublist(memAddress) == 0): # G I
+      return global_memory[0][memAddress]
+    elif(get_sublist(memAddress) == 1): # G F
+      return global_memory[1][memAddress-1500]
+    elif(get_sublist(memAddress) == 2): # G S
+      return global_memory[1][memAddress-3000]
+    elif(get_sublist(memAddress) == 3): # G B
+      if(global_memory[1][memAddress-4500] == 'T'):
+        return True
+      elif(global_memory[1][memAddress-4500] == 'F'):
+        return False
+      else:
+        return global_memory[1][memAddress-4500]
+  elif(get_scope(memAddress) == 1):
+    if(get_sublist(memAddress) == 0): # C I
+      return constants_memory[0][memAddress-6000]
+    elif(get_sublist(memAddress) == 1): # C F
+      return constants_memory[1][memAddress-7500]
+    elif(get_sublist(memAddress) == 2): # C S
+      return constants_memory[2][memAddress-9000]
+    elif(get_sublist(memAddress) == 3): # C B
+      if(constants_memory[1][memAddress-10500] == 'T'):
+        return True
+      elif(constants_memory[1][memAddress-10500] == 'F'):
+        return False
+      else:
+        return constants_memory[1][memAddress-10500]
+  elif(get_scope(memAddress) == 2):
+    if(get_sublist(memAddress) == 0): # L I
+      return function_memory[0][memAddress-12000]
+    elif(get_sublist(memAddress) == 1): # L F
+      return function_memory[1][memAddress-13500]
+    elif(get_sublist(memAddress) == 2): # L S
+      return function_memory[1][memAddress-15000]
+    elif(get_sublist(memAddress) == 3): # L B
+      if(function_memory[1][memAddress-16500] == 'T'):
+        return True
+      elif(function_memory[1][memAddress-16500] == 'F'):
+        return False
+      else:
+        return function_memory[1][memAddress-16500]
+
+def load_initial_memory():
+  global global_memory, function_memory, constants_memory, zombie_memory
+  global_memory[0] = [None] * global_mem_counter[0]
+  global_memory[1] = [None] * (global_mem_counter[1] - 1500)
+  global_memory[2] = [None] * (global_mem_counter[2] - 3000)
+  global_memory[3] = [None] * (global_mem_counter[3] - 4500)
+
+  # constants_memory[0] = [None] * (constants_mem_counter[0] - 6000)
+  # constants_memory[1] = [None] * (constants_mem_counter[1] - 7500)
+  # constants_memory[2] = [None] * (constants_mem_counter[2] - 9000)
+  # constants_memory[3] = [None] * (constants_mem_counter[3] - 10500)
+
+  # Load main memory
+  main_mem_det = functions['main']
+  main_mem_needed = main_mem_det.mem_needed
+  function_memory[0] = [None] * main_mem_needed[0]
+  function_memory[1] = [None] * main_mem_needed[1]
+  function_memory[2] = [None] * main_mem_needed[2]
+  function_memory[3] = [None] * main_mem_needed[3]
+
+  zombie_memory = [[] for i in range(4)]
+
+def make_magic():
+  global global_memory, function_memory, constants_memory, zombie_memory
+  i = 0
+  while(True):
+    print('i: ', i)
+    print('Global memory', global_memory)
+    print('Constants memory', constants_memory)
+    print('Local memory', function_memory)
+    print('Memory stack size: ', memoryStack.size())
+    quad = QuadrupleList.quadruple_list[i]
+    if(quad.operator == 1): # +
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' + ', op2)
+      res = op1 + op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res
+      i += 1
+    elif(quad.operator == 2): # -
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' - ', op2)
+      res = op1 - op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 3): # *
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' * ', op2)
+      res = op1 * op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 4): # /
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' / ', op2)
+      res = op1 / op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 5): # %
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' % ', op2)
+      res = op1 % op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 6): # =
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      if(resultAddr[0] == 0): # If scope is global
+        global_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left)
+      elif(resultAddr[0] == 1):
+        constants_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left)
+      else:
+        function_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left)
+      print('= ', get_value(quad.left))
+      i += 1
+    elif(quad.operator == 7): # ==
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' == ', op2)
+      res = op1 == op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 8): # >
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' > ', op2)
+      res = op1 > op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res
+      i += 1
+    elif(quad.operator == 9): # <
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' < ', op2)
+      res = op1 < op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 10): # <=
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' <= ', op2)
+      res = op1 <= op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res
+      i += 1
+    elif(quad.operator == 11): # >=
+      # global i
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' >= ', op2)
+      res = op1 >= op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 12): # <>
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' <> ', op2)
+      res = op1 != op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 13): # &&
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' && ', op2)
+      res = op1 and op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 14): # ||
+      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(quad.left)
+      op2 = get_value(quad.right)
+      print(op1, ' || ', op2)
+      res = op1 or op2
+      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      i += 1
+    elif(quad.operator == 15): # (
+      print("(")
+    elif(quad.operator == 16): # )
+      print(")")
+    elif(quad.operator == 17): # goto
+      # global i
+      i = quad.result
+      print('goto: ', i)
+    elif(quad.operator == 18): # gotof
+      # global i
+      resultAddr = get_address(quad.left)
+      # Aqui está el print de la listita
+      print(resultAddr)
+      if(resultAddr[0] == 0): # If scope is global
+        if(global_memory[resultAddr[1]][resultAddr[2]] != True):
+           i = quad.result
+        else:
+          i += 1
+      elif(resultAddr[0] == 1):
+        if(constants_memory[resultAddr[1]][resultAddr[2]] != True):
+           i = quad.result
+        else:
+          i += 1
+      elif(resultAddr[0] == 2):
+        if(function_memory[resultAddr[1]][resultAddr[2]] != True):
+          i = quad.result
+        else:
+          i += 1
+      print("gotof", i)
+    elif(quad.operator == 19): # gotoz
+      # global i
+      if(quad.left == 0):
+        i = quad.result
+      else:
+        i += 1
+      print("gotoz", i)
+    elif(quad.operator == 20): # READ
+      # global i
+      print("READ")
+    elif(quad.operator == 21): # WRITE
+      # global i
+      print(get_value(quad.result))
+      print("WRITE")
+      i += 1
+    elif(quad.operator == 22): # RET
+      # global i
+      i += 1
+      print("RET ", quad.result)
+    elif(quad.operator == 23): # EPROC
+      # global i
+      print("EPROC")
+      mem = memoryStack.pop()
+      function_memory = mem.memory
+      print('Recoverded memory: ', mem.memory)
+      i = mem.last_quadruple
+      print('Returning to ', i)
+    elif(quad.operator == 24): # EPROG
+      # global i
+      print('Program terminated')
+      exit(0)
+      # print("EPROG")
+    elif(quad.operator == 25): # DIM
+      # global i
+      QuadrupleList.quadruple_list[i].left -= 1
+      i += 1
+      print("DIM")
+    elif(quad.operator == 26): # PARAM
+      # global i
+      tmpAddr = get_address(quad.left)
+      zombie_memory[tmpAddr[1]][tmpAddr[2]] = get_value(quad.result)
+      i += 1
+      print('PARAM', get_value(quad.result))
+    elif(quad.operator == 27): # gosub
+      # global i
+      mem = Memory()
+      mem.build(function_memory, i+1)
+      print('GOSUB, SAVING MEMORY: ', function_memory)
+      memoryStack.push(mem)
+      function_memory = zombie_memory
+      print('New local memory = ', function_memory)
+      reset_zombie_mem()
+      i = quad.result
+    elif(quad.operator == 28): # ERA
+      # global i
+      make_zombie_mem(quad.result)
+      i += 1
+      print("ERA callling ", quad.result)
+
+def make_zombie_mem(fun_name):
+  global zombie_memory
+  fun_det = functions[fun_name]
+  mem_needed = fun_det.mem_needed
+  # print(mem_needed)
+  zombie_memory[0] = [None] * mem_needed[0]
+  zombie_memory[1] = [None] * mem_needed[1]
+  zombie_memory[2] = [None] * mem_needed[2]
+  zombie_memory[3] = [None] * mem_needed[3]
+
+def reset_zombie_mem():
+  global zombie_memory
+  zombie_memory = [[] for i in range(4)]
+
 parser = yacc.yacc()
-file = open("inputs/arrays.zm", "r")
+file = open("inputs/cic_fibo.zm", "r")
 yacc.parse(file.read())
 file.close()
