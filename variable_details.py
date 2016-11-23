@@ -11,7 +11,6 @@ class VariableDetails:
     self.vtype = vtype
     self.vmemory = vmemory
     self.arrayDetails = ArrayDetails(ad)
-    print(self.arrayDetails.details, "<<<------")
     if ad and ad.details :
         self.isArray = True
     else:
@@ -35,11 +34,14 @@ class ArrayDetails:
     def __init__(self, ad=None):
         if ad:
             self.details = ad.details
+            self.totalSize = ad.totalSize
         else:
             self.details = []
+            self.totalSize = 0
 
     def add_details(self, details):
         self.details.append(details)
+        self.totalSize += 1
 
     def get_dimension(self, x):
         return self.details[x]
@@ -49,6 +51,7 @@ class ArrayDetails:
 
     def erase(self):
         self.details = []
+        self.totalSize = 0
 
     def print(self):
         for det in self.details:

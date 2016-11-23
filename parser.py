@@ -15,6 +15,7 @@ import lexer
 tokens = lexer.tokens
 
 #Array structures
+checked_dimension = 0
 var = None
 totalSize = 0
 isArray = False
@@ -60,7 +61,7 @@ def p_assignment(t):
   'assignment : variable EQUALS expresion'
   #'assignment : assignation_variable EQUALS expresion'
   assignment_quadruple()
-  print('ASSIGNMENT')
+  #print('ASSIGNMENT')
 
 #def p_assignation_variable(t):
 #  'assignation_variable : ID ass_opt_array'
@@ -164,11 +165,6 @@ def p_register_dimensions(t):
         for det in arrayDetails.details:
             print("[size, m][", det.size, ",", det.m, "]")
 
-def p_dim_loop(t):
-  '''dim_loop : dimensions
-              | empty'''
-    # print('DIM LOOP')
-
 def p_expresion(t):
   'expresion : level3 expresion_loop'
   # print('EXPRESION: ')
@@ -260,7 +256,7 @@ def p_level0(t):
             | constant
             | variable
             | fun_call guadalupean_patch'''
-  print('LEVEL0')
+  #print('LEVEL0')
 
 def p_guadalupean_patch(t):
   '''guadalupean_patch : '''
@@ -473,22 +469,35 @@ def p_variable(t):
 
 def p_set_variable(t):
   'set_variable : '
-  global current_id, variables
+  global current_id, variables, checked_variable, dim
+  dim = 0
+  checked_variable = 0
   current_id = t[-1] # Set variable id as current_id
   operands.push(t[-1]) # Push literal variable id to operands stack
   #current_id = t[1] # Set variable id as current_id
   #operands.push(t[1]) # Push literal variable id to operands stack
   # types.push(type(t[1])) # Push variable type to types stack
-  print('SETTING ',t[-1])
+  #print('SETTING ',t[-1])
 
 def p_opt_array(t):
   '''opt_array : empty
-               | check_dimensions dimensions'''
+               | check_dimensions dimensions calculate_location'''
   # print('OPT ARRAY')
+
+def p_calculate_location(t):
+    'calculate_location : '
+    calculate_location()
 
 def p_dimensions(t):
   'dimensions : L_BRACKET expresion evaluate_index R_BRACKET dim_loop'
   # print('DIMENSIONS')
+
+def p_dim_loop(t):
+    '''dim_loop : dimensions
+              | empty'''
+    global dim
+    dim += 1
+    # print('DIM LOOP')
 
 def p_check_dimensions(t):
     'check_dimensions : '
@@ -523,9 +532,10 @@ def p_dim_loop_decl(t):
 
 def p_declare_dimension(t):
     'declare_dimension :'
-    global arrayDetails, r
+    global arrayDetails, r, dim
     arrayDetails.add_details(Details(t[-1]))
     r = t[-1] * r
+    dim += 1
 
 def p_start_array(t):
     'start_array : '
@@ -641,6 +651,21 @@ def p_error(p):
 # Helper functions #
 ####################
 
+def calculate_location():
+    global current_id
+    print("ROLLLLLLLLLLLLLLLLLLLING", current_id)
+    aux = operands.pop()
+    sum_code = operations['+']
+    tempQuad = Quadruple()
+    #generate temp
+    newid = 'tmp' + str(tempCount)
+    tempCount += 1
+    newid_type = string_types[1]
+    tmp_mem = get_var_mem(current_scope, newid_type)
+    #
+    tempQuad.build(sum_code, aux, BASE, tmp_mem)
+
+
 def start_array():
     global arrayDetails, isArray, dim, r
     arrayDetails = ArrayDetails()
@@ -648,17 +673,19 @@ def start_array():
     dim = 1
     r = 1
 
+def calculate_location():
+    aux = operands.pop()
+
 def check_dimensions():
     global dim, var
     operand_id = operands.pop()
     if(typeString(str(type(operand_id))) == 'str'): # Check if operand1 is a variable
       vmem = get_operand_mem(operand_id, current_function) # Gets memory for the variable
       if not var.isArray:
-          #TODO ADD SIGNIFICANT ERROR MESSAGE
-          print("error")
-          dim = 1
-          dimensionStack.push([operand_id, dim])
-          operators.push(operations['('])
+          print("Error, variable ", operand_id, " is not an array.")
+      dim = 1
+      dimensionStack.push([operand_id, dim])
+      operators.push(operations['('])
 
 def get_type_from_stack():
     return str(types.pop()).split("'")[1]
@@ -697,22 +724,53 @@ def add_to_fun_dict():
 ##################################
 
 def validate_quadruple():
-    global current_function
-    print(">>>>>>>>>>>>>><<<<<<")
-    print(current_id)
+    global current_function, checked_dimension, dim, tempCount
+    tempQuad = Quadruple()
+    index = operands.top()
+    verify_code = operations['VERIFY']
+    multiply_code = operations['*']
+    sum_code = operations['+']
     var = get_operand_mem(current_id, current_function) # Gets memory for the variable
+    #TODO validations for missing variable
+    # right now, it assumes the variable exists
     if current_id in variables['function'][current_function['id']]:
         var_det = variables['function'][current_function['id']][current_id]
     else :
         var_det = variables['global'][current_id]
+    size = var_det.arrayDetails.details[checked_dimension].size
+    m = var_det.arrayDetails.details[checked_dimension].m
+    before_last = checked_dimension < var_det.arrayDetails.totalSize
 
-    print(var_det.arrayDetails.details, "<-----------")
-    print(var_det.isArray)
-    print(var_det.vmemory)
-    print(">>>>>>>>>>>>>><<<<<<")
-    #tempQuad = Quadruple()
-    #index = operands.pop()
-    #tempQuad.build(operations.get('VERIFY'), -, 0, index)
+    # Generate validation quadruple
+    tempQuad.build(verify_code, index, None, size)
+    QuadrupleList.push(tempQuad)
+
+    checked_dimension += 1
+    # If there are more dimensions to check
+    if before_last:
+        aux = operands.pop()
+        #generate temp
+        newid = 'tmp' + str(tempCount)
+        tempCount += 1
+        newid_type = string_types[1]
+        tmp_mem = get_var_mem(current_scope, newid_type)
+        #
+        tempQuad.build(multiply_code, aux, m, tmp_mem)
+        operands.push(tmp_mem)
+    # If we are on the 2nd or greater dimension
+    if dim > 1:
+        print("chombawombawombawombawomba")
+        aux2 = operands.pop()
+        aux1 = operands.pop()
+        #generate temp
+        newid = 'tmp' + str(tempCount)
+        tempCount += 1
+        newid_type = string_types[1]
+        tmp_mem = get_var_mem(current_scope, newid_type)
+        #
+        tempQuad.build(sum_code, aux2, aux1, tmp_mem)
+        operands.push(tmp_mem)
+    QuadrupleList.print()
 
 def write_expression_quadruple():
     tempQuad = Quadruple()
@@ -1369,6 +1427,6 @@ def reset_zombie_mem():
   zombie_memory = [[] for i in range(4)]
 
 parser = yacc.yacc()
-file = open("inputs/cic_fibo.zm", "r")
+file = open("inputs/arrays.zm", "r")
 yacc.parse(file.read())
 file.close()

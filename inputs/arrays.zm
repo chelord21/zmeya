@@ -1,9 +1,9 @@
 var x : int;
 var y : int;
-var i[2] : int;
-var j[2][2] : int;
+var i[7] : int;
+var j[8][9] : int;
 var z : int;
 
 main{
-  x = 3;
+  j[3][5] = 3;
 }

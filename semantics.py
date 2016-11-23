@@ -156,7 +156,7 @@ operations = {
  'RET'   : 22, # Return value
  'EPROC' : 23, # End Procedure
  'EPROG' : 24, # End Program
- 'DIM'   : 25,  # Substract value of given quadruple by one (used for repeat only)
+ 'DIM'   : 25, # Substract value of given quadruple by one (used for repeat only)
  'PARAM' : 26,
  'gosub' : 27,
  'ERA'   : 28,
