@@ -1,0 +1,6 @@
+main{
+  var i[5] : int;
+  var x : int;
+  x = 2;
+  i[ x ] = 5;
+}

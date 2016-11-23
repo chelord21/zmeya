@@ -1,9 +1,0 @@
-main{
-  var p : int;
-  var true : bool;
-  var arr[10] : int;
-
-  repeat(10){
-    n = 10;
-  }
-}

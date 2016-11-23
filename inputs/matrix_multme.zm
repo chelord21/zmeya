@@ -1,0 +1,31 @@
+main{
+  var a[3] : int;
+  var b[3] : int;
+  var c : int;
+  var x : int;
+  var z : int;
+  var d : int;
+
+  x = 0;
+  c = 0;
+  d = 0;
+  z = 1;
+
+  while( x < 3 ){
+    a[x] = z;
+    b[x] = z + 5;
+    z = z + 1;
+    x = x + 1;
+  }
+
+  x = 0;
+  while ( x < 3 ){
+    d = a[x] * b[x];
+    write(d);
+    c = c + d;
+    x = x + 1;
+  }
+
+  write("-----");
+  write(c);
+}

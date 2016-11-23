@@ -317,15 +317,15 @@ def get_operand_mem(op, cf):
   return var_mem
 
 def memory_to_data_type(mem):
-  if((mem >= 0 and mem < 1500) or 
+  if((mem >= 0 and mem < 1500) or
      (mem >= 6000 and mem < 7500) or
      (mem >= 12000 and mem < 13500)):
     return 'int'
-  elif((mem >= 1500 and mem < 3000) or 
+  elif((mem >= 1500 and mem < 3000) or
        (mem >= 7500 and mem < 9000) or
        (mem >= 13500 and mem < 15000)):
     return 'float'
-  elif((mem >= 3000 and mem < 4500) or 
+  elif((mem >= 3000 and mem < 4500) or
        (mem >= 9000 and mem < 10500) or
        (mem >= 15000 and mem < 16500)):
     return 'str'

@@ -15,10 +15,12 @@ import lexer
 tokens = lexer.tokens
 
 #Array structures
+idstack = zStack()
+checkstack = zStack()
 checked_dimension = 0
 var = None
 totalSize = 0
-isArray = False
+isArray = {}
 dim = 0
 r = 1
 arrayDetails = ArrayDetails()
@@ -137,18 +139,20 @@ def p_content(t):
 
 def p_declaration(t):
   'declaration : VAR variable_decl COLON atomic register_dimensions SEMICOLON'
-  global current_scope, current_type, current_id, current_function, isArray, arrayDetails, r, totalSize
+  global current_scope, current_type, current_id, current_function, arrayDetails, r, totalSize, idstack, checkstack
   if current_scope == 'global':
     alfa = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
-    #print(alfa.arrayDetails.details, "<-------------")
-    variables[current_scope][current_id] = alfa
+    #variables[current_scope][current_id] = alfa
+    variables[current_scope][idstack.top()] = alfa
   else:
     aux_dict = variables[current_scope]
     alfa = VariableDetails(current_type, get_var_mem(current_scope, current_type, totalSize), arrayDetails)
-    aux_dict[current_function['id']][current_id] = alfa
+    #aux_dict[current_function['id']][current_id] = alfa
+    aux_dict[current_function['id']][idstack.top()] = alfa
   current_type = ''
   current_id = ''
-  isArray = False
+  idstack.pop()
+  #checkstack.pop()
   arrayDetails.erase()
   r = 1
   # print('DECLARATION')
@@ -156,18 +160,20 @@ def p_declaration(t):
 def p_register_dimensions(t):
     'register_dimensions : '
     global r, totalSize, arrayDetails
-    print("Array dimensions: ", current_id, " : ", r)
+    #print("Array dimensions: ", current_id, " : ", r)
     totalSize = r
-    if(isArray):
+    #print(isArray)
+    #if(isArray[current_id]):
+    if(isArray[idstack.top()]):
         for det in arrayDetails.details:
             r = int(r / det.size)
             det.set_m(r)
-        for det in arrayDetails.details:
-            print("[size, m][", det.size, ",", det.m, "]")
+        #for det in arrayDetails.details:
+        #    print("[size, m][", det.size, ",", det.m, "]")
 
 def p_expresion(t):
-  'expresion : level3 expresion_loop'
-  # print('EXPRESION: ')
+    'expresion : level3 expresion_loop'
+    #print('EXPRESION: ')
   # QuadrupleList.print()
 
 def p_expresion_loop(t):
@@ -254,9 +260,15 @@ def p_function_types(t):
 def p_level0(t):
   '''level0 : L_PAREN add_bottom expresion R_PAREN remove_bottom
             | constant
-            | variable
+            | variable idstackpop
             | fun_call guadalupean_patch'''
   #print('LEVEL0')
+
+def p_idstackpop(t):
+    'idstackpop : '
+    global idstack
+    idstack.pop()
+    checkstack.pop()
 
 def p_guadalupean_patch(t):
   '''guadalupean_patch : '''
@@ -395,10 +407,13 @@ def p_set_param_type(t):
 # Append parameter id to the function's parameter names list
 def p_set_param_name(t):
   '''set_param_name : '''
-  global current_id, current_function
-  current_function['params_ids'].append(current_id)
+  global current_id, current_function, idstack
+  #current_function['params_ids'].append(current_id)
+  current_function['params_ids'].append(idstack.top())
   # print('Appended', current_id, 'to current_function[params_ids]')
   current_id = ''
+  idstack.pop()
+  checkstack.pop()
   # print('Current id after append: ', current_id)
 
 def p_params_loop(t):
@@ -465,16 +480,17 @@ def p_sentence(t):
 
 def p_variable(t):
   'variable : ID set_variable opt_array'
-  global checked_dimension
-  checked_dimension = 0
   #print('VARIABLE')
 
 def p_set_variable(t):
   'set_variable : '
-  global current_id, variables, checked_variable, dim
+  global current_id, variables, checked_variable, dim, checked_dimension, idstack
   dim = 0
   checked_variable = 0
+  checked_dimension = 0
   current_id = t[-1] # Set variable id as current_id
+  idstack.push(t[-1])
+  checkstack.push(0)
   operands.push(t[-1]) # Push literal variable id to operands stack
   #current_id = t[1] # Set variable id as current_id
   #operands.push(t[1]) # Push literal variable id to operands stack
@@ -503,7 +519,6 @@ def p_dim_loop(t):
 
 def p_check_dimensions(t):
     'check_dimensions : '
-    global current_id
     check_dimensions()
 
 def p_evaluate_index(t):
@@ -511,12 +526,18 @@ def p_evaluate_index(t):
     validate_quadruple()
 
 def p_variable_decl(t):
-  'variable_decl : ID opt_array_decl'
-  global current_id, variables
-  current_id = t[1] # Set variable id as current_id
+  'variable_decl : ID set_false opt_array_decl'
   operands.push(t[1]) # Push literal variable id to operands stack
   # types.push(type(t[1])) # Push variable type to types stack
   # print('VARIABLE')
+
+def p_set_false(t):
+    'set_false : '
+    global isArray, current_id, idstack
+    current_id = t[-1] # Set variable id as current_id
+    idstack.push(t[-1])
+    #isArray[current_id] = False
+    isArray[idstack.top()] = False
 
 def p_opt_array_decl(t):
   '''opt_array_decl : empty
@@ -653,11 +674,19 @@ def p_error(p):
 # Helper functions #
 ####################
 
+def make_positive(x):
+    if x < 0:
+        x *= -1
+    return x
+
 def calculate_location():
-    global tempCount, variables, current_function, current_id
-    base_dir = get_operand_mem(current_id, current_function) # Gets memory for the variable
+    global tempCount, variables, current_function, current_id, idstack
+    #base_dir = get_operand_mem(current_id, current_function) # Gets memory for the variable
+    base_dir = get_operand_mem(idstack.top(), current_function) # Gets memory for the variable
     cons_mem = append_const(base_dir, 'int') # Get virtual memory for the base direction
     aux = operands.pop()
+    if(typeString(str(type(aux))) == 'str'): # Check if aux is a variable
+      aux = get_operand_mem(aux, current_function) # Gets memory for the variable
     sum_code = operations['+']
     tempQuad = Quadruple()
     #generate temp
@@ -667,32 +696,38 @@ def calculate_location():
     tmp_mem = get_var_mem(current_scope, newid_type) * -1
     aux_dict = variables[current_scope] # Line used to reduce next's line length
     aux_dict[current_function['id']][newid] = VariableDetails(newid_type, tmp_mem) # Saves tmp in variables hash under current_function 
-    print(variables[current_scope][current_function['id']][newid].vmemory, " ||||||||||||||||||||||")
     #
     tempQuad.build(sum_code, aux, cons_mem, tmp_mem)
     QuadrupleList.push(tempQuad)
-    QuadrupleList.print()
+    #QuadrupleList.print()
     operators.pop()
     operands.push(newid)
     #print("THIS IS THE LAST:" ,operators.top())
 
 def start_array():
-    global arrayDetails, isArray, dim, r
+    global arrayDetails, isArray, dim, r, idstack
     arrayDetails = ArrayDetails()
-    isArray = True
+    #print(isArray)
+    #isArray[current_id] = True
+    isArray[idstack.top()] = True
+    #print(isArray)
     dim = 1
     r = 1
 
 def check_dimensions():
-    global dim, var
+    global dim, var, isArray, current_id, idstack
     operand_id = operands.pop()
-    if current_id in variables['function'][current_function['id']]:
-        var_det = variables['function'][current_function['id']][current_id]
+    #if current_id in variables['function'][current_function['id']]:
+    if idstack.top() in variables['function'][current_function['id']]:
+        #var_det = variables['function'][current_function['id']][current_id]
+        var_det = variables['function'][current_function['id']][idstack.top()]
     else :
-        var_det = variables['global'][current_id]
-    if not var_det.isArray:
+        #var_det = variables['global'][current_id]
+        var_det = variables['global'][idstack.top()]
+    #if not isArray[current_id]:
+    if not isArray[idstack.top()]:
         print("Error, variable ", operand_id, " is not an array.")
-    dim = 0
+    #dim = 0
     operators.push(operations['('])
 
 def get_type_from_stack():
@@ -732,35 +767,57 @@ def add_to_fun_dict():
 ##################################
 
 def validate_quadruple():
-    global current_function, checked_dimension, dim, tempCount
+    global current_function, checked_dimension, dim, tempCount, current_id, idstack
     dim += 1
     tempQuad = Quadruple()
     index = operands.top()
     verify_code = operations['VERIFY']
     multiply_code = operations['*']
     sum_code = operations['+']
-    var = get_operand_mem(current_id, current_function) # Gets memory for the variable
+
+    if(typeString(str(type(index))) == 'str'):
+        if(index not in variables['function'][current_function['id']]):
+            if(index not in variables['global']):
+                print('Operand ', index, ' has not been defined.')
+            else:
+                op_det = variables['global'][index]
+                op_type = op_det.vtype
+                index = op_det.vmemory
+        else:
+            op_det = variables['function'][current_function['id']][index]
+            op_type = op_det.vtype
+            index = op_det.vmemory
+
+    #var = get_operand_mem(current_id, current_function) # Gets memory for the variable
+    var = get_operand_mem(idstack.top(), current_function) # Gets memory for the variable
     #TODO validations for missing variable
     # right now, it assumes the variable exists
-    if current_id in variables['function'][current_function['id']]:
-        var_det = variables['function'][current_function['id']][current_id]
+    #if current_id in variables['function'][current_function['id']]:
+    if idstack.top() in variables['function'][current_function['id']]:
+        #var_det = variables['function'][current_function['id']][current_id]
+        var_det = variables['function'][current_function['id']][idstack.top()]
     else :
-        var_det = variables['global'][current_id]
-    size = var_det.arrayDetails.details[checked_dimension].size
-    m = var_det.arrayDetails.details[checked_dimension].m
+        #var_det = variables['global'][current_id]
+        var_det = variables['global'][idstack.top()]
+    size = var_det.arrayDetails.details[checkstack.top()].size
+    m = var_det.arrayDetails.details[checkstack.top()].m
     cons_mem = append_const(m, 'int') # Get virtual memory for m
-    checked_dimension += 1
-    before_last = checked_dimension < var_det.arrayDetails.totalSize
+    #checked_dimension += 1
+    checkstack.push(checkstack.pop()+1)
+    #before_last = checked_dimension < var_det.arrayDetails.totalSize
+    before_last = checkstack.top() < var_det.arrayDetails.totalSize
+    print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", before_last, checkstack.top(), var_det.arrayDetails.totalSize)
 
     # Generate validation quadruple
     tempQuad.build(verify_code, index, 0, size)
     QuadrupleList.push(tempQuad)
-    QuadrupleList.print()
 
     # If there are more dimensions to check
     if before_last:
         tempQuad = Quadruple()
         aux = operands.pop()
+        if(typeString(str(type(aux))) == 'str'): # Check if aux is a variable
+            aux = get_operand_mem(aux, current_function) # Gets memory for the variable
         #generate temp
         newid = 'tmp' + str(tempCount)
         tempCount += 1
@@ -771,10 +828,14 @@ def validate_quadruple():
         QuadrupleList.push(tempQuad)
         operands.push(tmp_mem)
     # If we are on the 2nd or greater dimension
-    if dim > 1:
+    if checkstack.top() > 1:
         tempQuad = Quadruple()
         aux2 = operands.pop()
         aux1 = operands.pop()
+        if(typeString(str(type(aux1))) == 'str'): # Check if aux1 is a variable
+            aux1 = get_operand_mem(aux1, current_function) # Gets memory for the variable
+        if(typeString(str(type(aux2))) == 'str'): # Check if aux2 is a variable
+            aux2 = get_operand_mem(aux2, current_function) # Gets memory for the variable
         #generate temp
         newid = 'tmp' + str(tempCount)
         tempCount += 1
@@ -782,6 +843,7 @@ def validate_quadruple():
         tmp_mem = get_var_mem(current_scope, newid_type)
         #
         tempQuad.build(sum_code, aux1, aux2, tmp_mem)
+        print(sum_code, aux1, aux2, tmp_mem, " <-----------------")
         QuadrupleList.push(tempQuad)
         operands.push(tmp_mem)
 
@@ -789,6 +851,8 @@ def write_expression_quadruple():
     tempQuad = Quadruple()
     lastQuad = QuadrupleList.get_last()
     operand = operands.pop()
+    if(typeString(str(type(operand))) == 'str'): # Check if operand is a variable
+      operand = get_operand_mem(operand, current_function) # Gets memory for the variable
     operation = operations['WRITE']
     tempQuad.build(operation, None, None, operand)
     QuadrupleList.push(tempQuad)
@@ -854,15 +918,15 @@ def arithmetic_quadruple():
     operand2 = operands.pop() # Get operands
     operand1 = operands.pop()
 
-
     if(typeString(str(type(operand1))) == 'str'): # Check if operand1 is a variable
       operand1 = get_operand_mem(operand1, current_function) # Gets memory for the variable
     if(typeString(str(type(operand2))) == 'str'):
       operand2 = get_operand_mem(operand2, current_function)
 
-    type1 = memory_to_data_type(operand1) # Get type of variable/constant given the memory slot
-    type2 = memory_to_data_type(operand2)
+    type1 = memory_to_data_type(make_positive(operand1)) # Get type of variable/constant given the memory slot
+    type2 = memory_to_data_type(make_positive(operand2))
 
+    #QuadrupleList.print()
     # Semantic evaluation
     if(semantic_cube[int_types[type1]][int_types[type2]][operator] == -1):
       print('Type mismatch between ', type1, ' and ', type2)
@@ -1214,11 +1278,11 @@ def make_magic():
   global global_memory, function_memory, constants_memory, zombie_memory
   i = 0
   while(True):
-    print('i: ', i)
-    print('Global memory', global_memory)
-    print('Constants memory', constants_memory)
-    print('Local memory', function_memory)
-    print('Memory stack size: ', memoryStack.size())
+    #print('i: ', i)
+    #print('Global memory', global_memory)
+    #print('Constants memory', constants_memory)
+    #print('Local memory', function_memory)
+    #print('Memory stack size: ', memoryStack.size())
     quad = QuadrupleList.quadruple_list[i]
     if(quad.operator == 1): # +
       # global i
@@ -1228,7 +1292,7 @@ def make_magic():
           resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' + ', op2)
+      #print(op1, ' + ', op2)
       res = op1 + op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
@@ -1237,7 +1301,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' - ', op2)
+      #print(op1, ' - ', op2)
       res = op1 - op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
@@ -1246,7 +1310,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' * ', op2)
+      #print(op1, ' * ', op2)
       res = op1 * op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
@@ -1255,7 +1319,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' / ', op2)
+      #print(op1, ' / ', op2)
       res = op1 / op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1264,7 +1328,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' % ', op2)
+      #print(op1, ' % ', op2)
       res = op1 % op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1277,14 +1341,14 @@ def make_magic():
         constants_memory[resultAddr[1]][resultAddr[2]] = get_value(get_real(quad.left))
       else:
         function_memory[resultAddr[1]][resultAddr[2]] = get_value(get_real(quad.left))
-      print('= ', get_value(get_real(quad.left)))
+      #print('= ', get_value(get_real(quad.left)))
       i += 1
     elif(quad.operator == 7): # ==
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' == ', op2)
+      #print(op1, ' == ', op2)
       res = op1 == op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1293,7 +1357,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' > ', op2)
+      #print(op1, ' > ', op2)
       res = op1 > op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
@@ -1302,7 +1366,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' < ', op2)
+      #print(op1, ' < ', op2)
       res = op1 < op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1311,7 +1375,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' <= ', op2)
+      #print(op1, ' <= ', op2)
       res = op1 <= op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
@@ -1320,7 +1384,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' >= ', op2)
+      #print(op1, ' >= ', op2)
       res = op1 >= op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1328,7 +1392,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' <> ', op2)
+      #print(op1, ' <> ', op2)
       res = op1 != op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1336,7 +1400,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' && ', op2)
+      #print(op1, ' && ', op2)
       res = op1 and op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1344,7 +1408,7 @@ def make_magic():
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
       op1 = get_value(get_real(quad.left))
       op2 = get_value(get_real(quad.right))
-      print(op1, ' || ', op2)
+      #print(op1, ' || ', op2)
       res = op1 or op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
@@ -1355,12 +1419,12 @@ def make_magic():
     elif(quad.operator == 17): # goto
       # global i
       i = quad.result
-      print('goto: ', i)
+      #print('goto: ', i)
     elif(quad.operator == 18): # gotof
       # global i
       resultAddr = get_address(quad.left)
       # Aqui está el print de la listita
-      print(resultAddr)
+      #print(resultAddr)
       if(resultAddr[0] == 0): # If scope is global
         if(global_memory[resultAddr[1]][resultAddr[2]] != True):
            i = quad.result
@@ -1376,34 +1440,35 @@ def make_magic():
           i = quad.result
         else:
           i += 1
-      print("gotof", i)
+      #print("gotof", i)
     elif(quad.operator == 19): # gotoz
       # global i
       if(quad.left == 0):
         i = quad.result
       else:
         i += 1
-      print("gotoz", i)
+      #print("gotoz", i)
     elif(quad.operator == 20): # READ
       # global i
       print("READ")
     elif(quad.operator == 21): # WRITE
       # global i
-      print(get_value(quad.result))
-      print("WRITE")
+      #print(quad.result)
+      print(get_value(get_real(quad.result)))
+      #print("WRITE")
       i += 1
     elif(quad.operator == 22): # RET
       # global i
       i += 1
-      print("RET ", quad.result)
+      #print("RET ", quad.result)
     elif(quad.operator == 23): # EPROC
       # global i
-      print("EPROC")
+      #print("EPROC")
       mem = memoryStack.pop()
       function_memory = mem.memory
-      print('Recoverded memory: ', mem.memory)
+      #print('Recoverded memory: ', mem.memory)
       i = mem.last_quadruple
-      print('Returning to ', i)
+      #print('Returning to ', i)
     elif(quad.operator == 24): # EPROG
       # global i
       print('Program terminated')
@@ -1413,37 +1478,37 @@ def make_magic():
       # global i
       QuadrupleList.quadruple_list[i].left -= 1
       i += 1
-      print("DIM")
+      #print("DIM")
     elif(quad.operator == 26): # PARAM
       # global i
       tmpAddr = get_address(quad.left)
       zombie_memory[tmpAddr[1]][tmpAddr[2]] = get_value(quad.result)
       i += 1
-      print('PARAM', get_value(quad.result))
+      #print('PARAM', get_value(quad.result))
     elif(quad.operator == 27): # gosub
       # global i
       mem = Memory()
       mem.build(function_memory, i+1)
-      print('GOSUB, SAVING MEMORY: ', function_memory)
+      #print('GOSUB, SAVING MEMORY: ', function_memory)
       memoryStack.push(mem)
       function_memory = zombie_memory
-      print('New local memory = ', function_memory)
+      #print('New local memory = ', function_memory)
       reset_zombie_mem()
       i = quad.result
     elif(quad.operator == 28): # ERA
       # global i
       make_zombie_mem(quad.result)
       i += 1
-      print("ERA callling ", quad.result)
+      #print("ERA callling ", quad.result)
     elif(quad.operator == 29): # VERIFY
       # global i
       op = get_value(quad.left)
-      if op >= quad.result:
-          print("Array out of bounds at ", quad.left)
-          exit(1)
-      if op < quad.right:
-          print("Array out of bounds at ", quad.left)
-          exit(1)
+      #if op >= quad.result:
+      #    print("Array index out of bounds (greater) at ", get_value(quad.left), ">=", op, " (", quad.left, ")")
+      #    exit(1)
+      #if op < quad.right:
+      #    print("Array index out of bounds (less than) at ", get_value(quad.right), " (", quad.right, ")")
+      #    exit(1)
       i += 1
 
 def make_zombie_mem(fun_name):
@@ -1461,6 +1526,6 @@ def reset_zombie_mem():
   zombie_memory = [[] for i in range(4)]
 
 parser = yacc.yacc()
-file = open("inputs/cic_fibo.zm", "r")
+file = open("inputs/matrix_mult.zm", "r")
 yacc.parse(file.read())
 file.close()
