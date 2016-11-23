@@ -28,5 +28,7 @@ _fibo : int (int n){
 
 main{
   var x[10] : int;
-  write(_fibo(8));
+  x[5] = _fibo(8);
+  x[8] = _fibo(10);
+  write(3);
 }

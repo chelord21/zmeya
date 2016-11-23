@@ -465,6 +465,8 @@ def p_sentence(t):
 
 def p_variable(t):
   'variable : ID set_variable opt_array'
+  global checked_dimension
+  checked_dimension = 0
   #print('VARIABLE')
 
 def p_set_variable(t):
@@ -490,7 +492,7 @@ def p_calculate_location(t):
 
 def p_dimensions(t):
   'dimensions : L_BRACKET expresion evaluate_index R_BRACKET dim_loop'
-  # print('DIMENSIONS')
+  #print('DIMENSIONS')
 
 def p_dim_loop(t):
     '''dim_loop : dimensions
@@ -652,7 +654,7 @@ def p_error(p):
 ####################
 
 def calculate_location():
-    global tempCount, semantic_cube, variables, current_function, current_id
+    global tempCount, variables, current_function, current_id
     base_dir = get_operand_mem(current_id, current_function) # Gets memory for the variable
     cons_mem = append_const(base_dir, 'int') # Get virtual memory for the base direction
     aux = operands.pop()
@@ -662,16 +664,16 @@ def calculate_location():
     newid = 'tmp' + str(tempCount)
     tempCount += 1
     newid_type = string_types[1]
-    tmp_mem = get_var_mem(current_scope, newid_type)
+    tmp_mem = get_var_mem(current_scope, newid_type) * -1
     aux_dict = variables[current_scope] # Line used to reduce next's line length
-    aux_dict[current_function['id']][newid] = VariableDetails(newid_type, tmp_mem) # Saves tmp in variables hash under current_function
+    aux_dict[current_function['id']][newid] = VariableDetails(newid_type, tmp_mem) # Saves tmp in variables hash under current_function 
+    print(variables[current_scope][current_function['id']][newid].vmemory, " ||||||||||||||||||||||")
     #
     tempQuad.build(sum_code, aux, cons_mem, tmp_mem)
     QuadrupleList.push(tempQuad)
-    #QuadrupleList.print()
-    #operands.pop()
+    QuadrupleList.print()
     operators.pop()
-    #operands.push(tmp_mem)
+    operands.push(newid)
     #print("THIS IS THE LAST:" ,operators.top())
 
 def start_array():
@@ -821,7 +823,6 @@ def assignment_quadruple():
         QuadrupleList.push(tempQuad)
     else:
       #########################################################################3
-      #print('SDFAHDFD ', operand, ass_variable)
       if(typeString(str(type(operand))) == 'str'):
         if(operand not in variables['function'][current_function['id']]):
           if(operand not in variables['global']):
@@ -832,7 +833,7 @@ def assignment_quadruple():
             operand = op_det.vmemory
         else:
           op_det = variables['function'][current_function['id']][operand]
-          op_type = op_det.vtype 
+          op_type = op_det.vtype
           operand = op_det.vmemory
       else:
         op_type = memory_to_data_type(operand)
@@ -1081,7 +1082,7 @@ def check_fun_call_exist(id_fun):
 memoryStack = zStack()
 
 def get_scope(memAddress):
-  if(memAddress < 0 or memAddress >= 18000):
+  if(memAddress >= 18000):
     print('Memory segment overflow')
     exit(0)
   if(memAddress < 6000):
@@ -1200,6 +1201,15 @@ def load_initial_memory():
 
   zombie_memory = [[] for i in range(4)]
 
+# Returns [scope, data_type, real mem address]
+def get_real(x):
+    global variables
+    if x >= 0:
+        return x
+    x *= -1
+    return get_value(x)
+
+#def get_address(x):
 def make_magic():
   global global_memory, function_memory, constants_memory, zombie_memory
   i = 0
@@ -1212,9 +1222,12 @@ def make_magic():
     quad = QuadrupleList.quadruple_list[i]
     if(quad.operator == 1): # +
       # global i
-      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      if quad.result < 0:
+          resultAddr = get_address(-1 * quad.result) # Gets array scope, type, real mem address
+      else:
+          resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' + ', op2)
       res = op1 + op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
@@ -1222,26 +1235,26 @@ def make_magic():
     elif(quad.operator == 2): # -
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' - ', op2)
       res = op1 - op2
-      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
     elif(quad.operator == 3): # *
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' * ', op2)
       res = op1 * op2
-      function_memory[resultAddr[1]][resultAddr[2]] = res 
+      function_memory[resultAddr[1]][resultAddr[2]] = res
       i += 1
     elif(quad.operator == 4): # /
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' / ', op2)
       res = op1 / op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
@@ -1249,28 +1262,28 @@ def make_magic():
     elif(quad.operator == 5): # %
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' % ', op2)
       res = op1 % op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
     elif(quad.operator == 6): # =
       # global i
-      resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
+      resultAddr = get_address(get_real(quad.result)) # Gets array scope, type, real mem address
       if(resultAddr[0] == 0): # If scope is global
-        global_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left)
+        global_memory[resultAddr[1]][resultAddr[2]] = get_value(get_real(quad.left))
       elif(resultAddr[0] == 1):
-        constants_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left)
+        constants_memory[resultAddr[1]][resultAddr[2]] = get_value(get_real(quad.left))
       else:
-        function_memory[resultAddr[1]][resultAddr[2]] = get_value(quad.left)
-      print('= ', get_value(quad.left))
+        function_memory[resultAddr[1]][resultAddr[2]] = get_value(get_real(quad.left))
+      print('= ', get_value(get_real(quad.left)))
       i += 1
     elif(quad.operator == 7): # ==
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' == ', op2)
       res = op1 == op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
@@ -1278,8 +1291,8 @@ def make_magic():
     elif(quad.operator == 8): # >
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' > ', op2)
       res = op1 > op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
@@ -1287,8 +1300,8 @@ def make_magic():
     elif(quad.operator == 9): # <
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' < ', op2)
       res = op1 < op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
@@ -1296,8 +1309,8 @@ def make_magic():
     elif(quad.operator == 10): # <=
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' <= ', op2)
       res = op1 <= op2
       function_memory[resultAddr[1]][resultAddr[2]] = res
@@ -1305,32 +1318,32 @@ def make_magic():
     elif(quad.operator == 11): # >=
       # global i
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' >= ', op2)
       res = op1 >= op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
     elif(quad.operator == 12): # <>
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' <> ', op2)
       res = op1 != op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
     elif(quad.operator == 13): # &&
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' && ', op2)
       res = op1 and op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
       i += 1
     elif(quad.operator == 14): # ||
       resultAddr = get_address(quad.result) # Gets array scope, type, real mem address
-      op1 = get_value(quad.left)
-      op2 = get_value(quad.right)
+      op1 = get_value(get_real(quad.left))
+      op2 = get_value(get_real(quad.right))
       print(op1, ' || ', op2)
       res = op1 or op2
       function_memory[resultAddr[1]][resultAddr[2]] = res 
@@ -1448,6 +1461,6 @@ def reset_zombie_mem():
   zombie_memory = [[] for i in range(4)]
 
 parser = yacc.yacc()
-file = open("inputs/arrays.zm", "r")
+file = open("inputs/cic_fibo.zm", "r")
 yacc.parse(file.read())
 file.close()

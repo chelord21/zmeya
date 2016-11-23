@@ -342,3 +342,4 @@ def memory_to_data_type(mem):
 
 def typeString(s):
     return s.split("'")[1]
+

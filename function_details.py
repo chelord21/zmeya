@@ -8,3 +8,4 @@ class FunctionDetails:
     self.params_names = params_names
     self.mem_needed = mem_needed
     self.initial_quad = initial_quad
+

@@ -45,4 +45,4 @@ WHILE ::= while '(' EXPRESION ')' BLOCK
 WRITE ::= write '(' WRITE_OPT ')'
 WRITE_OPT ::= EXPRESION | 'string'
 
-// C like arrays
+// C like array

@@ -56,3 +56,4 @@ class ArrayDetails:
     def print(self):
         for det in self.details:
             print("::", det.size, ":", det.m)
+

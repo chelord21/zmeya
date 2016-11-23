@@ -64,3 +64,4 @@ class QuadrupleList(object):
         for i in range(0, len(self.quadruple_list)):
             self.quadruple_list[i].print()
 
+

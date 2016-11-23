@@ -14,3 +14,4 @@ class Memory(object):
         """
         self.memory = memory
         self.last_quadruple = last_quadruple
+
