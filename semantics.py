@@ -261,6 +261,7 @@ def get_var_mem(scope, vtype, r=1):
         exit(0)
       return function_mem_counter[3] - 1-r
 
+# add a constant and return its memory address
 def append_const(cons, cons_type):
   if(cons_type == 'int'): # Condition to check which index should be modified
     constants_mem_counter[0] += 1 # Add one to memory counter

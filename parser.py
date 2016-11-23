@@ -465,7 +465,7 @@ def p_sentence(t):
 
 def p_variable(t):
   'variable : ID set_variable opt_array'
-  print('VARIABLE')
+  #print('VARIABLE')
 
 def p_set_variable(t):
   'set_variable : '
@@ -482,7 +482,7 @@ def p_set_variable(t):
 def p_opt_array(t):
   '''opt_array : empty
                | check_dimensions dimensions calculate_location'''
-  # print('OPT ARRAY')
+  #print('OPT ARRAY')
 
 def p_calculate_location(t):
     'calculate_location : '
@@ -494,7 +494,7 @@ def p_dimensions(t):
 
 def p_dim_loop(t):
     '''dim_loop : dimensions
-              | empty'''
+                | empty'''
     global dim
     dim += 1
     # print('DIM LOOP')
@@ -502,7 +502,7 @@ def p_dim_loop(t):
 def p_check_dimensions(t):
     'check_dimensions : '
     global current_id
-    #check_dimensions()
+    check_dimensions()
 
 def p_evaluate_index(t):
     'evaluate_index : '
@@ -652,8 +652,9 @@ def p_error(p):
 ####################
 
 def calculate_location():
-    global current_id
-    print("ROLLLLLLLLLLLLLLLLLLLING", current_id)
+    global tempCount, semantic_cube, variables, current_function, current_id
+    base_dir = get_operand_mem(current_id, current_function) # Gets memory for the variable
+    cons_mem = append_const(base_dir, 'int') # Get virtual memory for the base direction
     aux = operands.pop()
     sum_code = operations['+']
     tempQuad = Quadruple()
@@ -662,9 +663,16 @@ def calculate_location():
     tempCount += 1
     newid_type = string_types[1]
     tmp_mem = get_var_mem(current_scope, newid_type)
+    aux_dict = variables[current_scope] # Line used to reduce next's line length
+    aux_dict[current_function['id']][newid] = VariableDetails(newid_type, tmp_mem) # Saves tmp in variables hash under current_function
     #
-    tempQuad.build(sum_code, aux, BASE, tmp_mem)
-
+    tempQuad.build(sum_code, aux, cons_mem, tmp_mem)
+    QuadrupleList.push(tempQuad)
+    #QuadrupleList.print()
+    #operands.pop()
+    operators.pop()
+    #operands.push(tmp_mem)
+    #print("THIS IS THE LAST:" ,operators.top())
 
 def start_array():
     global arrayDetails, isArray, dim, r
@@ -673,19 +681,17 @@ def start_array():
     dim = 1
     r = 1
 
-def calculate_location():
-    aux = operands.pop()
-
 def check_dimensions():
     global dim, var
     operand_id = operands.pop()
-    if(typeString(str(type(operand_id))) == 'str'): # Check if operand1 is a variable
-      vmem = get_operand_mem(operand_id, current_function) # Gets memory for the variable
-      if not var.isArray:
-          print("Error, variable ", operand_id, " is not an array.")
-      dim = 1
-      dimensionStack.push([operand_id, dim])
-      operators.push(operations['('])
+    if current_id in variables['function'][current_function['id']]:
+        var_det = variables['function'][current_function['id']][current_id]
+    else :
+        var_det = variables['global'][current_id]
+    if not var_det.isArray:
+        print("Error, variable ", operand_id, " is not an array.")
+    dim = 0
+    operators.push(operations['('])
 
 def get_type_from_stack():
     return str(types.pop()).split("'")[1]
@@ -725,6 +731,7 @@ def add_to_fun_dict():
 
 def validate_quadruple():
     global current_function, checked_dimension, dim, tempCount
+    dim += 1
     tempQuad = Quadruple()
     index = operands.top()
     verify_code = operations['VERIFY']
@@ -739,15 +746,18 @@ def validate_quadruple():
         var_det = variables['global'][current_id]
     size = var_det.arrayDetails.details[checked_dimension].size
     m = var_det.arrayDetails.details[checked_dimension].m
+    cons_mem = append_const(m, 'int') # Get virtual memory for m
+    checked_dimension += 1
     before_last = checked_dimension < var_det.arrayDetails.totalSize
 
     # Generate validation quadruple
-    tempQuad.build(verify_code, index, None, size)
+    tempQuad.build(verify_code, index, 0, size)
     QuadrupleList.push(tempQuad)
+    QuadrupleList.print()
 
-    checked_dimension += 1
     # If there are more dimensions to check
     if before_last:
+        tempQuad = Quadruple()
         aux = operands.pop()
         #generate temp
         newid = 'tmp' + str(tempCount)
@@ -755,11 +765,12 @@ def validate_quadruple():
         newid_type = string_types[1]
         tmp_mem = get_var_mem(current_scope, newid_type)
         #
-        tempQuad.build(multiply_code, aux, m, tmp_mem)
+        tempQuad.build(multiply_code, aux, cons_mem, tmp_mem)
+        QuadrupleList.push(tempQuad)
         operands.push(tmp_mem)
     # If we are on the 2nd or greater dimension
     if dim > 1:
-        print("chombawombawombawombawomba")
+        tempQuad = Quadruple()
         aux2 = operands.pop()
         aux1 = operands.pop()
         #generate temp
@@ -768,9 +779,9 @@ def validate_quadruple():
         newid_type = string_types[1]
         tmp_mem = get_var_mem(current_scope, newid_type)
         #
-        tempQuad.build(sum_code, aux2, aux1, tmp_mem)
+        tempQuad.build(sum_code, aux1, aux2, tmp_mem)
+        QuadrupleList.push(tempQuad)
         operands.push(tmp_mem)
-    QuadrupleList.print()
 
 def write_expression_quadruple():
     tempQuad = Quadruple()
@@ -788,7 +799,7 @@ def read_quadruple():
     QuadrupleList.push(tempQuad)
 
 def assignment_quadruple():
-    global variables, current_function, variables, semantic_cube
+    global current_function, variables, semantic_cube
     tempQuad = Quadruple()
     operation = operations['=']
     operand = operands.pop()
@@ -810,7 +821,7 @@ def assignment_quadruple():
         QuadrupleList.push(tempQuad)
     else:
       #########################################################################3
-      print('SDFAHDFD ', operand, ass_variable)
+      #print('SDFAHDFD ', operand, ass_variable)
       if(typeString(str(type(operand))) == 'str'):
         if(operand not in variables['function'][current_function['id']]):
           if(operand not in variables['global']):
@@ -1411,6 +1422,16 @@ def make_magic():
       make_zombie_mem(quad.result)
       i += 1
       print("ERA callling ", quad.result)
+    elif(quad.operator == 29): # VERIFY
+      # global i
+      op = get_value(quad.left)
+      if op >= quad.result:
+          print("Array out of bounds at ", quad.left)
+          exit(1)
+      if op < quad.right:
+          print("Array out of bounds at ", quad.left)
+          exit(1)
+      i += 1
 
 def make_zombie_mem(fun_name):
   global zombie_memory
