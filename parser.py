@@ -65,17 +65,6 @@ def p_assignment(t):
   assignment_quadruple()
   #print('ASSIGNMENT')
 
-#def p_assignation_variable(t):
-#  'assignation_variable : ID ass_opt_array'
-#
-#def p_ass_opt_array(t):
-#  '''ass_opt_array : dimensions
-#                   | ass_var_to_stack'''
-#
-#def p_ass_var_to_stack(t):
-#  '''ass_var_to_stack : '''
-#  operands.push(t[-1])
-
 def p_atomic(t):
   '''atomic : STRING
             | INT
@@ -204,7 +193,6 @@ def p_check_void_fun_call(t):
     print('Function ', t[-1], ' was not declared.')
     exit(0)
 
-
 def p_fun_call(t):
   'fun_call : ID_FUN save_fun_id L_PAREN add_bottom fun_call_opts R_PAREN remove_bottom fun_call_quadruples'
   # print('FUN CALL')
@@ -285,7 +273,7 @@ def p_remove_bottom(t):
 
 def p_evaluate_level0(t):
     'evaluate_level0 : '
-    if(operators.size() and levels[operators.top()] >= 1):
+    if(operators.size() and levels[operators.top()] == 1):
         arithmetic_quadruple()
 
 ## LEVEL 1 - %, *, /
@@ -307,7 +295,7 @@ def p_level1_opers(t):
 def p_evaluate_level1(t):
     'evaluate_level1 : '
     # operators.print()
-    if(operators.size() and levels[operators.top()] >= 2):
+    if(operators.size() and levels[operators.top()] == 2):
         arithmetic_quadruple()
 
 ## LEVEL 2 - +, -
@@ -328,7 +316,7 @@ def p_level2_opers(t):
 def p_evaluate_level2(t):
     'evaluate_level2 : '
     # operators.print()
-    if(operators.size() and levels[operators.top()] >= 3):
+    if(operators.size() and levels[operators.top()] == 3):
         arithmetic_quadruple()
 
 ## LEVEL 3 - <, >, <=, >=, <>, ==

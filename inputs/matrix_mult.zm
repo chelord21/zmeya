@@ -11,32 +11,24 @@ main{
   k = 1;
   while( i < 3 ){
     while( j < 3 ){
-      write( k );
       a[i][j] = k;
+      r[i][j] = 0;
       k = k + 1;
       j = j + 1;
     }
     j = 0;
     i = i + 1;
   }
-  write("-----");
 
   i = 0;
   j = 0;
   k = 0;
   while( i < 3 ){
     while( j < 3 ){
-      acum = 0;
       while( k < 3 ){
-        acum = a[i][k] * a[k][j] + acum;
-        write(">>>>");
-        write(a[i][k]);
-        write(a[k][j]);
-        write(acum);
+        r[i][j] = r[i][j] + a[i][k] * a[k][j];
         k = k + 1;
-        write("<<<<");
       }
-      r[i][j] = acum;
       k = 0;
       j = j + 1;
     }
@@ -45,5 +37,7 @@ main{
   }
 
   write("-----");
+  write(r[0][0]);
   write(r[1][1]);
+  write(r[2][2]);
 }
